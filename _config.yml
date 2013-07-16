@@ -1,0 +1,16 @@
+markdown: rdiscount
+pygments: true
+permalink: /posts/:title
+rdiscount:
+  extensions: [smart]
+title : Chris Benninger
+production_url : http://benninger.ca
+description: "Code, rants, utilities, tutorials, projects and other things by Chris Benninger."
+disqus_shortname: benningerca
+analytics: UA-5453717-1
+##gauges: 50f2b533613f5d7c8000000c
+author :
+  name : Chris Benninger
+  github : chrisbenninger
+  twitter : chrisbenninger
+  email: chrisbenninger@gmail.com

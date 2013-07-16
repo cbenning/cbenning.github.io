@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>SBx00 Azalia HDA sound with Debian Squeeze</title>
+
+  <meta name="author" content="Chris Benninger" />
+  <meta name="description" content="Code, rants, utilities, tutorials, projects and other things by Chris Benninger." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="alternate" type="application/rss+xml" href="/atom.xml" />
+
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300'
+    rel='stylesheet' type='text/css'>
+
+  <link href="/css/up.css" rel="stylesheet">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-57x57-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+</head>
+
+<body>
+  <div class="navbar navbar-fixed-top">
+    <div class="container">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Chris Benninger</a>
+      <div class="nav-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav pull-right hidden-print">
+          <li>
+            <a class="hidden-sm" href="http://github.com/caarlos0/up"
+              title="Get this theme!">
+              <i class="icon-download icon-large"></i>
+            </a>
+            <a class="visible-sm" href="http://github.com/caarlos0/up"
+              title="Get this theme!">
+              <i class="icon-download icon-large"></i>
+              Get this theme!
+            </a>
+          </li>
+          <li>
+            <a class="hidden-sm" title="About me" href="/about.html">
+              <i class="icon-user icon-large"></i>
+            </a>
+            <a class="visible-sm" title="About me" href="/about.html">
+              <i class="icon-user icon-large"></i>
+              About me
+            </a>
+          </li>
+          <li>
+            <a class="hidden-sm" href="/atom.xml" title="Atom Feed">
+              <i class="icon-rss icon-large"></i>
+            </a>
+            <a class="visible-sm" href="/atom.xml" title="Atom Feed">
+              <i class="icon-rss icon-large"></i>
+              Atom Feed
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <section class="content">
+  <h1>
+    <a href="/posts/sbx00-azalia-hda-sound-with-debian-squeeze">SBx00 Azalia HDA sound with Debian Squeeze</a>
+  </h1>
+
+  <section class="byline">
+    January 21, 2011
+  </section>
+
+  I got a new motherboard yesterday with an integrated ASUS chipset and SBx00 Azalia (Intel HDA) audio card. The sound worked out of the box and then after installing the FGLRX video driver, it suddenly stopped. Anyway, long story short I noticed a message in /var/log/kern.log talking about the snd-hda-intel driver "failing to set MSI" whatever that is.
+
+<!--more-->
+
+I found that there were two issues, the snd-hda-intel driver was not detecting the correct model and was improperly trying to enable msi. I fixed it by adding the follwing to /etc/modprobe.d/alsa-base.conf:
+<pre class="brush: shell">options snd-hda-intel model=asus enable_msi=0</pre>
+and then rebooting.
+
+If you have a different chip model, you can find yours out at: <a href="http://www.kernel.org/doc/Documentation/sound/alsa/HD-Audio-Models.txt">http://www.kernel.org/doc/Documentation/sound/alsa/HD-Audio-Models.txt</a>. Good luck.
+
+  <div class="pull"></div>
+  <a  href="https://twitter.com/share" class="twitter-share-button"
+data-via="chrisbenninger" data-lang="en" data-size="large">Tweet</a>
+<script>
+!function(d,s,id){
+  var js,fjs=d.getElementsByTagName(s)[0];
+  if(!d.getElementById(id)){
+    js=d.createElement(s);
+    js.id=id;
+    js.src="//platform.twitter.com/widgets.js";
+    fjs.parentNode.insertBefore(js,fjs);
+  }
+}(document,"script","twitter-wjs");
+</script>
+
+  <hr>
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  var disqus_shortname = 'benningerca';
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+</section>
+
+  </div>
+
+  <div id="footer" class="hidden-print">
+    <section class="meta">
+      <div class="container">
+        <div class="row">
+          <div class="col col-lg-2 col-offset-4">
+            <a href="https://twitter.com/chrisbenninger">
+              <i class="icon icon-twitter icon-4x"></i>
+              <div>Follow me on Twitter.</div>
+            </a>
+          </div>
+          <div class="col col-lg-2 next">
+            <a href="https://github.com/chrisbenninger">
+              <i class="icon icon-github icon-4x"></i>
+              <div>
+                See my github profile.
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<script type="text/javascript">
+
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-5453717-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+
+</script>
+
+
+  
+
+</body>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="/js/up.js"></script>
+</html>

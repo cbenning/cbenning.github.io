@@ -1,0 +1,20 @@
+---
+layout: post
+title: Udev and Optiarc high-cpu utilization fix
+categories:
+- Linux
+- Opensource
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+For months I have been plagued with this annoying problem on my MSI GX620 laptop. At some point I upgraded my version to udev to 151.X and began to notice that the udevd process was using around 25% of my cpu. After months of putting up with poor battery life and a scalding hot keyboard I found a solution.
+
+The problem was a result of a poorly implemented firmware on the Optiarc RW_AD_7560S on my GX620. Installing the newer firmware located <a href="http://ftp.euro.dell.com/rmsd/AD-7560S%20SD05.zip">here</a> took care of the problem immediately. This updates the firmware to version SD05. I had to boot into windows and ran the executable in the 'win' folder. 
+
+Booting into linux, the problem was immediately solved. 
+
+Happy computing :)

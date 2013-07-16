@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>Debian Squeeze + Xen 4 + Kernel 2.6.32.27 = Misery</title>
+
+  <meta name="author" content="Chris Benninger" />
+  <meta name="description" content="Code, rants, utilities, tutorials, projects and other things by Chris Benninger." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="alternate" type="application/rss+xml" href="/atom.xml" />
+
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300'
+    rel='stylesheet' type='text/css'>
+
+  <link href="/css/up.css" rel="stylesheet">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-57x57-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+</head>
+
+<body>
+  <div class="navbar navbar-fixed-top">
+    <div class="container">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Chris Benninger</a>
+      <div class="nav-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav pull-right hidden-print">
+          <li>
+            <a class="hidden-sm" href="http://github.com/caarlos0/up"
+              title="Get this theme!">
+              <i class="icon-download icon-large"></i>
+            </a>
+            <a class="visible-sm" href="http://github.com/caarlos0/up"
+              title="Get this theme!">
+              <i class="icon-download icon-large"></i>
+              Get this theme!
+            </a>
+          </li>
+          <li>
+            <a class="hidden-sm" title="About me" href="/about.html">
+              <i class="icon-user icon-large"></i>
+            </a>
+            <a class="visible-sm" title="About me" href="/about.html">
+              <i class="icon-user icon-large"></i>
+              About me
+            </a>
+          </li>
+          <li>
+            <a class="hidden-sm" href="/atom.xml" title="Atom Feed">
+              <i class="icon-rss icon-large"></i>
+            </a>
+            <a class="visible-sm" href="/atom.xml" title="Atom Feed">
+              <i class="icon-rss icon-large"></i>
+              Atom Feed
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <section class="content">
+  <h1>
+    <a href="/posts/debian-squeeze-xen-4-kernel-2-6-32-27-misery">Debian Squeeze + Xen 4 + Kernel 2.6.32.27 = Misery</a>
+  </h1>
+
+  <section class="byline">
+    January 13, 2011
+  </section>
+
+  I recently moved my Debian Squeeze development platform from the 2.6.31.10 kernel and Xen 3.4.3 to 2.6.32.27 and Xen 4.0.1. I really must say this has been both a learning experience and...to put it lightly, a vortex of never-ending agony from which there is no hope of escape. <!--more--> I have spent several full working days worth of hours just trying to get a DomU to consistently boot, the keyword being "consistently". I figure that it wouldn't be quite so bad If my DomU never managed to lift off, but against all my best efforts the magic number seems to be somewhere around 30%. This as a result, keeps me tantalizingly close enough to success that I just keep working at it .  I am a huge fan of this project and most open source initiatives, this being one of the main reasons I chose to use Xen for my research prototype. All that being said, I have not been able to keep this thing going long enough to get any active development done since I upgraded to the newer version and using it right now feels like I am walking on eggshells. I am not criticizing Xen, it is an amazingly complex piece of software and the developers are doing a fantastic job. Here are the two main issues I have encountered over the last year of using Xen and the Xen hypervisor API.
+<h1>Documentation and Howtos? I think not!</h1>
+The Xen wiki provides a small amount of help, but seems to cover exactly 1/4 of each thing you might want to know, no more, no less. Just enough to let you know that a solution is possible, but It doesn't feel like giving it to you just yet. Why does the <a href="http://wiki.archlinux.org">Arch Linux Wiki</a> get to kick so much ass?
+<h1>No one ever posts how they solved a problem.</h1>
+I am currently having an issue related to this wonderful error: "SETVCPUCONTEXT failed". So when I spend a while on the xen-users mailing list and find someone else with the same issue I get all giddy and read through the comments expectantly, carefully, taking my time and enjoying the lead up to a beautiful solution that will solve all my life's problems until.....It just stops. The vast majority of the issues I have encountered have been quite thoroughly discussed by the developers and the community, the problem is that no one seems to post how they solved the problem, they just fix their systems and move on with their life never looking at the forum post ever again. The developers on the meantime fix it in the kernel or Xen and you don't get a fix unless you are willing to update your kernel to the bleeding-edge version fresh from the git repository. So I plead with all Xen users! Post your solutions! Post them for the good of all mankind! At the very least post them to preserve this poor man's sanity!
+
+  <div class="pull"></div>
+  <a  href="https://twitter.com/share" class="twitter-share-button"
+data-via="chrisbenninger" data-lang="en" data-size="large">Tweet</a>
+<script>
+!function(d,s,id){
+  var js,fjs=d.getElementsByTagName(s)[0];
+  if(!d.getElementById(id)){
+    js=d.createElement(s);
+    js.id=id;
+    js.src="//platform.twitter.com/widgets.js";
+    fjs.parentNode.insertBefore(js,fjs);
+  }
+}(document,"script","twitter-wjs");
+</script>
+
+  <hr>
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  var disqus_shortname = 'benningerca';
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+</section>
+
+  </div>
+
+  <div id="footer" class="hidden-print">
+    <section class="meta">
+      <div class="container">
+        <div class="row">
+          <div class="col col-lg-2 col-offset-4">
+            <a href="https://twitter.com/chrisbenninger">
+              <i class="icon icon-twitter icon-4x"></i>
+              <div>Follow me on Twitter.</div>
+            </a>
+          </div>
+          <div class="col col-lg-2 next">
+            <a href="https://github.com/chrisbenninger">
+              <i class="icon icon-github icon-4x"></i>
+              <div>
+                See my github profile.
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<script type="text/javascript">
+
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-5453717-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+
+</script>
+
+
+  
+
+</body>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="/js/up.js"></script>
+</html>

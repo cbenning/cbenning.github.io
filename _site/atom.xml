@@ -1,0 +1,868 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+ <title>Chris Benninger</title>
+ <link href="http://benninger.ca/atom.xml" rel="self"/>
+ <link href="http://benninger.ca/"/>
+ <updated>2013-07-16T12:14:15-07:00</updated>
+ <id>http://benninger.ca</id>
+ <author>
+   <name>Chris Benninger</name>
+ </author>
+
+ 
+ <entry>
+   <title>How to Force Snow Leopard+ to consider a shell script safe.</title>
+   <link href="http://benninger.ca/posts/how-to-force-snow-leopard-to-consider-a-shell-script-safe"/>
+   <updated>2013-06-12T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/how-to-force-snow-leopard-to-consider-a-shell-script-safe</id>
+   <content type="html">You can tell OSX Snow Leopard to consider shell scripts safe to execute without a user prompt. This is useful for automation of certain tasks.
+
+&lt;!--more--&gt;
+
+You can use any UTI mime-type to allow any filetype you wish. To do so, place the below text in ~/Library/Preferences/com.apple.DownloadAssessment.plist
+
+
+&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;
+&amp;lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&amp;gt;
+&amp;lt;plist version=&quot;1.0&quot;&amp;gt;
+&amp;lt;dict&amp;gt;
+	&amp;lt;key&amp;gt;LSRiskCategorySafe&amp;lt;/key&amp;gt;
+	&amp;lt;dict&amp;gt;
+		&amp;lt;key&amp;gt;LSRiskCategoryContentTypes&amp;lt;/key&amp;gt;
+		&amp;lt;array&amp;gt;
+			&amp;lt;string&amp;gt;public.shell-script&amp;lt;/string&amp;gt;
+		&amp;lt;/array&amp;gt;
+	&amp;lt;/dict&amp;gt;
+&amp;lt;/dict&amp;gt;
+&amp;lt;/plist&amp;gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Virtualizing OSX: Nic card setup</title>
+   <link href="http://benninger.ca/posts/virtualizing-osx-nic-card-setup"/>
+   <updated>2013-05-07T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/virtualizing-osx-nic-card-setup</id>
+   <content type="html">If you are automating anything with virtual machines, you likely will be automatically assigning MAC addresses to Nic cards. If you are using any OSX guests, you may have issues around new Nic cards being assigned and having them come up without human interaction. To force OSX to register and bring up new Nics, run the following:
+&lt;pre class=&quot;brush:bash&quot;&gt;
+networksetup -detectnewhardware
+&lt;/pre&gt;
+Applying that to the virtualization case, you can use &lt;em&gt;Automator&lt;/em&gt; to create and &lt;em&gt;Application&lt;/em&gt; that runs an &lt;em&gt;AppleScript&lt;/em&gt; with the above command, and set it to run on login.
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Akka+Scala: Deploying an actor remotely</title>
+   <link href="http://benninger.ca/posts/akkascala-deploying-an-actor-remotely"/>
+   <updated>2013-04-26T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/akkascala-deploying-an-actor-remotely</id>
+   <content type="html">In my use case, I have a variable number of independent &lt;em&gt;ActorSystems&lt;/em&gt;. As a new system starts up, it initiates a simple Syn/Ack procedure with the command and control system, allowing the C&amp;C to deploy remote actors. Just for fun, here is some example code.
+
+&lt;!--more--&gt;
+
+Lets start with our remote system:
+&lt;pre class=&quot;brush:scala&quot;&gt;
+object Remote extends App{
+ val system = ActorSystem(&quot;RemoteSystem&quot;,
+   ConfigFactory.defaultReference(getClass.getClassLoader))
+ val connStr = &quot;akka://CommandSystem@&lt;ip&gt;:2555/user/CommandActor&quot;
+ val cnc = system.actorFor(connStr)
+ val synActor = system.actorOf(Props[SynActor])
+}
+
+class SynActor extends Actor{
+ override def preStart = {
+  //Send the syn
+  Remote.cnc ! new Syn
+ }
+ def receive = {
+  case a:Ack =&gt; //
+ }
+}
+&lt;/pre&gt;
+
+Some shared classes:
+&lt;pre class=&quot;brush:scala&quot;&gt;
+case class Syn()
+case class Ack()
+&lt;/pre&gt;
+
+Now the Command and Control system and the actual code you want run remotely:
+&lt;pre class=&quot;brush:scala&quot;&gt;
+object Command extends App{
+ val system = ActorSystem(&quot;CommandSystem&quot;,
+   ConfigFactory.defaultReference(getClass.getClassLoader))
+ val cncActor = system.actorOf(Props[CommandActor])
+}
+
+class CommandActor extends Actor {
+ def receive = {
+  case s:Syn =&gt;
+   //Respond for politeness
+   sender ! new Ack   
+   //Get the remote actorsystem path
+   val addr = AddressFromURIString(sender.path.root.toString)  
+   //Push the actor to the remote system
+   val remoteActor = context.actorOf((Props[RemoteActor]).withDeploy(
+     Deploy(scope = RemoteScope(addr)))) 
+ }
+}
+
+class RemoteActor extends Actor {
+ //Where you put your remote code implementation
+}
+&lt;/pre&gt;
+From here, you can handle management of remote actors in whichever way you want. Fun stuff!
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Creating an Akka actor from a dynamically loaded Jar file in Scala</title>
+   <link href="http://benninger.ca/posts/creating-an-akka-actor-from-a-dynamically-loaded-jar-file-in-scala"/>
+   <updated>2012-11-14T00:00:00-08:00</updated>
+   <id>http://benninger.ca/posts/creating-an-akka-actor-from-a-dynamically-loaded-jar-file-in-scala</id>
+   <content type="html">Creating actors in &lt;a href=&quot;http://doc.akka.io/docs/akka/snapshot/scala/actors.html&quot;&gt;Akka&lt;/a&gt; is generally pretty straight forward. If using the general use-case, there are two slightly different methods to use depending on whether or not your Actor has any parameters in it&#39;s constructor.
+&lt;!--more--&gt;
+&lt;h4&gt;Without constructor parameters&lt;/h4&gt;
+&lt;pre class=&quot;brush: scala&quot;&gt;
+class MyActor extends Actor { ... }
+
+val myActor = system.actorOf(Props[MyActor],name=&quot;actorname&quot;)
+&lt;/pre&gt;
+
+&lt;h4&gt;With constructor parameters&lt;/h4&gt;
+&lt;pre class=&quot;brush: scala&quot;&gt;
+class MyActor(param:String) extends Actor { ... }
+
+val myActor = system.actorOf(Props(new MyActor(parameter)),name=&quot;actorname&quot;)
+&lt;/pre&gt;
+
+That&#39;s pretty straight forward. However, there are outlier cases for JVM+Scala in which some more dynamic functionality seen in languages like Python is useful. As a result, I&#39;ve been playing with ways to dynamically load classes from remote jar files. As I have been into Akka+Scala for a while, this ultimately leads to the question: &quot;How can I load an Actor from a jarfile I received from a remote source?&quot;. This isn&#39;t quite comparable to what Python does, but it is interesting and powerful nonetheless.
+
+Loading a class from a jarfile using a URLClassLoader is fairly straightforward and I wont cover it here. What I will cover is loading an Actor from a URLClassLoader in Scala. Using reflection this can be achieved without too much stress, assuming we do not need to pass parameters into an actor&#39;s constructor.
+
+&lt;h4&gt;From a URLClassLoader without constructor parameters&lt;/h4&gt;
+&lt;pre class=&quot;brush: scala&quot;&gt;
+class MyActor extends Actor { ... }
+
+val loader = jarFileToUrlClassLoader(jarURL)
+val clazz = loader.loadClass(&quot;my.pkg.MyActor&quot;)
+val myActor = context.system.actorOf(Props(clazz.asInstanceOf[Class[_ : &lt; akka.actor.Actor]])
+&lt;/pre&gt;
+
+If you&#39;re constructor has parameters however, it becomes a little more tricky. Unfortunately the Scala/Akka API doesn&#39;t seem to support this. The Java/Akka one does, though we have to use the Creator class. Creator is a factory that makes whatever type you tell it to. Override its create function and return an Actor.
+
+&lt;h4&gt;From a URLClassLoader with constructor parameters&lt;/h4&gt;
+&lt;pre class=&quot;brush: scala&quot;&gt;
+class MyActor(p:String) extends Actor { ... }
+
+val loader = jarFileToUrlClassLoader(jarURL)
+val clazz = loader.loadClass(&quot;my.pkg.MyActor&quot;)
+val const = clazz.getConstructors()(0) //Do this properly
+
+val prop = new Props
+val myActor = prop.withCreator(new akka.japi.Creator[Actor]{
+    def create:Actor = {
+        return const.newInstance(&quot;My Parameter&quot;).asInstanceOf[Actor]
+    }
+})
+&lt;/pre&gt;
+
+Tada! Now you have all the tools needed to beam Jarfiles around, load them and fire up actors inside them.
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Cloud 2012 and SophosLabs and Scala, Oh my!</title>
+   <link href="http://benninger.ca/posts/cloud-2012-and-sophoslabs-and-scala-oh-my"/>
+   <updated>2012-08-07T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/cloud-2012-and-sophoslabs-and-scala-oh-my</id>
+   <content type="html">It&#39;s been a long while since I last posted anything, I thought I would summarize a few of the things that have occurred lately. The first of which is that the research paper based on my graduate research was presented at the IEEE Cloud 2012 conference in Hawaii in June. &lt;a href=&quot;http://webhome.csc.uvic.ca/~onat/&quot;&gt;Dr. Onat Yazir&lt;/a&gt; presented the work for me as I wasn&#39;t able to attend. For anyone interested, the &lt;a href=&quot;http://www.benninger.ca/wp-content/uploads/2012/10/06253540.pdf&quot;&gt;paper can be found here&lt;/a&gt;.
+
+In addition to this news, I have accepted an R&amp;D/Development position at &lt;a href=&quot;http://en.wikipedia.org/wiki/Sophos&quot;&gt;Sophos (SophosLabs)&lt;/a&gt; in Vancouver BC. I have been there for about a month now and am having a lot of fun. In particular, I&#39;ve been playing a lot with the &lt;a href=&quot;http://www.scala-lang.org/&quot;&gt;Scala programming language&lt;/a&gt;. In combination with the 3rd-party &lt;a href=&quot;http://akka.io/&quot;&gt;Akka&lt;/a&gt; library, Scala provides an extremely powerful set of tools for building distributed systems using the &lt;a href=&quot;http://en.wikipedia.org/wiki/Actor_model&quot;&gt;Actor model&lt;/a&gt;. I must admit, I originally resisted many of the changes in thinking required for effective use of the Actor model and Scala, especially coming from my favouritism towards C and Python. Scala actors however, have begun to restore my faith in the JVM (what&#39;s that you say?). I suggest you give it a shot, I think you&#39;ll be pleasantly surprised.
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Graduation, Maitland and career seeking.</title>
+   <link href="http://benninger.ca/posts/graduation-maitland-and-career-seeking"/>
+   <updated>2012-05-29T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/graduation-maitland-and-career-seeking</id>
+   <content type="html">Well it&#39;s done, I am finished all the requirements for my MSc. and have now been approved for graduation.
+
+My thesis, entitled &lt;em&gt;Maitland: Analysis of Packed and Encrypted Malware via Paravirtualization Extensions&lt;/em&gt; can be found &lt;a href=&quot;http://www.benninger.ca/wp-content/uploads/2012/05/Benninger_Christopher_MSc_2012.pdf&quot;&gt;here&lt;/a&gt; if anyone is interested. In addition, a few months ago we began working on a conference paper version of my thesis work. It was recently accepted to the IEEE Cloud 2012 conference and I am very excited about it. I will post some paper details and a citation once the conference is over (late June).
+
+Now that my MSc. is finished, I&#39;ll be investigating some career opportunities both here in Vancouver and abroad.
+</content>
+ </entry>
+ 
+ <entry>
+   <title>How to get answers on a developer or help IRC channel.</title>
+   <link href="http://benninger.ca/posts/how-to-get-answers-on-a-developer-or-help-irc-channel"/>
+   <updated>2011-11-12T00:00:00-08:00</updated>
+   <id>http://benninger.ca/posts/how-to-get-answers-on-a-developer-or-help-irc-channel</id>
+   <content type="html">I&#39;ve spent the better part of two years working on a very technical project. I don&#39;t personally know many people who are able to really help me with the technical side of things. As my environment has little solid documentation, I had nowhere to turn but the developer community&#39;s IRC channel and mailing list.
+&lt;!--more--&gt;
+When I started out, I was relatively new to the whole &quot;IRC as a method of running a project&quot; thing and found it rather frustrating (sometimes I still do). When I asked for help with a problem I was having, I would usually start out by trying to be civil, introducing myself and framing the problem at a high-level so that people interested or knowledgeable about the area would pipe up. I never got a response and I couldn&#39;t understand why.
+
+Recently, I&#39;m finding myself on the opposite side of that interaction, ignoring the person asking for help because I don&#39;t feel like asking for more information about their issue. For all of the people out there experiencing frustration while trying to get help, I wanted to provide some advice on the subject of getting what you want:
+&lt;ul&gt;
+	&lt;li&gt;Culturally, developer communities are usually filled with very technically-mind individuals, each with different skill-sets. They aren&#39;t usually interested in using the channel as a form of interaction or a chatroom. They want to solve their problems, keep up to date on the latest developments (by reading other people&#39;s posts) and sometimes pipe in when they know something.&lt;/li&gt;
+	&lt;li&gt;Don&#39;t bother asking if anyone &#39;knows about a thing&#39;. Most of these people are at work while on the channel and are working on projects of their own. They aren&#39;t watching the channel eagerly to help young bright minds who want to ask high-level questions which demand long, explanatory answers. People are busy! Don&#39;t waste their time.&lt;/li&gt;
+	&lt;li&gt;People in these communities are usually most interested in the technical issues. Ask technical questions and provide enough information that they can try and answer it concisely and without asking for more context or information.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;In summary, when you need a question answered just keep it simple, keep it technical, keep it professional. If you are using software X, instead of asking &quot;does anyone know anything about X?&quot; try &quot;While using X, I used feature Y and Z happened.&quot;, copy error messages, version numbers and everything you can think of that might be useful.&lt;/div&gt;
+&amp;nbsp;
+&lt;div&gt;Good luck.&lt;/div&gt;
+&amp;nbsp;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Converting those pesky .m4a files to .mp3 on Linux</title>
+   <link href="http://benninger.ca/posts/converting-those-pesky-m4a-files-to-mp3-on-linux"/>
+   <updated>2011-08-06T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/converting-those-pesky-m4a-files-to-mp3-on-linux</id>
+   <content type="html">Here is a nice one-liner to convert a .m4a audio file to a .mp3 file:
+&lt;pre class=&quot;brush: shell&quot;&gt;$ faad -o - input_file.m4a | lame - output_file.mp3&lt;/pre&gt;
+Note: Make sure you have lame and faad installed. In debian they are just &#39;faad&#39; and &#39;lame&#39; packages.
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Vim: Use selected text as input to a shell command</title>
+   <link href="http://benninger.ca/posts/vim-use-selected-text-as-input-to-a-shell-command"/>
+   <updated>2011-07-19T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/vim-use-selected-text-as-input-to-a-shell-command</id>
+   <content type="html">&lt;a href=&quot;http://www.benninger.ca/wp-content/uploads/2011/07/Screenshot.png&quot;&gt;
+&lt;/a&gt;This is most likely common knowledge but I keep forgetting how to do it. If you want to run shell command on a small section of text in file you have open in vim, here is how. 
+&lt;!--more--&gt;
+In visual-mode, select the text.
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;a href=&quot;http://www.benninger.ca/wp-content/uploads/2011/07/Screenshot.png&quot;&gt;&lt;img class=&quot;aligncenter size-full wp-image-81&quot; style=&quot;border-style: initial; border-color: initial;&quot; title=&quot;Screenshot&quot; src=&quot;http://www.benninger.ca/wp-content/uploads/2011/07/Screenshot.png&quot; alt=&quot;&quot; width=&quot;490&quot; height=&quot;308&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&amp;nbsp;
+&lt;div&gt;Now hit : and you should see :&#39;&amp;lt;, &#39;&amp;gt; at the prompt&lt;/div&gt;
+&amp;nbsp;
+&lt;div&gt;&lt;a href=&quot;http://www.benninger.ca/wp-content/uploads/2011/07/Screenshot-1.png&quot;&gt;&lt;img class=&quot;aligncenter size-full wp-image-83&quot; title=&quot;Screenshot-1&quot; src=&quot;http://www.benninger.ca/wp-content/uploads/2011/07/Screenshot-1.png&quot; alt=&quot;&quot; width=&quot;494&quot; height=&quot;305&quot; /&gt;&lt;/a&gt;&lt;/div&gt;
+&amp;nbsp;
+&lt;div&gt;Now following that, type :w !&amp;lt;command&amp;gt;, where &amp;lt;command&amp;gt; is the command you want to run. In my case I wanted to see how many characters were in the selected text, so I used &#39;wc -w&#39;. Then hit enter.&lt;/div&gt;
+&amp;nbsp;
+&lt;div&gt;&lt;a href=&quot;http://www.benninger.ca/wp-content/uploads/2011/07/Screenshot-2.png&quot;&gt;&lt;img class=&quot;aligncenter size-full wp-image-84&quot; title=&quot;Screenshot-2&quot; src=&quot;http://www.benninger.ca/wp-content/uploads/2011/07/Screenshot-2.png&quot; alt=&quot;&quot; width=&quot;491&quot; height=&quot;306&quot; /&gt;&lt;/a&gt;&lt;/div&gt;
+&amp;nbsp;
+&lt;div&gt;The result should show itself in the output section. In my case, there were 22 words.&lt;/div&gt;
+&amp;nbsp;
+&lt;div&gt;&lt;a href=&quot;http://www.benninger.ca/wp-content/uploads/2011/07/Screenshot-3.png&quot;&gt;&lt;img class=&quot;aligncenter size-full wp-image-85&quot; title=&quot;Screenshot-3&quot; src=&quot;http://www.benninger.ca/wp-content/uploads/2011/07/Screenshot-3.png&quot; alt=&quot;&quot; width=&quot;493&quot; height=&quot;332&quot; /&gt;&lt;/a&gt;&lt;/div&gt;
+&amp;nbsp;
+&lt;div&gt;Happy Viming!&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Workviz</title>
+   <link href="http://benninger.ca/posts/pyvizer"/>
+   <updated>2011-04-22T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/pyvizer</id>
+   <content type="html">Workviz is a prototype tool I built for viewing live server metadata in a compact way. The original intention was not to create an admin tool but rather a way for human&#39;s to use their natural pattern recognition to identify properties in a server cluster. Written in python, using NumPy and VPython, Workviz displays a 3d representation of user-selected metrics about any number of physical machines. It also supports simulations by creating alternate &quot;Workload Generators&quot; and inserting them on the fly.
+
+Here is the &lt;a title=&quot;PyVizer&quot; href=&quot;http://www.benninger.ca/?page_id=67&quot;&gt;Project Page&lt;/a&gt;.
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Writing to a file from the Kernel</title>
+   <link href="http://benninger.ca/posts/writing-to-a-file-from-the-kernel"/>
+   <updated>2011-04-04T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/writing-to-a-file-from-the-kernel</id>
+   <content type="html">Writing to a file in C is a fairly trivial affair. The Linux kernel does not have access to the usual user-land tools for interacting with files. Because this is generally a highly frowned upon practice (consider that a disclaimer) It took a while to pry the functions in question out of the people who knew them. A &quot;preferred&quot; technique would be to pass the parameters in via IOCTLs and implement a read() function in your module. Then reading the dump from the module and writing into the file from userspace. That just seemed like a lot of work for a one-time test so...
+&lt;!--more--&gt;
+
+My application was just a simple, one-time functional test to see what the contents memory were without doing a full core-dump, which should really be all you use this for, consider yourself warned.
+
+I found a good example &lt;a title=&quot;Kernel File stuff&quot; href=&quot;http://www.linuxjournal.com/article/8110?page=0,1&quot;&gt;here&lt;/a&gt; which I later realized did not work because the author seemed to be trying to obfuscate the actual solution with fake functions. Anyway here is an example of writing several blocks of data to a file.
+
+&amp;nbsp;
+&lt;pre class=&quot;brush: c&quot;&gt;char* dump_filename; //Set to the file you are targeting
+struct file *file;
+int i;
+void* data;  //Needs to be a kernel pointer, not userspace pointer
+int block_count; //Set me to something
+int block_size; //Set me to something
+loff_t pos = 0;
+mm_segment_t old_fs;
+
+old_fs = get_fs();  //Save the current FS segment
+set_fs(get_ds());
+
+file = filp_open(dump_filename, O_WRONLY|O_CREAT, 0644);
+
+if(file){
+	for(i=0; i &amp;lt; block_count ; i++){
+
+		data=&amp;lt;somewhere&amp;gt;+block_count*i //Wherever your data is
+		if(data==NULL){
+			continue;
+		}
+   		vfs_write(file, data, block_size, &amp;amp;pos);
+		pos = pos+block_size;
+
+	}
+	filp_close(file,NULL);
+}
+set_fs(old_fs); //Reset to save FS
+kfree(dump_filename);&lt;/pre&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>ImportError: No module named xen... on fresh compiled Xen 4.0.1 with Debian/Ubuntu</title>
+   <link href="http://benninger.ca/posts/importerror-no-module-named-xen-on-fresh-compiled-xen-4-0-1-with-debianubuntu"/>
+   <updated>2011-01-25T00:00:00-08:00</updated>
+   <id>http://benninger.ca/posts/importerror-no-module-named-xen-on-fresh-compiled-xen-4-0-1-with-debianubuntu</id>
+   <content type="html">This took me a few hours to find in the mailing list and I thought I would share it with a title that people would find if googling for a solution.&lt;!--more--&gt;
+
+I compiled a fresh copy of Xen 4.0.1 and all of the tools that come along with it. I immediately rebooted and tried to run &quot;xm&quot; to check the status of the system. Any variation on any xen-related command led to me something along the lines of this:
+&lt;pre class=&quot;brush: shell&quot;&gt;ImportError: No module named xen.xm&lt;/pre&gt;
+The cause is that xen installs all of the python tools into ﻿﻿&quot;/usr/lib/python2.6/site-packages/&quot; which is not by default in pythons path on a Debian (or Ubuntu) machine. After several hours of searching I found &lt;a href=&quot;http://lists.xensource.com/archives/html/xen-users/2010-05/msg00820.html&quot;&gt;this&lt;/a&gt; post describing the solution.
+
+When installing the compiled tools, use this obscure option to the makefile:
+&lt;pre class=&quot;brush: shell&quot;&gt;make install-tools PYTHON_PREFIX_ARG=&quot;--install-layout=deb&quot;&lt;/pre&gt;
+Enjoy
+</content>
+ </entry>
+ 
+ <entry>
+   <title>SBx00 Azalia HDA sound with Debian Squeeze</title>
+   <link href="http://benninger.ca/posts/sbx00-azalia-hda-sound-with-debian-squeeze"/>
+   <updated>2011-01-21T00:00:00-08:00</updated>
+   <id>http://benninger.ca/posts/sbx00-azalia-hda-sound-with-debian-squeeze</id>
+   <content type="html">I got a new motherboard yesterday with an integrated ASUS chipset and SBx00 Azalia (Intel HDA) audio card. The sound worked out of the box and then after installing the FGLRX video driver, it suddenly stopped. Anyway, long story short I noticed a message in /var/log/kern.log talking about the snd-hda-intel driver &quot;failing to set MSI&quot; whatever that is.
+
+&lt;!--more--&gt;
+
+I found that there were two issues, the snd-hda-intel driver was not detecting the correct model and was improperly trying to enable msi. I fixed it by adding the follwing to /etc/modprobe.d/alsa-base.conf:
+&lt;pre class=&quot;brush: shell&quot;&gt;options snd-hda-intel model=asus enable_msi=0&lt;/pre&gt;
+and then rebooting.
+
+If you have a different chip model, you can find yours out at: &lt;a href=&quot;http://www.kernel.org/doc/Documentation/sound/alsa/HD-Audio-Models.txt&quot;&gt;http://www.kernel.org/doc/Documentation/sound/alsa/HD-Audio-Models.txt&lt;/a&gt;. Good luck.
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Debian Squeeze + Xen 4 + Kernel 2.6.32.27 = Misery</title>
+   <link href="http://benninger.ca/posts/debian-squeeze-xen-4-kernel-2-6-32-27-misery"/>
+   <updated>2011-01-13T00:00:00-08:00</updated>
+   <id>http://benninger.ca/posts/debian-squeeze-xen-4-kernel-2-6-32-27-misery</id>
+   <content type="html">I recently moved my Debian Squeeze development platform from the 2.6.31.10 kernel and Xen 3.4.3 to 2.6.32.27 and Xen 4.0.1. I really must say this has been both a learning experience and...to put it lightly, a vortex of never-ending agony from which there is no hope of escape. &lt;!--more--&gt; I have spent several full working days worth of hours just trying to get a DomU to consistently boot, the keyword being &quot;consistently&quot;. I figure that it wouldn&#39;t be quite so bad If my DomU never managed to lift off, but against all my best efforts the magic number seems to be somewhere around 30%. This as a result, keeps me tantalizingly close enough to success that I just keep working at it .  I am a huge fan of this project and most open source initiatives, this being one of the main reasons I chose to use Xen for my research prototype. All that being said, I have not been able to keep this thing going long enough to get any active development done since I upgraded to the newer version and using it right now feels like I am walking on eggshells. I am not criticizing Xen, it is an amazingly complex piece of software and the developers are doing a fantastic job. Here are the two main issues I have encountered over the last year of using Xen and the Xen hypervisor API.
+&lt;h1&gt;Documentation and Howtos? I think not!&lt;/h1&gt;
+The Xen wiki provides a small amount of help, but seems to cover exactly 1/4 of each thing you might want to know, no more, no less. Just enough to let you know that a solution is possible, but It doesn&#39;t feel like giving it to you just yet. Why does the &lt;a href=&quot;http://wiki.archlinux.org&quot;&gt;Arch Linux Wiki&lt;/a&gt; get to kick so much ass?
+&lt;h1&gt;No one ever posts how they solved a problem.&lt;/h1&gt;
+I am currently having an issue related to this wonderful error: &quot;SETVCPUCONTEXT failed&quot;. So when I spend a while on the xen-users mailing list and find someone else with the same issue I get all giddy and read through the comments expectantly, carefully, taking my time and enjoying the lead up to a beautiful solution that will solve all my life&#39;s problems until.....It just stops. The vast majority of the issues I have encountered have been quite thoroughly discussed by the developers and the community, the problem is that no one seems to post how they solved the problem, they just fix their systems and move on with their life never looking at the forum post ever again. The developers on the meantime fix it in the kernel or Xen and you don&#39;t get a fix unless you are willing to update your kernel to the bleeding-edge version fresh from the git repository. So I plead with all Xen users! Post your solutions! Post them for the good of all mankind! At the very least post them to preserve this poor man&#39;s sanity!
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Debugging Kernel hard locks with netconsole</title>
+   <link href="http://benninger.ca/posts/debugging-kernel-hard-locks-with-netconsole"/>
+   <updated>2011-01-05T00:00:00-08:00</updated>
+   <id>http://benninger.ca/posts/debugging-kernel-hard-locks-with-netconsole</id>
+   <content type="html">There is already plenty of literature in this subject, I just thought I would throw in my vote.
+
+Currently I am building a pair of kernel tools. As i have learned, debugging more complex kernel modules could be considered an art of it&#39;s own. A rather large and fuzzy section of my code is causing a hard lock of my entire test system. Unfortunately because this is a hard lock (entire kernel is in an corrupted and unrecoverable state) none of my debugging output makes it to the daemons responsible for displaying them before the entire system grinds to a screeching halt.
+&lt;!--more--&gt;
+After some googling I came to the conclusion that I needed an external logging mechanism, a highly-recommended one being to use a null-modem serial cable and tell the test kernel to output all messages to the serial port as well. Long story short, after a trip to The Source, about 4 hours of troubleshooting and $30 later my dev machine was inexplicably still not outputting system logs.
+
+Shortly before giving up for the day, I found several articles about a kernel module called &quot;netconsole&quot;. This module basically works very low in the network card driver stack to spew kernel message out onto the network via UDP. After less than 30 minutes I had this tool working beautifully and identified the line of code causing the lockup.
+
+There are several tutorials on how to use this so I wont get too into it, but essentially I only had to do three simple steps.
+&lt;h1&gt;Simple Procedure (Debian)&lt;/h1&gt;
+1. Set the options for the module (port/ip/ etc. we want to send messages to/from on the network) on my test machine. I did this by adding a file in /etc/modules.d called netconsole.conf which looked something like this (I run Debian testing by the way):
+&lt;pre&gt;options netconsole netconsole=&amp;lt;from_port&amp;gt;@&amp;lt;from_ip/&amp;lt;out_eth_port&amp;gt;,&amp;lt;to_port&amp;gt;@&amp;lt;to_ip&amp;gt;/&amp;lt;to_mac_addr&amp;gt;&lt;/pre&gt;
+2. Load the module, you may also want to set the module to load on start if you have not already.
+&lt;pre&gt;&amp;gt; modprobe netconsole&lt;/pre&gt;
+3. Log data from remote computer. On the machine with the IP/mac you specified as the &quot;to&quot; location, use netcat to dump out what you get on that port:
+&lt;pre&gt;&amp;gt; nc -l -u -p &amp;lt;to_port&amp;gt;&lt;/pre&gt;
+At this point you should be getting kernel messages from the other machine!
+&lt;h1&gt;Firewall&lt;/h1&gt;
+If you aren&#39;t getting any messages, make sure your firewall isn&#39;t blocking the port you are using to send the logs.
+&lt;h1&gt;Conclusion&lt;/h1&gt;
+In conclusion, netconsole is very effective at what it does, is simpler and cheaper to setup than using a serial console. The only downside I can see is if you are trying to debug a network card driver. All-in-all, super useful.
+&lt;h1&gt;References&lt;/h1&gt;
+&lt;ul&gt;
+	&lt;li&gt;&lt;a href=&quot;http://www.cyberciti.biz/tips/linux-netconsole-log-management-tutorial.html&quot;&gt;Linux Configure Netconsole To Log Messages Over UDP Network&lt;/a&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;a href=&quot;http://www.novell.com/communities/node/4753/netconsole-howto-send-kernel-boot-messages-over-ethernet&quot;&gt;Netconsole howto: send kernel boot messages over ethernet&lt;/a&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;a href=&quot;http://www.novell.com/communities/node/4753/netconsole-howto-send-kernel-boot-messages-over-ethernet&quot;&gt;&lt;/a&gt;&lt;a href=&quot;http://mindplusplus.wordpress.com/2010/03/06/using-netconsole-on-linux/&quot;&gt;Using Netconsole on Linux&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Attachmate's Canadian Offices</title>
+   <link href="http://benninger.ca/posts/attachmates-canadian-offices"/>
+   <updated>2010-12-08T00:00:00-08:00</updated>
+   <id>http://benninger.ca/posts/attachmates-canadian-offices</id>
+   <content type="html">I was listening to one of my &lt;a href=&quot;http://linuxoutlaws.com/&quot;&gt;favorite podcasts&lt;/a&gt; today when the topic of the &lt;a href=&quot;http://www.osnews.com/story/24056/Attachmate_Buys_Novell&quot;&gt;Attachmate acquisition of Novell&lt;/a&gt; came up. I had heard about this a while ago but decided to go take a look at Attachmate website because I hadn&#39;t heard of the company before. I often like take a look at where large companies have offices (if any) within Canada simply because I am always in the market. There were a surprisingly large number of offices in Canada, nearly one in each province. I&lt;a href=&quot;http://www.attachmate.com/Worldwide/Canada+Offices.htm&quot;&gt; then noticed the addresses&lt;/a&gt; and thought it was amusing enough to share them.
+&lt;!--more--&gt;
+Apparently the Alberta, Saskatchewan and Manitoba offices are in Ontario, and the British Columbia office is in Seattle,WA. Way to up-talk your geographical distribution Attachmate.
+
+&lt;em&gt;Fun fact: The distance from Alberta to Markham, Ontario is roughly the distance from Sweden to Turkey, must be a helluva commute for those Alberta office workers.&lt;/em&gt;
+
+&lt;a href=&quot;http://www.benninger.ca/wp-content/uploads/2010/12/Screenshot.png&quot;&gt;&lt;img class=&quot;aligncenter size-medium wp-image-49&quot; title=&quot;Screenshot&quot; src=&quot;http://www.benninger.ca/wp-content/uploads/2010/12/Screenshot-174x300.png&quot; alt=&quot;&quot; width=&quot;174&quot; height=&quot;300&quot; /&gt;&lt;/a&gt;&lt;em&gt;
+&lt;/em&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Adding support for an unsupported power controller in Emulab</title>
+   <link href="http://benninger.ca/posts/adding-support-for-an-unsupported-power-manager-in-emulab"/>
+   <updated>2010-11-07T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/adding-support-for-an-unsupported-power-manager-in-emulab</id>
+   <content type="html">As a continuation of sorts to my &lt;a href=&quot;http://www.penninger.ca/?p=38&quot;&gt;previous post&lt;/a&gt;, I thought I would also do a short description of adding support for an unsupported power controller. The IBM Bladecenter is more or less unsupported by Emulab in all respects, the switches and the integrated power controller are unsupported and even the blade servers grudgingly resist running any vanilla FreeBSD images that come with the Emulab source.
+
+Note: &lt;em&gt;This set of steps is very similar to my post about &lt;a href=&quot;http://www.benninger.ca/?p=38&quot;&gt;adding switch support&lt;/a&gt;&lt;/em&gt;
+&lt;!--more--&gt;
+&lt;em&gt;
+&lt;/em&gt;
+&lt;h1&gt;Create a new case&lt;/h1&gt;
+Add a case to /usr/testbed/bin/power to include a new power type, I&#39;ll use &quot;mynewpower&quot; in this example. Edit this file and include the perl module you will be putting your code in by adding this to the top:
+&lt;pre class=&quot;brush: perl&quot;&gt;use power_mynewpower;   ##Assuming your module is called power_mynewpower.pm&lt;/pre&gt;
+&lt;em&gt;
+&lt;/em&gt;
+Somewhere around line 332 you&#39;ll find the beginning of the IF you&#39;ll need to add your case to:
+&lt;pre class=&quot;brush: perl&quot;&gt;#
+# Finally, we look at the controller type and construct the proper type
+# of object
+#
+my $errors = 0;
+if ($type eq &quot;APC&quot;) {
+my $device = new snmpit_apc($IP,$verbose);
+if (!defined $device) {
+    warn &quot;Unable to contact controller for $nodestr. Skipping...\n&quot;;
+    next;
+} else {
+    print &quot;Calling device-&amp;gt;power($op,@outlets)\n&quot;
+	if $verbose &amp;gt; 1;
+    if ($device-&amp;gt;power($op,@outlets)) {
+	print &quot;Control of $nodestr failed.\n&quot;;
+	$errors++;
+    }
+}
+} elsif ($type =~ &quot;RPC&quot;) {
+if (rpc27ctrl($op,$power_id,@outlets)) {
+    print &quot;Control of $nodestr failed.\n&quot;; $exitval++;
+}
+} elsif (($class eq &quot;sg&quot;) || ($type eq &quot;garcia&quot;)) {
+# XXX: &#39;garcia&#39; is temporary until stargates are subnodes of
+# garcias
+if (sgmotectrl($op,@nodes)) {
+    print &quot;Control of $nodestr failed.\n&quot;; $exitval++;
+    $errors++;
+}
+} elsif ($type =~ /whol-(\w+)/) {
+my $iface = $1;
+if (wholctrl($op,$iface,@nodes)) {
+    print &quot;Control of $nodestr failed.\n&quot;; $exitval++;
+    $errors++;
+}
+} elsif ($type =~ /rmcp-(\w+)/) {
+if (rmcpctrl($1,$op,@nodes)) {
+    print &quot;Control of $nodestr failed.\n&quot;; ++$exitval;
+    ++$errors;
+}
+} elsif ($type eq &#39;ilo2&#39; || $type eq &#39;ilo&#39;) {
+if (iloctrl($type,$op,@nodes)) {
+    print &quot;Control of $nodestr failed.\n&quot;; ++$exitval;
+        ++$errors;
+    }
+} elsif ($type eq &quot;mail&quot;) {
+if (mailctrl($op,@nodes)) {
+    print &quot;Control of $nodestr failed.\n&quot;; $exitval++;
+    $errors++;
+}
+$sendevent = 0; # power_mail sends this itself.
+#------------------------------------------------------------------------
+# This calls mynewpower_nodectrl() inside power_mynewpower.pm when
+# it encounters our new power type
+#------------------------------------------------------------------------
+} elsif ($type eq &quot;mynewpower&quot;) {
+   if (mynewpower_nodectrl($1,$op,@nodes)) {
+	print &quot;Control of $nodestr failed.\n&quot;; $exitval++;
+	$errors++;
+   }
+}
+#------------------------------------------------------------------------
+else {
+print &quot;power: Unknown power type &#39;$type&#39;\n&quot;;
+$errors++;
+}&lt;/pre&gt;
+&lt;h1&gt;&lt;em&gt;
+&lt;/em&gt;
+Implement the code&lt;/h1&gt;
+Now just create a perl package &lt;em&gt;power_mynewpower.pm&lt;/em&gt; and implement the &lt;em&gt;mynewpower_nodectrl($type,$cmd,@nodes)&lt;/em&gt; subroutine.  As far as I can tell, the $cmd value that is most important for experimental nodes is the &quot;cycle&quot; command. Here is a sample file:
+&lt;pre class=&quot;brush: perl&quot;&gt;#!/usr/bin/perl -wT
+#
+
+package power_mynewpower;
+
+use Exporter;
+@ISA = (&quot;Exporter&quot;);
+@EXPORT = qw( mynewpower_nodectrl );
+
+use lib &quot;/usr/testbed/lib&quot;;
+use libdb;
+
+sub mynewpower_nodectrl($$@) {
+    my ($type,$cmd,@nodes) = @_;
+    my $exitval = 0;
+    print &quot;mynewpower_nodectrl called with $type,$cmd,(&quot; . join(&#39;,&#39;,@nodes) . &quot;)\n&quot;;
+
+    if($cmd eq &quot;cycle&quot;){
+        ##Do something here
+    }
+    return $exitval;	
+}&lt;/pre&gt;
+In our case, this routine executes a bash script which logs in and reboots the specified node from the bladecenter.
+
+&lt;em&gt;
+&lt;/em&gt;
+&lt;h1&gt;Add the type to the database&lt;/h1&gt;
+Add a new row into the &#39;node_types&#39; table:
+&lt;table&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;th&gt;class&lt;/th&gt;
+&lt;th&gt;type&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;power&lt;/td&gt;
+&lt;td&gt;mynewpower&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+Now just follow the &lt;a href=&quot;https://wiki.emulab.net/wiki/install/power-control.html&quot;&gt;instructions on the Emulab Wiki&lt;/a&gt; for adding nodes that use the power type. Emulab will automatically find your implemented perl module and run the specified subroutine when it attempts to perform a power operation on a node which has a &quot;mynewpower&quot; power manager. You should be good to go! Feedback is very welcome.
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Omega Eclipse Theme v0.1</title>
+   <link href="http://benninger.ca/posts/omega-eclipse-theme-v0-1"/>
+   <updated>2010-11-06T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/omega-eclipse-theme-v0-1</id>
+   <content type="html">Thanks to &lt;a href=&quot;http://www.matthewimrie.ca/&quot;&gt;Matthew Imrie&lt;/a&gt; for creating an &lt;a href=&quot;http://www.eclipse.org/&quot;&gt;Eclipse&lt;/a&gt; version of &lt;a href=&quot;http://www.benninger.ca/?page_id=29&quot;&gt;my Omega theme&lt;/a&gt;. Download and installation instructions can be found &lt;a href=&quot;http://www.matthewimrie.ca/?page_id=100&quot;&gt;here&lt;/a&gt;.
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Adding support for unsupported switches to Emulab</title>
+   <link href="http://benninger.ca/posts/adding-support-for-unsupported-switches-to-emulab"/>
+   <updated>2010-11-06T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/adding-support-for-unsupported-switches-to-emulab</id>
+   <content type="html">&lt;a href=&quot;http://www.emulab.net/&quot;&gt;Emulab&lt;/a&gt; is a popular network testbed for researchers built and maintained by the &lt;a href=&quot;http://www.utah.edu/&quot;&gt;University of Utah&lt;/a&gt;. At the &lt;a href=&quot;http://www.inspire.ece.uvic.ca/&quot;&gt;InSPiRe&lt;/a&gt; research lab at the &lt;a href=&quot;http://www.uvic.ca&quot;&gt;University of Victoria&lt;/a&gt; we are in the process of building our own Emulab instance to run local experiments and to modify for very specific purposes. This article outlines the process I went through to add support for our switches which were not supported by the Emulab codebase at the time of this writing.
+&lt;!--more--&gt;
+&lt;em&gt;
+&lt;/em&gt;
+&lt;h1&gt;Our Unique Problem&lt;/h1&gt;
+Our switches which are the &lt;em&gt;Nortel Layer 2/3 GBE Switch module for IBM Bladecenters&lt;/em&gt; posed an interesting problem. These switches run a completely dead and undocumented operating system with no open SNMP description. One way that this could be reverse-engineered would be to use a proprietary configuration tool and sniff the network packets to determine the internal MIB structure.
+
+The MIB solution would be the best approach, unfortunately the only configuration tool available to us was the command-line interface accessible via remote telnet. For this reason we werent able to use SNMP. Instead of SNMP we used the Perl::Expect module to login via telnet to manipulate the switches.
+
+Note: &lt;em&gt;Using telnet vs SNMP will not affect what needs to be done to emulab in order to support a new switch, only the implementation of the api subroutines discussed below will differ.&lt;/em&gt;
+
+&lt;em&gt;
+&lt;/em&gt;
+&lt;h1&gt;Create an internal switch-type name&lt;/h1&gt;
+Come up with a name that you will refer to your new switch as internally, both in the database and in the naming schemes of your supporting perl files. I will use &#39;mynewswitch&#39; hereafter as our switch model.
+
+&lt;em&gt;
+&lt;/em&gt;
+&lt;h1&gt;Add a switch instance&lt;/h1&gt;
+Assuming you arent working on a live Emulab testbed, you need to add your new switch(es) to database Otherwise you probably want to do this step last once you&#39;ve tested your code.
+
+Insert a record into the &#39;nodes&#39; table in the database such that a new switch exists and the &#39;type&#39; field is set to  &#39;mynewswitch&#39; :
+&lt;table&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;th&gt;node_id&lt;/th&gt;
+&lt;th&gt;type&lt;/th&gt;
+&lt;th&gt;phys_nodeid&lt;/th&gt;
+&lt;th&gt;role&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;mynewswitch_1&lt;/td&gt;
+&lt;td&gt;mynewswitch&lt;/td&gt;
+&lt;td&gt;mynewswitch_1&lt;/td&gt;
+&lt;td&gt;testswitch&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;em&gt;
+&lt;/em&gt;
+&lt;h1&gt;Add a case to handle your new type&lt;/h1&gt;
+When you create an experiment, Emulab will choose a switch from database and pass it&#39;s name down through the code until it needs to begin the switch-specific work. The &#39;snmpit_stack.pm&#39; (located in /usr/testbet/lib/ on boss) seems to be the threshold where the switch specific stuff gets used. I edited this file and added a new case for when it sees the switch type &quot;mynewswitch&quot;. Emulab calls the &#39;new()&#39; subroutine here, which queries the database for the switch&#39;s type and then tries to load the correct perl module for that type. In the following code sample from snmpit_stack.pm I&#39;ve added a new case which passes control to the file we will handle our switch interaction in. Look towards the bottom for my comment:
+&lt;pre  class=&quot;brush: perl&quot;&gt;
+SWITCH: for ($type) {
+    (/cisco/) &amp;&amp; do {
+        use snmpit_cisco;
+        $device = new snmpit_cisco($devicename,$self-&gt;{DEBUG});
+        last;
+        }; # /cisco/
+    (/foundry1500/ || /foundry9604/) &amp;&amp; do {
+        use snmpit_foundry;
+        $device = new snmpit_foundry($devicename,$self-&gt;{DEBUG});
+        last;
+        }; # /foundry.*/
+    (/nortel1100/ || /nortel5510/) &amp;&amp; do {
+        use snmpit_nortel;
+        $device = new snmpit_nortel($devicename,$self-&gt;{DEBUG});
+        last;
+        }; # /nortel.*/
+#------------------------------------------------------------------------
+    (/mynewswitch/) &amp;&amp; do {     ## Our new case
+        use snmpit_mynewswitch;   ## Looks for snmpit_mynewswitch.pm
+        $device = new snmpit_mynewswitch($devicename,$self-&gt;{DEBUG});
+        last;
+        }; # /mynewswitch.*/
+#------------------------------------------------------------------------
+    (/hp/) &amp;&amp; do {
+        use snmpit_hp;
+        $device = new snmpit_hp($devicename,$self-&gt;{DEBUG});
+        last;
+        }; # /hp.*/
+    die &quot;Device $devicename is not of a known type, skipping\n&quot;;
+}
+&lt;/pre&gt;
+&lt;em&gt;
+&lt;/em&gt;
+&lt;h1&gt;Implement the device-specific subroutines&lt;/h1&gt;
+The previous step will cause Emulab to look for &#39;snmpit_mynewswitch.pm&#39; in /usr/testbed/lib/ and expect a minimal implementation of the core subroutines to be in place. Because there are so many, Instead of discussing them here individually, I have created a tar file with an unimplemented sample and some comments for what each one does. Find it below. If you find any missing subroutines or unnecessary ones, please let me know.
+
+In order to build our support, I logged in through telnet and ran my functions individually from a test file and watched the changes take effect. A sample test file is included in the tar file.
+
+If you are forced to do something like I did, feel free to contact me if you need some help using the Perl::Expect module for this specific purpose. If you are going to use SNMP, I recommend getting on the &lt;em&gt;emulab-admins google group&lt;/em&gt; and talking to the guys at Utah about how they built support for the stuff already in Emulab.
+
+&lt;em&gt;&lt;span style=&quot;font-style: normal;&quot;&gt;
+&lt;/span&gt;&lt;/em&gt;
+&lt;h1&gt;Downloads:&lt;/h1&gt;
+&lt;a href=&quot;http://www.benninger.ca/wp-content/uploads/2010/11/template.tar.gz&quot;&gt;template.tar.gz&lt;/a&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>syfor.com --> benninger.ca</title>
+   <link href="http://benninger.ca/posts/syfor-com-benninger-ca"/>
+   <updated>2010-10-05T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/syfor-com-benninger-ca</id>
+   <content type="html">The syfor.com site is now called benninger.ca. The syfor domain will still point here for quite a while but eventually we will use it for something else.
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Omega Gedit Theme v0.1</title>
+   <link href="http://benninger.ca/posts/omega-gedit-theme-v0-1"/>
+   <updated>2010-10-01T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/omega-gedit-theme-v0-1</id>
+   <content type="html">Omega is a &lt;a href=&quot;http://projects.gnome.org/gedit/&quot;&gt;Gedit&lt;/a&gt; theme I have slowly been making by modifying the built-in Oblivion theme to my liking. A few colleagues started using it and I decided to post it. I have been making changes slowly over time when I find something unpleasant to the eye. Eclipse version also in the works… but If you like darker gedit themes..check it out.
+
+&lt;a href=&quot;http://www.benninger.ca/?page_id=29&quot;&gt;Omega Gedit Theme&lt;/a&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Udev and Optiarc high-cpu utilization fix</title>
+   <link href="http://benninger.ca/posts/udev-and-optiarc-high-cpu-utilization-fix"/>
+   <updated>2010-06-22T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/udev-and-optiarc-high-cpu-utilization-fix</id>
+   <content type="html">For months I have been plagued with this annoying problem on my MSI GX620 laptop. At some point I upgraded my version to udev to 151.X and began to notice that the udevd process was using around 25% of my cpu. After months of putting up with poor battery life and a scalding hot keyboard I found a solution.
+
+The problem was a result of a poorly implemented firmware on the Optiarc RW_AD_7560S on my GX620. Installing the newer firmware located &lt;a href=&quot;http://ftp.euro.dell.com/rmsd/AD-7560S%20SD05.zip&quot;&gt;here&lt;/a&gt; took care of the problem immediately. This updates the firmware to version SD05. I had to boot into windows and ran the executable in the &#39;win&#39; folder. 
+
+Booting into linux, the problem was immediately solved. 
+
+Happy computing :)
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Generating IOCTL commands for char drivers</title>
+   <link href="http://benninger.ca/posts/generating-ioctl-commands-for-char-drivers"/>
+   <updated>2010-05-19T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/generating-ioctl-commands-for-char-drivers</id>
+   <content type="html">In a project of mine, I noticed that passing the specific integer &#39;2&#39; as a command to a device driver I was working on caused it to return -1 without even entering my ioctl_handle function or giving a reason. After doing a bit of reading I learned that these command numbers are shared across the system and you can get some weird behavior using the same numbers for different drivers. &lt;!--more--&gt;
+
+Being in a hurry, I chose an arbitrary integer above 200 as an offset for all my commands knowing in the back of my mind that I&#39;d need to find the &#39;proper&#39; solution. Now that I have some spare time, I google&#39;d around a bit and found there are some macros for just this purpose:
+&lt;pre  class=&quot;brush: c&quot;&gt;
+_IO(int type, int number)
+&lt;/pre&gt;
+_IO is used for generating a simple command integer that needs to define a command and (optionally) get an integer return value. &lt;em&gt;int type&lt;/em&gt; is an arbitrarily chosen number unique to this device driver. &lt;em&gt;int number&lt;/em&gt; is the number you wish to assign to the command (often in a range beginning with 0 or 1). 
+
+A simple example using this macro is as follows:
+&lt;pre  class=&quot;brush: c&quot;&gt;
+#define MYDRIVER_IOCTL_TYPE 124  /* My arbitrary number */
+#define MYDRIVER_CMDONE _IO(MYDRIVER_IOCTL_TYPE, 1)  /* Command one */
+#define MYDRIVER_CMDTWO _IO(MYDRIVER_IOCTL_TYPE, 2)  /* Command two */
+&lt;/pre&gt;
+
+
+There are three more that are similar but used if you are generating a command that will be passing a pointer to a data-structure in the call to IOCTL in user-space. 
+&lt;pre  class=&quot;brush: c&quot;&gt;
+_IOR(int type, int number, data_type)
+_IOW(int type, int number, data_type)
+_IORW(int type, int number, data_type)
+&lt;/pre&gt;
+Each takes a third parameter &lt;em&gt;data_type&lt;/em&gt; which is the data-structure type that you intend to send/receive. _IOR for example is used if you intend to have the kernel code fill your struct with some data, hence the notion of a READ. _IOW and _IORW are similar but for writing and read/writing respectively.
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Keeping files safe and available with Unison and BackupPC</title>
+   <link href="http://benninger.ca/posts/keeping-files-safe-and-available-with-unison-and-backuppc"/>
+   <updated>2010-04-08T00:00:00-07:00</updated>
+   <id>http://benninger.ca/posts/keeping-files-safe-and-available-with-unison-and-backuppc</id>
+   <content type="html">Over the years I have been experimenting with countless methods for keeping my files available to me wherever I am. Being primarily a linux user, I have a great opportunity to experiment given some of the clever tools that have emerged. I have been hard-pressed to find a solution to meet my exact requirements but I have actually settled upon a solution that has withstood the test of time and I want to share it.&lt;!--more--&gt;
+
+I will mention that simple remote login does not meet my requirements for serious work. It does however supplement my setup as an alternative access method if I don&#39;t trust the machine I am on. If you are looking for a remote access tool, I highly recommend &lt;a href=&quot;http://freenx.berlios.de/&quot;&gt;freenx&lt;/a&gt;.
+
+One other requirement I should mention is that I need to keep my stuff backed up. I need to make sure I don&#39;t lose anything that I decide I need to keep. Because of the iterative nature of the stuff I work on, having the opportunity to roll back to a previous backup is a huge bonus and has proven extremely valuable in the past.
+
+I realize that a combination of various web-services offered for free such as &lt;a href=&quot;http://www.evernote.com/&quot;&gt;Evernote&lt;/a&gt;, &lt;a href=&quot;http://docs.google.com&quot;&gt;Google Docs&lt;/a&gt;, etc. can probably meet most people&#39;s needs. I do see some issues with current web-services that I prefer not to have to deal with:
+&lt;ol&gt;
+	&lt;li&gt;Ownership - Once you have uploaded something, can you be sure It belongs to you?&lt;/li&gt;
+	&lt;li&gt;Availability - Many web-services up-times are awesome, but even the mighty Google goes down from time to time&lt;/li&gt;
+	&lt;li&gt;Backups - Do you know if your stuff is actually being backed up? Even if it is, do you have access to the backups?&lt;/li&gt;
+	&lt;li&gt;Instability - Many of the cool new stuff that comes out has the potential to die after their initial popularity has died off.&lt;/li&gt;
+&lt;/ol&gt;
+By hosting my own private solution, I at least know that If the internet in my neighborhood goes down I can go home and a copy of my backups and all my files are available on my home server.
+
+My solution consists of the following components:
+&lt;h3&gt;Unison &amp;amp; SSH&lt;/h3&gt;
+&lt;a href=&quot;http://www.cis.upenn.edu/~bcpierce/unison/&quot;&gt;Unison&lt;/a&gt; is a file synchronization tool which is designed for synchronization between two machines. It allows you to synchronize folders on separate machines over a network (using SSH) = and it even runs on the big three: Windows, Mac OS, and Linux. This means that you can use it for all your machines. If you only have two machines then this is a dead simple setup. More than two machines, is basically the same just more pairs. In my setup:
+&lt;ul&gt;
+	&lt;li&gt;My laptop has my entire home directory (minus some annoying configuration stuff)&lt;/li&gt;
+	&lt;li&gt;My work machine has only certain files and folders within my home directory which are related to work&lt;/li&gt;
+	&lt;li&gt;My home server has the entire thing&lt;/li&gt;
+	&lt;li&gt;And if I need to access files from an untrusted machine, ssh or freenx lets me get at them quickly&lt;/li&gt;
+&lt;/ul&gt;
+Each machine has unison installed but only the ones that can initiate a synchronization need their own config file. Here is and example config file (.unison/default.prf)
+&lt;pre&gt;root = local_directory   // I use my home directory here
+root = ssh://remote_username@remote_host:port/remote_directory
+
+//Explicit commands to backup specific things
+path = folder_to_include     //Relative to local_directory
+
+//You can also do a &quot;Sync everything Except&quot; approach as below
+ignore = Path {.*}    // Ignore config files,
+ignore = Path {bin}   // Ignore my binary files&lt;/pre&gt;
+The only issue I have encountered is that in order for everything to work, you have to run a sync now and then. Occasional sync&#39;s are completely habit now though so it&#39;s not really a problem. If you do forget to sync, you can always log in to the machine and do a sync via ssh because unison has a commanline version built in!
+&lt;h3&gt;BackupPC&lt;/h3&gt;
+I encountered &lt;a href=&quot;http://backuppc.sourceforge.net/&quot;&gt;BackupPC&lt;/a&gt; a few years ago when I was doing admin work and was looking for a good, cheap backup solution for one of our clients. I tested the software int he office (along with many others) and I can honestly say it is impressive. Whether you are a company or an individual, this thing rocks. It can be a bit of a challenge to get working perfectly, but once it does it works very well. You could definitely get a good setup using just a cronjob that does a clever copy too if you wanted to research that.
+
+Anyway, BackupPC does tons of stuff but the feature I am interested in, is that it does very clever incremental backups that take up very little space depending on how many files you modify between backups.
+
+In my configuration, BackupPC will do nightly incremental backups up my home directory located on the home server to an external drive.
+
+Note: BackupPC sometimes requires some trickery if you are storing archives on a separate volume than the one it is running on. (hint, mount the external volume to the default location as opposed to changing the location in the configuration)
+
+If you have some questions on configurations, leave a comment or fire me an email. Also here is my uber-simple setup in diagram form:
+
+&lt;a href=&quot;http://www.benninger.ca/wp-content/uploads/2010/04/Unison.png&quot;&gt;&lt;img src=&quot;http://www.benninger.ca/wp-content/uploads/2010/04/Unison-300x202.png&quot; alt=&quot;&quot; title=&quot;Unison&quot; width=&quot;300&quot; height=&quot;202&quot; class=&quot;aligncenter size-medium wp-image-23&quot; /&gt;&lt;/a&gt;
+
+I am also considering an attempt to port Unison to android so I can access and backup stuff on my phone!
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Building Xen-3.4 testing and linux-2.6.31.10 domain0 kernel on Debian-testing</title>
+   <link href="http://benninger.ca/posts/building-xen-3-4-testing-and-linux-2-6-31-10-domain0-kernel-on-debian-testing"/>
+   <updated>2010-02-19T00:00:00-08:00</updated>
+   <id>http://benninger.ca/posts/building-xen-3-4-testing-and-linux-2-6-31-10-domain0-kernel-on-debian-testing</id>
+   <content type="html">&lt;h3&gt;This is a howto on compiling and installing Xen 3.4 testing from the repository and linux kernel 2.6.31.10 for a Debian squeeze domain0.&lt;/h3&gt;
+Note: Try and do everything as root. If you do a make and then make install with different users, it will completely recompile over again.
+Now even though &lt;a href=&quot;http://xenbits.xensource.com/linux-2.6.18-xen.hg&quot;&gt;linux-2.6.18-xen&lt;/a&gt; is the proper kernel to be using for a Xen domain0, the new version of udev in all the usable distros do not support the older kernels (anything before 2.6.25 I believe). So I will be using the 2.6.31.10 kernel along with the gentoo Xen patches. Lets see how this goes.&lt;!--more--&gt;
+&lt;h3&gt;Getting the source:&lt;/h3&gt;
+Install Mercurial
+&lt;pre&gt;$aptitude install mercurial&lt;/pre&gt;
+Get the Xen Source
+&lt;pre&gt;$hg clone http://xenbits.xensource.com/xen-3.4-testing.hg&lt;/pre&gt;
+Get the Xen domain0 Linux kernel source and the patches from &lt;a href=&quot;http://www.kernel.org/pub/linux/kernel/v2.6/linux-2.6.31.10.tar.bz2&quot;&gt;here&lt;/a&gt; and &lt;a href=&quot;http://gentoo-xen-kernel.googlecode.com/files/xen-patches-2.6.31-10.tar.bz2&quot;&gt;here&lt;/a&gt; respectively:
+&lt;pre&gt;$wget http://www.kernel.org/pub/linux/kernel/v2.6/linux-2.6.31.10.tar.bz2
+$wget http://gentoo-xen-kernel.googlecode.com/files/xen-patches-2.6.31-10.tar.bz2&lt;/pre&gt;
+Now unpack them with
+&lt;pre&gt;$tar -jxvf linux-2.6.31.10.tar.bz2
+$mkdir xen-patches
+$cd xen-patches
+$tar -jxvf ../xen-patches-2.6.31-10.tar.bz2
+$cd ~/&lt;/pre&gt;
+&lt;h3&gt;Apply the patches:&lt;/h3&gt;
+&lt;pre&gt;$cd linux-2.6.31.10
+$cat ../xen-patches/* | patch -p1&lt;/pre&gt;
+Now you probably want to rename your kernel to indicate is has been patched. You can also modify the &quot;Extra version&quot; variable in make menuconfig later on if you want the kernel to have a different name to show up with &#39;uname&#39;.
+&lt;pre&gt;$cd ~/
+$mv linux-2.6.31.10 linux-2.6.31.10-xen&lt;/pre&gt;
+&lt;h3&gt;Get Dependencies:&lt;/h3&gt;
+There are quite a lot of dependencies. Too many to list individually, but here&#39;s how to install them all:
+&lt;pre&gt;$aptitude install gawk bzip2 mercurial transfig bzip2 screen ssh debootstrap iproute bridge-utils python-twisted binutils zlib1g-dev python-dev python python-central libssl-dev install libcurl3-dev libncurses5-dev x-dev build-essential gettext libx11-dev make bin86 bcc gcc ncurses-dev patch xorg-dev transfig libsdl1.2-dev libvncserver-dev udev pciutils-dev graphviz texlive-latex-base git-core texinfo texlive-latex-extra texlive-font-utils texlive-fonts-extra texlive-fonts-recommended&lt;/pre&gt;
+Grab a coffee...
+&lt;h3&gt;Compiling:&lt;/h3&gt;
+Enter the Xen source directory
+&lt;pre&gt;$cd xen-3.4-testing.hg&lt;/pre&gt;
+Cross your fingers and start compiling
+&lt;pre&gt;$make&lt;/pre&gt;
+Or if you have a fast machine with lots of cores, use the -j switch. Usually you use the number of cores you have plus 2.
+&lt;pre&gt;$make -j 4&lt;/pre&gt;
+This will take a long time...grab another coffee, If the build fails anywhere I may have missed a dependency. Its usually pretty obvious what the dependency is by the build error message. Just go install it and try again.
+Xen is hopefully compiled so we can take care of the kernel. Onward with our linux-2.6.31.10-xen kernel.
+&lt;pre&gt;cd linux-2.6.31.10-xen
+$make menuconfig&lt;/pre&gt;
+You need to enable Xen Support (under processor type and features) as well as Priviledged Domain (under device drivers-&amp;gt;Xen) and I also set Xen compatibility to 3.3.0 and above (under device drivers-&amp;gt;Xen-&amp;gt;Xen Version compatibility). Once you&#39;ve enabled everything you think you&#39;ll need, start compiling.
+&lt;pre&gt;$make&lt;/pre&gt;
+Once its done without errors, go ahead and install it, but do not use the -j option for the install.
+&lt;pre&gt;$make install&lt;/pre&gt;
+Also you need to install the modules
+&lt;pre&gt;$make modules_install&lt;/pre&gt;
+Once that is done, look in the /boot directory
+&lt;pre&gt;$cd /boot &amp;amp;&amp;amp; ls&lt;/pre&gt;
+You should see some files: xen-3.4.3-rc3-pre.gz and vmlinuz-2.6.31.10. If not, you need to go back and deal with the problem because nothing will work past this point.
+Also check the /lib/modules directory for a directory called 2.6.31.10
+&lt;h3&gt;Generate an initrd image:&lt;/h3&gt;
+So you&#39;ve got Xen and the linux kernel compiled, now you need an initrd image to go along with the kernel. Enter the /boot directory:
+&lt;pre&gt;$cd /boot&lt;/pre&gt;
+Setup the dependencies for the initrd image:
+&lt;pre&gt;$depmod -a 2.6.31.10&lt;/pre&gt;
+Now generate an initrd image using the mkinitramfs command
+&lt;pre&gt;$mkinitramfs -o initrd.img-xen 2.6.31.10&lt;/pre&gt;
+There should now be a file called initrd.img-xen in /boot
+&lt;h3&gt;Grub2:&lt;/h3&gt;
+This can be a bit of a pain because of grub2 being rather....Beta, but we cant let that stop us. (If you have grub legacy, look &lt;a href=&quot;http://www.infohit.net/blog/post/compiling-a-xen-dom0-kernel-for-ubuntu-jaunty.html&quot;&gt;here&lt;/a&gt;)
+Make sure you have a livecd available in case you make a mistake with the config file formatting and grub fails. Now open the grub config file using your favorite editor (which is probably vim because otherwise your insane) like this
+&lt;pre&gt;$vim /boot/grub/grub.cfg&lt;/pre&gt;
+Scoll down to where you see the menuentries. Add your own entry with something like this.
+&lt;pre&gt;menuentry &quot;Xen, with Linux 2.6.31.10&quot; {
+        echo    Loading Linux 2.6.18.8-xen ...
+        multiboot       /boot/xen-3.4.3-rc3-pre.gz
+        module  /boot/vmlinuz-2.6.31.10 dummy=dummy root=/dev/sda1 ro
+        module  /boot/initrd.img-xen
+}&lt;/pre&gt;
+You may notice a few things different. You need to use multiboot and modules to pass Xen, the kernel and your initrd img into grub2. Also you may notice the parameter dummy=dummy going into the kernel, this is because at the time of writing this, there is a bug in grub2 which causes the first parameter not to be passed into the kernel. So we can create a useless one as the first parameter. That way when they fix the bug nothing horrible will happen to our bootup. Also you may not want to put your new entry at the top until you are sure everything works because grub defaults to the top entry.
+&lt;h3&gt;Booting:&lt;/h3&gt;
+Cross your fingers and reboot! Hold shift to get grub to show you a list if it doesnt by default. If it boots congratulations.
+&lt;h3&gt;Testing a guest domain:&lt;/h3&gt;
+Now you probably want to setup a Virtual Machine to test your setup. &lt;a href=&quot;http://stacklet.com/&quot;&gt;http://stacklet.com/&lt;/a&gt; has some pre-build appliance images you can grab and test with. Check out &lt;a href=&quot;http://www.linuxjournal.com/magazine/simple-virtual-appliances-linux-and-xen&quot;&gt;this&lt;/a&gt; post for more info on starting a virtual machine.
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Winter Olympics Silverlight streams now working with linux!</title>
+   <link href="http://benninger.ca/posts/winter-olympics-silverlight-streams-now-working-with-linux"/>
+   <updated>2010-02-18T00:00:00-08:00</updated>
+   <id>http://benninger.ca/posts/winter-olympics-silverlight-streams-now-working-with-linux</id>
+   <content type="html">I finally got the streams on &lt;a href=&quot;http://www.ctvolympics.ca/video/&quot;&gt;http://ctvolympics.ca&lt;/a&gt; working on linux using firefox 3.5.7 and &lt;a href=&quot;http://www.go-mono.com/moonlight/prerelease.aspx&quot;&gt;moonlight 3 preview 2&lt;/a&gt;.
+
+Once the plugin is installed, performance may not be super hot. To remedy this, disable the effects in moonlight by running this command in a terminal:
+&lt;pre&gt;&amp;gt; MOONLIGHT_OVERRIDES=effects=no&lt;/pre&gt;
+Then restart firefox. For other issues, checkout the moonlight &lt;a href=&quot;http://www.mono-project.com/Moonlight/OlympicsPlayerIssues&quot;&gt;issues&lt;/a&gt; page.
+</content>
+ </entry>
+ 
+
+</feed>

@@ -1,0 +1,34 @@
+---
+layout: post
+title: How to Force Snow Leopard+ to consider a shell script safe.
+categories: []
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+
+You can tell OSX Snow Leopard to consider shell scripts safe to execute without a user prompt. This is useful for automation of certain tasks.
+
+<!--more-->
+
+You can use any UTI mime-type to allow any filetype you wish. To do so, place the below text in ~/Library/Preferences/com.apple.DownloadAssessment.plist
+
+
+{% highlight html %}
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+	&lt;key&gt;LSRiskCategorySafe&lt;/key&gt;
+	&lt;dict&gt;
+		&lt;key&gt;LSRiskCategoryContentTypes&lt;/key&gt;
+		&lt;array&gt;
+			&lt;string&gt;public.shell-script&lt;/string&gt;
+		&lt;/array&gt;
+	&lt;/dict&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+{% endhighlight %}

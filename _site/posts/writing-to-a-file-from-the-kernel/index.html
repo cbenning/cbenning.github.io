@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>Writing to a file from the Kernel</title>
+
+  <meta name="author" content="Chris Benninger" />
+  <meta name="description" content="Code, rants, utilities, tutorials, projects and other things by Chris Benninger." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="alternate" type="application/rss+xml" href="/atom.xml" />
+
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300'
+    rel='stylesheet' type='text/css'>
+
+  <link href="/css/up.css" rel="stylesheet">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-57x57-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+</head>
+
+<body>
+  <div class="navbar navbar-fixed-top">
+    <div class="container">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Chris Benninger</a>
+      <div class="nav-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav pull-right hidden-print">
+          <li>
+            <a class="hidden-sm" href="http://github.com/caarlos0/up"
+              title="Get this theme!">
+              <i class="icon-download icon-large"></i>
+            </a>
+            <a class="visible-sm" href="http://github.com/caarlos0/up"
+              title="Get this theme!">
+              <i class="icon-download icon-large"></i>
+              Get this theme!
+            </a>
+          </li>
+          <li>
+            <a class="hidden-sm" title="About me" href="/about.html">
+              <i class="icon-user icon-large"></i>
+            </a>
+            <a class="visible-sm" title="About me" href="/about.html">
+              <i class="icon-user icon-large"></i>
+              About me
+            </a>
+          </li>
+          <li>
+            <a class="hidden-sm" href="/atom.xml" title="Atom Feed">
+              <i class="icon-rss icon-large"></i>
+            </a>
+            <a class="visible-sm" href="/atom.xml" title="Atom Feed">
+              <i class="icon-rss icon-large"></i>
+              Atom Feed
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <section class="content">
+  <h1>
+    <a href="/posts/writing-to-a-file-from-the-kernel">Writing to a file from the Kernel</a>
+  </h1>
+
+  <section class="byline">
+    April  4, 2011
+  </section>
+
+  Writing to a file in C is a fairly trivial affair. The Linux kernel does not have access to the usual user-land tools for interacting with files. Because this is generally a highly frowned upon practice (consider that a disclaimer) It took a while to pry the functions in question out of the people who knew them. A "preferred" technique would be to pass the parameters in via IOCTLs and implement a read() function in your module. Then reading the dump from the module and writing into the file from userspace. That just seemed like a lot of work for a one-time test so...
+<!--more-->
+
+My application was just a simple, one-time functional test to see what the contents memory were without doing a full core-dump, which should really be all you use this for, consider yourself warned.
+
+I found a good example <a title="Kernel File stuff" href="http://www.linuxjournal.com/article/8110?page=0,1">here</a> which I later realized did not work because the author seemed to be trying to obfuscate the actual solution with fake functions. Anyway here is an example of writing several blocks of data to a file.
+
+&nbsp;
+<pre class="brush: c">char* dump_filename; //Set to the file you are targeting
+struct file *file;
+int i;
+void* data;  //Needs to be a kernel pointer, not userspace pointer
+int block_count; //Set me to something
+int block_size; //Set me to something
+loff_t pos = 0;
+mm_segment_t old_fs;
+
+old_fs = get_fs();  //Save the current FS segment
+set_fs(get_ds());
+
+file = filp_open(dump_filename, O_WRONLY|O_CREAT, 0644);
+
+if(file){
+	for(i=0; i &lt; block_count ; i++){
+
+		data=&lt;somewhere&gt;+block_count*i //Wherever your data is
+		if(data==NULL){
+			continue;
+		}
+   		vfs_write(file, data, block_size, &amp;pos);
+		pos = pos+block_size;
+
+	}
+	filp_close(file,NULL);
+}
+set_fs(old_fs); //Reset to save FS
+kfree(dump_filename);</pre>
+
+  <div class="pull"></div>
+  <a  href="https://twitter.com/share" class="twitter-share-button"
+data-via="chrisbenninger" data-lang="en" data-size="large">Tweet</a>
+<script>
+!function(d,s,id){
+  var js,fjs=d.getElementsByTagName(s)[0];
+  if(!d.getElementById(id)){
+    js=d.createElement(s);
+    js.id=id;
+    js.src="//platform.twitter.com/widgets.js";
+    fjs.parentNode.insertBefore(js,fjs);
+  }
+}(document,"script","twitter-wjs");
+</script>
+
+  <hr>
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  var disqus_shortname = 'benningerca';
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+</section>
+
+  </div>
+
+  <div id="footer" class="hidden-print">
+    <section class="meta">
+      <div class="container">
+        <div class="row">
+          <div class="col col-lg-2 col-offset-4">
+            <a href="https://twitter.com/chrisbenninger">
+              <i class="icon icon-twitter icon-4x"></i>
+              <div>Follow me on Twitter.</div>
+            </a>
+          </div>
+          <div class="col col-lg-2 next">
+            <a href="https://github.com/chrisbenninger">
+              <i class="icon icon-github icon-4x"></i>
+              <div>
+                See my github profile.
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<script type="text/javascript">
+
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-5453717-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+
+</script>
+
+
+  
+
+</body>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="/js/up.js"></script>
+</html>

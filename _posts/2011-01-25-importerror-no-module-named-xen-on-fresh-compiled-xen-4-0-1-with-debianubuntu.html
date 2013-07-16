@@ -1,0 +1,28 @@
+---
+layout: post
+title: 'ImportError: No module named xen... on fresh compiled Xen 4.0.1 with Debian/Ubuntu'
+categories:
+- Kernel
+- Linux
+- Opensource
+- Programming
+- Research
+- Virtualization
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+  _wp_old_slug: ''
+  aktt_tweeted: '1'
+---
+This took me a few hours to find in the mailing list and I thought I would share it with a title that people would find if googling for a solution.<!--more-->
+
+I compiled a fresh copy of Xen 4.0.1 and all of the tools that come along with it. I immediately rebooted and tried to run "xm" to check the status of the system. Any variation on any xen-related command led to me something along the lines of this:
+<pre class="brush: shell">ImportError: No module named xen.xm</pre>
+The cause is that xen installs all of the python tools into ﻿﻿"/usr/lib/python2.6/site-packages/" which is not by default in pythons path on a Debian (or Ubuntu) machine. After several hours of searching I found <a href="http://lists.xensource.com/archives/html/xen-users/2010-05/msg00820.html">this</a> post describing the solution.
+
+When installing the compiled tools, use this obscure option to the makefile:
+<pre class="brush: shell">make install-tools PYTHON_PREFIX_ARG="--install-layout=deb"</pre>
+Enjoy

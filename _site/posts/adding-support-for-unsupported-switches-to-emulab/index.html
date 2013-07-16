@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>Adding support for unsupported switches to Emulab</title>
+
+  <meta name="author" content="Chris Benninger" />
+  <meta name="description" content="Code, rants, utilities, tutorials, projects and other things by Chris Benninger." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="alternate" type="application/rss+xml" href="/atom.xml" />
+
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300'
+    rel='stylesheet' type='text/css'>
+
+  <link href="/css/up.css" rel="stylesheet">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-57x57-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+</head>
+
+<body>
+  <div class="navbar navbar-fixed-top">
+    <div class="container">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Chris Benninger</a>
+      <div class="nav-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav pull-right hidden-print">
+          <li>
+            <a class="hidden-sm" href="http://github.com/caarlos0/up"
+              title="Get this theme!">
+              <i class="icon-download icon-large"></i>
+            </a>
+            <a class="visible-sm" href="http://github.com/caarlos0/up"
+              title="Get this theme!">
+              <i class="icon-download icon-large"></i>
+              Get this theme!
+            </a>
+          </li>
+          <li>
+            <a class="hidden-sm" title="About me" href="/about.html">
+              <i class="icon-user icon-large"></i>
+            </a>
+            <a class="visible-sm" title="About me" href="/about.html">
+              <i class="icon-user icon-large"></i>
+              About me
+            </a>
+          </li>
+          <li>
+            <a class="hidden-sm" href="/atom.xml" title="Atom Feed">
+              <i class="icon-rss icon-large"></i>
+            </a>
+            <a class="visible-sm" href="/atom.xml" title="Atom Feed">
+              <i class="icon-rss icon-large"></i>
+              Atom Feed
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <section class="content">
+  <h1>
+    <a href="/posts/adding-support-for-unsupported-switches-to-emulab">Adding support for unsupported switches to Emulab</a>
+  </h1>
+
+  <section class="byline">
+    November  6, 2010
+  </section>
+
+  <a href="http://www.emulab.net/">Emulab</a> is a popular network testbed for researchers built and maintained by the <a href="http://www.utah.edu/">University of Utah</a>. At the <a href="http://www.inspire.ece.uvic.ca/">InSPiRe</a> research lab at the <a href="http://www.uvic.ca">University of Victoria</a> we are in the process of building our own Emulab instance to run local experiments and to modify for very specific purposes. This article outlines the process I went through to add support for our switches which were not supported by the Emulab codebase at the time of this writing.
+<!--more-->
+<em>
+</em>
+<h1>Our Unique Problem</h1>
+Our switches which are the <em>Nortel Layer 2/3 GBE Switch module for IBM Bladecenters</em> posed an interesting problem. These switches run a completely dead and undocumented operating system with no open SNMP description. One way that this could be reverse-engineered would be to use a proprietary configuration tool and sniff the network packets to determine the internal MIB structure.
+
+The MIB solution would be the best approach, unfortunately the only configuration tool available to us was the command-line interface accessible via remote telnet. For this reason we werent able to use SNMP. Instead of SNMP we used the Perl::Expect module to login via telnet to manipulate the switches.
+
+Note: <em>Using telnet vs SNMP will not affect what needs to be done to emulab in order to support a new switch, only the implementation of the api subroutines discussed below will differ.</em>
+
+<em>
+</em>
+<h1>Create an internal switch-type name</h1>
+Come up with a name that you will refer to your new switch as internally, both in the database and in the naming schemes of your supporting perl files. I will use 'mynewswitch' hereafter as our switch model.
+
+<em>
+</em>
+<h1>Add a switch instance</h1>
+Assuming you arent working on a live Emulab testbed, you need to add your new switch(es) to database Otherwise you probably want to do this step last once you've tested your code.
+
+Insert a record into the 'nodes' table in the database such that a new switch exists and the 'type' field is set to  'mynewswitch' :
+<table>
+<tbody>
+<tr>
+<th>node_id</th>
+<th>type</th>
+<th>phys_nodeid</th>
+<th>role</th>
+</tr>
+<tr>
+<td>mynewswitch_1</td>
+<td>mynewswitch</td>
+<td>mynewswitch_1</td>
+<td>testswitch</td>
+</tr>
+</tbody>
+</table>
+<em>
+</em>
+<h1>Add a case to handle your new type</h1>
+When you create an experiment, Emulab will choose a switch from database and pass it's name down through the code until it needs to begin the switch-specific work. The 'snmpit_stack.pm' (located in /usr/testbet/lib/ on boss) seems to be the threshold where the switch specific stuff gets used. I edited this file and added a new case for when it sees the switch type "mynewswitch". Emulab calls the 'new()' subroutine here, which queries the database for the switch's type and then tries to load the correct perl module for that type. In the following code sample from snmpit_stack.pm I've added a new case which passes control to the file we will handle our switch interaction in. Look towards the bottom for my comment:
+<pre  class="brush: perl">
+SWITCH: for ($type) {
+    (/cisco/) && do {
+        use snmpit_cisco;
+        $device = new snmpit_cisco($devicename,$self->{DEBUG});
+        last;
+        }; # /cisco/
+    (/foundry1500/ || /foundry9604/) && do {
+        use snmpit_foundry;
+        $device = new snmpit_foundry($devicename,$self->{DEBUG});
+        last;
+        }; # /foundry.*/
+    (/nortel1100/ || /nortel5510/) && do {
+        use snmpit_nortel;
+        $device = new snmpit_nortel($devicename,$self->{DEBUG});
+        last;
+        }; # /nortel.*/
+#------------------------------------------------------------------------
+    (/mynewswitch/) && do {     ## Our new case
+        use snmpit_mynewswitch;   ## Looks for snmpit_mynewswitch.pm
+        $device = new snmpit_mynewswitch($devicename,$self->{DEBUG});
+        last;
+        }; # /mynewswitch.*/
+#------------------------------------------------------------------------
+    (/hp/) && do {
+        use snmpit_hp;
+        $device = new snmpit_hp($devicename,$self->{DEBUG});
+        last;
+        }; # /hp.*/
+    die "Device $devicename is not of a known type, skipping\n";
+}
+</pre>
+<em>
+</em>
+<h1>Implement the device-specific subroutines</h1>
+The previous step will cause Emulab to look for 'snmpit_mynewswitch.pm' in /usr/testbed/lib/ and expect a minimal implementation of the core subroutines to be in place. Because there are so many, Instead of discussing them here individually, I have created a tar file with an unimplemented sample and some comments for what each one does. Find it below. If you find any missing subroutines or unnecessary ones, please let me know.
+
+In order to build our support, I logged in through telnet and ran my functions individually from a test file and watched the changes take effect. A sample test file is included in the tar file.
+
+If you are forced to do something like I did, feel free to contact me if you need some help using the Perl::Expect module for this specific purpose. If you are going to use SNMP, I recommend getting on the <em>emulab-admins google group</em> and talking to the guys at Utah about how they built support for the stuff already in Emulab.
+
+<em><span style="font-style: normal;">
+</span></em>
+<h1>Downloads:</h1>
+<a href="http://www.benninger.ca/wp-content/uploads/2010/11/template.tar.gz">template.tar.gz</a>
+
+  <div class="pull"></div>
+  <a  href="https://twitter.com/share" class="twitter-share-button"
+data-via="chrisbenninger" data-lang="en" data-size="large">Tweet</a>
+<script>
+!function(d,s,id){
+  var js,fjs=d.getElementsByTagName(s)[0];
+  if(!d.getElementById(id)){
+    js=d.createElement(s);
+    js.id=id;
+    js.src="//platform.twitter.com/widgets.js";
+    fjs.parentNode.insertBefore(js,fjs);
+  }
+}(document,"script","twitter-wjs");
+</script>
+
+  <hr>
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  var disqus_shortname = 'benningerca';
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+</section>
+
+  </div>
+
+  <div id="footer" class="hidden-print">
+    <section class="meta">
+      <div class="container">
+        <div class="row">
+          <div class="col col-lg-2 col-offset-4">
+            <a href="https://twitter.com/chrisbenninger">
+              <i class="icon icon-twitter icon-4x"></i>
+              <div>Follow me on Twitter.</div>
+            </a>
+          </div>
+          <div class="col col-lg-2 next">
+            <a href="https://github.com/chrisbenninger">
+              <i class="icon icon-github icon-4x"></i>
+              <div>
+                See my github profile.
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<script type="text/javascript">
+
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-5453717-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+
+</script>
+
+
+  
+
+</body>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="/js/up.js"></script>
+</html>

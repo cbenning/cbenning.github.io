@@ -1,0 +1,16 @@
+---
+layout: post
+title: Converting those pesky .m4a files to .mp3 on Linux
+categories:
+- Linux
+- Opensource
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+---
+Here is a nice one-liner to convert a .m4a audio file to a .mp3 file:
+<pre class="brush: shell">$ faad -o - input_file.m4a | lame - output_file.mp3</pre>
+Note: Make sure you have lame and faad installed. In debian they are just 'faad' and 'lame' packages.
