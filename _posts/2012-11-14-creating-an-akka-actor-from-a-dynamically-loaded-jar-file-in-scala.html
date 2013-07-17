@@ -15,36 +15,36 @@ meta:
 Creating actors in <a href="http://doc.akka.io/docs/akka/snapshot/scala/actors.html">Akka</a> is generally pretty straight forward. If using the general use-case, there are two slightly different methods to use depending on whether or not your Actor has any parameters in it's constructor.
 <!--more-->
 <h4>Without constructor parameters</h4>
-<pre class="brush: scala">
+{% highlight scala %}
 class MyActor extends Actor { ... }
 
 val myActor = system.actorOf(Props[MyActor],name="actorname")
-</pre>
+{% endhighlight %}
 
 <h4>With constructor parameters</h4>
-<pre class="brush: scala">
+{% highlight scala %}
 class MyActor(param:String) extends Actor { ... }
 
 val myActor = system.actorOf(Props(new MyActor(parameter)),name="actorname")
-</pre>
+{% endhighlight %}
 
 That's pretty straight forward. However, there are outlier cases for JVM+Scala in which some more dynamic functionality seen in languages like Python is useful. As a result, I've been playing with ways to dynamically load classes from remote jar files. As I have been into Akka+Scala for a while, this ultimately leads to the question: "How can I load an Actor from a jarfile I received from a remote source?". This isn't quite comparable to what Python does, but it is interesting and powerful nonetheless.
 
 Loading a class from a jarfile using a URLClassLoader is fairly straightforward and I wont cover it here. What I will cover is loading an Actor from a URLClassLoader in Scala. Using reflection this can be achieved without too much stress, assuming we do not need to pass parameters into an actor's constructor.
 
 <h4>From a URLClassLoader without constructor parameters</h4>
-<pre class="brush: scala">
+{% highlight scala %}
 class MyActor extends Actor { ... }
 
 val loader = jarFileToUrlClassLoader(jarURL)
 val clazz = loader.loadClass("my.pkg.MyActor")
 val myActor = context.system.actorOf(Props(clazz.asInstanceOf[Class[_ : < akka.actor.Actor]])
-</pre>
+{% endhighlight %}
 
 If you're constructor has parameters however, it becomes a little more tricky. Unfortunately the Scala/Akka API doesn't seem to support this. The Java/Akka one does, though we have to use the Creator class. Creator is a factory that makes whatever type you tell it to. Override its create function and return an Actor.
 
 <h4>From a URLClassLoader with constructor parameters</h4>
-<pre class="brush: scala">
+{% highlight scala %}
 class MyActor(p:String) extends Actor { ... }
 
 val loader = jarFileToUrlClassLoader(jarURL)
@@ -57,6 +57,6 @@ val myActor = prop.withCreator(new akka.japi.Creator[Actor]{
         return const.newInstance("My Parameter").asInstanceOf[Actor]
     }
 })
-</pre>
+{% endhighlight %}
 
 Tada! Now you have all the tools needed to beam Jarfiles around, load them and fire up actors inside them.

@@ -16,10 +16,9 @@ meta:
 
 In my use case, I have a variable number of independent <em>ActorSystems</em>. As a new system starts up, it initiates a simple Syn/Ack procedure with the command and control system, allowing the C&C to deploy remote actors. Just for fun, here is some example code.
 
-<!--more-->
-
 Lets start with our remote system:
-<pre class="brush:scala">
+
+{% highlight scala %}
 object Remote extends App{
  val system = ActorSystem("RemoteSystem",
    ConfigFactory.defaultReference(getClass.getClassLoader))
@@ -37,16 +36,18 @@ class SynActor extends Actor{
   case a:Ack => //
  }
 }
-</pre>
+{% endhighlight %}
 
 Some shared classes:
-<pre class="brush:scala">
+
+{% highlight scala %}
 case class Syn()
 case class Ack()
-</pre>
+{% endhighlight %}
 
 Now the Command and Control system and the actual code you want run remotely:
-<pre class="brush:scala">
+
+{% highlight scala %}
 object Command extends App{
  val system = ActorSystem("CommandSystem",
    ConfigFactory.defaultReference(getClass.getClassLoader))
@@ -69,5 +70,5 @@ class CommandActor extends Actor {
 class RemoteActor extends Actor {
  //Where you put your remote code implementation
 }
-</pre>
+{% endhighlight %}
 From here, you can handle management of remote actors in whichever way you want. Fun stuff!

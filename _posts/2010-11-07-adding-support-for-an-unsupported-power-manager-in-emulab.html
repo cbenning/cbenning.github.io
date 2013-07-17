@@ -13,19 +13,17 @@ meta:
   _edit_last: '1'
   _wp_old_slug: ''
 ---
-As a continuation of sorts to my <a href="http://www.penninger.ca/?p=38">previous post</a>, I thought I would also do a short description of adding support for an unsupported power controller. The IBM Bladecenter is more or less unsupported by Emulab in all respects, the switches and the integrated power controller are unsupported and even the blade servers grudgingly resist running any vanilla FreeBSD images that come with the Emulab source.
-
-Note: <em>This set of steps is very similar to my post about <a href="http://www.benninger.ca/?p=38">adding switch support</a></em>
-<!--more-->
-<em>
-</em>
-<h1>Create a new case</h1>
+As a continuation of sorts to my <a href="/posts/adding-support-for-unsupported-switches-to-emulab/">previous post</a>, I thought I would also do a short description of adding support for an unsupported power controller. The IBM Bladecenter is more or less unsupported by Emulab in all respects, the switches and the integrated power controller are unsupported and even the blade servers grudgingly resist running any vanilla FreeBSD images that come with the Emulab source.
+<br /><br />
+Note: <em>This set of steps is very similar to my post about <a href="/posts/adding-support-for-unsupported-switches-to-emulab/">adding switch support</a></em>
+<h2>Create a new case</h2>
 Add a case to /usr/testbed/bin/power to include a new power type, I'll use "mynewpower" in this example. Edit this file and include the perl module you will be putting your code in by adding this to the top:
-<pre class="brush: perl">use power_mynewpower;   ##Assuming your module is called power_mynewpower.pm</pre>
-<em>
-</em>
+{% highlight perl %}
+use power_mynewpower;   ##Assuming your module is called power_mynewpower.pm
+{% endhighlight %}
 Somewhere around line 332 you'll find the beginning of the IF you'll need to add your case to:
-<pre class="brush: perl">#
+{% highlight perl %}
+#
 # Finally, we look at the controller type and construct the proper type
 # of object
 #
@@ -36,9 +34,9 @@ if (!defined $device) {
     warn "Unable to contact controller for $nodestr. Skipping...\n";
     next;
 } else {
-    print "Calling device-&gt;power($op,@outlets)\n"
-	if $verbose &gt; 1;
-    if ($device-&gt;power($op,@outlets)) {
+    print "Calling device-<power($op,@outlets)\n"
+	if $verbose > 1;
+    if ($device-<power($op,@outlets)) {
 	print "Control of $nodestr failed.\n";
 	$errors++;
     }
@@ -90,12 +88,13 @@ $sendevent = 0; # power_mail sends this itself.
 else {
 print "power: Unknown power type '$type'\n";
 $errors++;
-}</pre>
-<h1><em>
-</em>
-Implement the code</h1>
-Now just create a perl package <em>power_mynewpower.pm</em> and implement the <em>mynewpower_nodectrl($type,$cmd,@nodes)</em> subroutine.  As far as I can tell, the $cmd value that is most important for experimental nodes is the "cycle" command. Here is a sample file:
-<pre class="brush: perl">#!/usr/bin/perl -wT
+}
+{% endhighlight %}
+
+<h2>Implement the code</h2>
+Now just create a perl package <code>power_mynewpower.pm</code> and implement the <code>mynewpower_nodectrl($type,$cmd,@nodes)</code> subroutine.  As far as I can tell, the $cmd value that is most important for experimental nodes is the "cycle" command. Here is a sample file:
+{% highlight perl %}
+#!/usr/bin/perl -wT
 #
 
 package power_mynewpower;
@@ -116,12 +115,12 @@ sub mynewpower_nodectrl($$@) {
         ##Do something here
     }
     return $exitval;	
-}</pre>
+}
+{% endhighlight %}
 In our case, this routine executes a bash script which logs in and reboots the specified node from the bladecenter.
 
-<em>
-</em>
-<h1>Add the type to the database</h1>
+<h2>Add the type to the database</h2>
+
 Add a new row into the 'node_types' table:
 <table>
 <tbody>

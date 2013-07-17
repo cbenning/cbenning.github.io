@@ -11,12 +11,13 @@ published: true
 meta:
   _edit_last: '1'
 ---
-Over the years I have been experimenting with countless methods for keeping my files available to me wherever I am. Being primarily a linux user, I have a great opportunity to experiment given some of the clever tools that have emerged. I have been hard-pressed to find a solution to meet my exact requirements but I have actually settled upon a solution that has withstood the test of time and I want to share it.<!--more-->
+Over the years I have been experimenting with countless methods for keeping my files available to me wherever I am. Being primarily a linux user, I have a great opportunity to experiment given some of the clever tools that have emerged. I have been hard-pressed to find a solution to meet my exact requirements but I have actually settled upon a solution that has withstood the test of time and I want to share it.
+<br /><br />
 
 I will mention that simple remote login does not meet my requirements for serious work. It does however supplement my setup as an alternative access method if I don't trust the machine I am on. If you are looking for a remote access tool, I highly recommend <a href="http://freenx.berlios.de/">freenx</a>.
-
+<br /><br />
 One other requirement I should mention is that I need to keep my stuff backed up. I need to make sure I don't lose anything that I decide I need to keep. Because of the iterative nature of the stuff I work on, having the opportunity to roll back to a previous backup is a huge bonus and has proven extremely valuable in the past.
-
+<br /><br />
 I realize that a combination of various web-services offered for free such as <a href="http://www.evernote.com/">Evernote</a>, <a href="http://docs.google.com">Google Docs</a>, etc. can probably meet most people's needs. I do see some issues with current web-services that I prefer not to have to deal with:
 <ol>
 	<li>Ownership - Once you have uploaded something, can you be sure It belongs to you?</li>
@@ -27,8 +28,9 @@ I realize that a combination of various web-services offered for free such as <a
 By hosting my own private solution, I at least know that If the internet in my neighborhood goes down I can go home and a copy of my backups and all my files are available on my home server.
 
 My solution consists of the following components:
-<h3>Unison &amp; SSH</h3>
+<h2>Unison &amp; SSH</h2>
 <a href="http://www.cis.upenn.edu/~bcpierce/unison/">Unison</a> is a file synchronization tool which is designed for synchronization between two machines. It allows you to synchronize folders on separate machines over a network (using SSH) = and it even runs on the big three: Windows, Mac OS, and Linux. This means that you can use it for all your machines. If you only have two machines then this is a dead simple setup. More than two machines, is basically the same just more pairs. In my setup:
+<br /><br/>
 <ul>
 	<li>My laptop has my entire home directory (minus some annoying configuration stuff)</li>
 	<li>My work machine has only certain files and folders within my home directory which are related to work</li>
@@ -36,7 +38,8 @@ My solution consists of the following components:
 	<li>And if I need to access files from an untrusted machine, ssh or freenx lets me get at them quickly</li>
 </ul>
 Each machine has unison installed but only the ones that can initiate a synchronization need their own config file. Here is and example config file (.unison/default.prf)
-<pre>root = local_directory   // I use my home directory here
+{% highlight sh %}
+root = local_directory   // I use my home directory here
 root = ssh://remote_username@remote_host:port/remote_directory
 
 //Explicit commands to backup specific things
@@ -44,19 +47,21 @@ path = folder_to_include     //Relative to local_directory
 
 //You can also do a "Sync everything Except" approach as below
 ignore = Path {.*}    // Ignore config files,
-ignore = Path {bin}   // Ignore my binary files</pre>
+ignore = Path {bin}   // Ignore my binary files
+{% endhighlight %}
+
 The only issue I have encountered is that in order for everything to work, you have to run a sync now and then. Occasional sync's are completely habit now though so it's not really a problem. If you do forget to sync, you can always log in to the machine and do a sync via ssh because unison has a commanline version built in!
-<h3>BackupPC</h3>
+<h2>BackupPC</h2>
 I encountered <a href="http://backuppc.sourceforge.net/">BackupPC</a> a few years ago when I was doing admin work and was looking for a good, cheap backup solution for one of our clients. I tested the software int he office (along with many others) and I can honestly say it is impressive. Whether you are a company or an individual, this thing rocks. It can be a bit of a challenge to get working perfectly, but once it does it works very well. You could definitely get a good setup using just a cronjob that does a clever copy too if you wanted to research that.
-
+<br /><br/>
 Anyway, BackupPC does tons of stuff but the feature I am interested in, is that it does very clever incremental backups that take up very little space depending on how many files you modify between backups.
-
+<br /><br/>
 In my configuration, BackupPC will do nightly incremental backups up my home directory located on the home server to an external drive.
-
+<br /><br/>
 Note: BackupPC sometimes requires some trickery if you are storing archives on a separate volume than the one it is running on. (hint, mount the external volume to the default location as opposed to changing the location in the configuration)
-
+<br /><br/>
 If you have some questions on configurations, leave a comment or fire me an email. Also here is my uber-simple setup in diagram form:
 
-<a href="http://www.benninger.ca/wp-content/uploads/2010/04/Unison.png"><img src="http://www.benninger.ca/wp-content/uploads/2010/04/Unison-300x202.png" alt="" title="Unison" width="300" height="202" class="aligncenter size-medium wp-image-23" /></a>
+<a href="/images/posts/unison.png"><img src="/images/posts/unison.png" alt="" title="Unison" width="300" height="202" class="aligncenter size-medium wp-image-23" /></a>
 
 I am also considering an attempt to port Unison to android so I can access and backup stuff on my phone!

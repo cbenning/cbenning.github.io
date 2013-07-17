@@ -11,6 +11,6 @@ analytics: UA-5453717-1
 ##gauges: 50f2b533613f5d7c8000000c
 author :
   name : Chris Benninger
-  github : chrisbenninger
+  github : cbenning
   twitter : chrisbenninger
-  email: chrisbenninger@gmail.com
+  #email: chrisbenninger@gmail.com

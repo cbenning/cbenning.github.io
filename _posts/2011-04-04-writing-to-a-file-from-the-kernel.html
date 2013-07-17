@@ -14,15 +14,17 @@ published: true
 meta:
   _edit_last: '1'
 ---
-Writing to a file in C is a fairly trivial affair. The Linux kernel does not have access to the usual user-land tools for interacting with files. Because this is generally a highly frowned upon practice (consider that a disclaimer) It took a while to pry the functions in question out of the people who knew them. A "preferred" technique would be to pass the parameters in via IOCTLs and implement a read() function in your module. Then reading the dump from the module and writing into the file from userspace. That just seemed like a lot of work for a one-time test so...
-<!--more-->
+Writing to a file in C is a fairly trivial affair. The Linux kernel does not have access to the usual user-land tools for interacting with files. Because this is generally a highly frowned upon practice (consider that a disclaimer) It took a while to pry the functions in question out of the people who knew them. A "preferred" technique would be to pass the parameters in via <em>IOCTLs</em> and implement a <code>read()</code> function in your module. Then reading the dump from the module and writing into the file from userspace. That just seemed like a lot of work for a one-time test so...
+
+<br/> <br/>
 
 My application was just a simple, one-time functional test to see what the contents memory were without doing a full core-dump, which should really be all you use this for, consider yourself warned.
 
-I found a good example <a title="Kernel File stuff" href="http://www.linuxjournal.com/article/8110?page=0,1">here</a> which I later realized did not work because the author seemed to be trying to obfuscate the actual solution with fake functions. Anyway here is an example of writing several blocks of data to a file.
+<br/> <br/>
+I found a good example <a title="Kernel File stuff" href="http://www.linuxjournal.com/article/8110?page=0,1">here</a> which I later realized did not work because the author seemed to be trying to obfuscate the actual solution with fake functions. Anyway here is an example of writing several blocks of data to a file:
 
-&nbsp;
-<pre class="brush: c">char* dump_filename; //Set to the file you are targeting
+{% highlight c %}
+char* dump_filename; //Set to the file you are targeting
 struct file *file;
 int i;
 void* data;  //Needs to be a kernel pointer, not userspace pointer
@@ -51,3 +53,4 @@ if(file){
 }
 set_fs(old_fs); //Reset to save FS
 kfree(dump_filename);</pre>
+{% endhighlight %}

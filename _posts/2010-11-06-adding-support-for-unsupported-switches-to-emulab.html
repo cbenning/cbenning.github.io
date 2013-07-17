@@ -14,27 +14,23 @@ meta:
   _wp_old_slug: ''
 ---
 <a href="http://www.emulab.net/">Emulab</a> is a popular network testbed for researchers built and maintained by the <a href="http://www.utah.edu/">University of Utah</a>. At the <a href="http://www.inspire.ece.uvic.ca/">InSPiRe</a> research lab at the <a href="http://www.uvic.ca">University of Victoria</a> we are in the process of building our own Emulab instance to run local experiments and to modify for very specific purposes. This article outlines the process I went through to add support for our switches which were not supported by the Emulab codebase at the time of this writing.
-<!--more-->
-<em>
-</em>
-<h1>Our Unique Problem</h1>
+
+<br /><br />
+<h2>Our Unique Problem</h2>
 Our switches which are the <em>Nortel Layer 2/3 GBE Switch module for IBM Bladecenters</em> posed an interesting problem. These switches run a completely dead and undocumented operating system with no open SNMP description. One way that this could be reverse-engineered would be to use a proprietary configuration tool and sniff the network packets to determine the internal MIB structure.
-
+<br /><br />
 The MIB solution would be the best approach, unfortunately the only configuration tool available to us was the command-line interface accessible via remote telnet. For this reason we werent able to use SNMP. Instead of SNMP we used the Perl::Expect module to login via telnet to manipulate the switches.
-
+<br /><br />
 Note: <em>Using telnet vs SNMP will not affect what needs to be done to emulab in order to support a new switch, only the implementation of the api subroutines discussed below will differ.</em>
 
-<em>
-</em>
-<h1>Create an internal switch-type name</h1>
+<h2>Create an internal switch-type name</h2>
 Come up with a name that you will refer to your new switch as internally, both in the database and in the naming schemes of your supporting perl files. I will use 'mynewswitch' hereafter as our switch model.
 
-<em>
-</em>
-<h1>Add a switch instance</h1>
+<h2>Add a switch instance</h2>
 Assuming you arent working on a live Emulab testbed, you need to add your new switch(es) to database Otherwise you probably want to do this step last once you've tested your code.
-
+<br /><br />
 Insert a record into the 'nodes' table in the database such that a new switch exists and the 'type' field is set to  'mynewswitch' :
+
 <table>
 <tbody>
 <tr>
@@ -53,9 +49,9 @@ Insert a record into the 'nodes' table in the database such that a new switch ex
 </table>
 <em>
 </em>
-<h1>Add a case to handle your new type</h1>
+<h2>Add a case to handle your new type</h2>
 When you create an experiment, Emulab will choose a switch from database and pass it's name down through the code until it needs to begin the switch-specific work. The 'snmpit_stack.pm' (located in /usr/testbet/lib/ on boss) seems to be the threshold where the switch specific stuff gets used. I edited this file and added a new case for when it sees the switch type "mynewswitch". Emulab calls the 'new()' subroutine here, which queries the database for the switch's type and then tries to load the correct perl module for that type. In the following code sample from snmpit_stack.pm I've added a new case which passes control to the file we will handle our switch interaction in. Look towards the bottom for my comment:
-<pre  class="brush: perl">
+{% highlight perl %}
 SWITCH: for ($type) {
     (/cisco/) && do {
         use snmpit_cisco;
@@ -86,17 +82,15 @@ SWITCH: for ($type) {
         }; # /hp.*/
     die "Device $devicename is not of a known type, skipping\n";
 }
-</pre>
-<em>
-</em>
-<h1>Implement the device-specific subroutines</h1>
+{% endhighlight %}
+
+<h2>Implement the device-specific subroutines</h2>
 The previous step will cause Emulab to look for 'snmpit_mynewswitch.pm' in /usr/testbed/lib/ and expect a minimal implementation of the core subroutines to be in place. Because there are so many, Instead of discussing them here individually, I have created a tar file with an unimplemented sample and some comments for what each one does. Find it below. If you find any missing subroutines or unnecessary ones, please let me know.
-
+<br /><br />
 In order to build our support, I logged in through telnet and ran my functions individually from a test file and watched the changes take effect. A sample test file is included in the tar file.
-
+<br /><br />
 If you are forced to do something like I did, feel free to contact me if you need some help using the Perl::Expect module for this specific purpose. If you are going to use SNMP, I recommend getting on the <em>emulab-admins google group</em> and talking to the guys at Utah about how they built support for the stuff already in Emulab.
 
-<em><span style="font-style: normal;">
-</span></em>
-<h1>Downloads:</h1>
-<a href="http://www.benninger.ca/wp-content/uploads/2010/11/template.tar.gz">template.tar.gz</a>
+<br /><br />
+<h2>Downloads:</h2>
+<a href="/assets/template.tar.gz">template.tar.gz</a>
