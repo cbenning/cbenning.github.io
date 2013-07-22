@@ -82,7 +82,14 @@
 
   <div class="container">
     {{ content }}
+    <div class="pull"></div>
+    {% include twitter.html %}
+    <hr>
+    {% if page.comments %}
+    {% include disqus.html %}
+    {% endif %}
   </div>
+
 
   <div id="footer" class="hidden-print">
     <section class="meta">
