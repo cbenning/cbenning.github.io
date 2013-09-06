@@ -16,11 +16,11 @@ AeroFS is a pretty cool (unfortunately not open-source) tool for synchronizing d
 The main problem I ran into was that when I ran aerofs (or aerofs-cli, from the commandline) it barfed out this useful gem of a message:
 
 {% highlight bash %}
-ERROR: Sorry, AeroFS couldn't launch. Please contact us at support@aerofs.com:
+ERROR: Sorry, AeroFS couldn&#39;t launch. Please contact us at support@aerofs.com:
 Exit code 127.
 {% endhighlight %}
 
-After some fiddling, I noticed they are using Java under the hood and seeing as how they most likely compiled their code with the standard <em>Oracle Java JDK</em>, my default setup <em>OpenJDK</em> from the Arch repository was probably causing problems (I'v had problems before with compatibility with <em>OpenJDK</em>). So I uninstalled the <em>OpenJDK</em> and <em>OpenJRE</em> packages and downloaded the latest <a href="http://java.com/en/download/manual.jsp?locale=en">Oracle JRE</a>. After unpacking it to where I wanted (in this case /opt), I unpacked it and added the following lines to my <em>.bash_profile</em>.
+After some fiddling, I noticed they are using Java under the hood and seeing as how they most likely compiled their code with the standard <em>Oracle Java JDK</em>, my default setup <em>OpenJDK</em> from the Arch repository was probably causing problems (I've had problems before with compatibility with <em>OpenJDK</em>). So I uninstalled the <em>OpenJDK</em> and <em>OpenJRE</em> packages and downloaded the latest <a href="http://java.com/en/download/manual.jsp?locale=en">Oracle JRE</a>. After unpacking it to where I wanted (in this case /opt), I unpacked it and added the following lines to my <em>.bash_profile</em>.
 
 {% highlight bash %}
 export PATH=$PATH:/opt/my_jre_version/bin/
