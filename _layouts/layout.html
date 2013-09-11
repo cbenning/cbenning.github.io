@@ -2,6 +2,17 @@
 <html lang="en">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+  <script type="text/javascript">
+      var url_map = {
+          "http://www.benninger.ca/?p=22":"http://www.benninger.ca/posts/keeping-files-safe-and-available-with-unison-and-backuppc/"
+      }
+
+      if( location.href in url_map){
+          document.write("<script type='text/javascript'><!-- window.location = 'url_map[location.href]' //--><//script>")
+      }
+  </script>
+
   <title>{{ page.title }}</title>
 
   <meta name="author" content="{{ site.author.name }}" />
