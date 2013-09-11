@@ -9,7 +9,10 @@
       }
       //alert(location.href)
       if( location.href in url_map){
-          document.write("<script type='text/javascript'><!-- window.location = \""+url_map[location.href]+"\" //--><\/script>")
+          document.write("
+                  <meta http-equiv=\"refresh\" content=\"0;url=\""+url_map[location.href]+"\">
+                  <script type='text/javascript'><!-- window.location = \""+url_map[location.href]+"\" //--><\/script>
+                  ")
       }
   </script>
 
