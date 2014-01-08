@@ -39,18 +39,18 @@ set_fs(get_ds());
 file = filp_open(dump_filename, O_WRONLY|O_CREAT, 0644);
 
 if(file){
-	for(i=0; i &lt; block_count ; i++){
+	for(i=0; i < block_count ; i++){
 
-		data=&lt;somewhere&gt;+block_count*i //Wherever your data is
+        data=<somewhere>+block_count*i //Wherever your data is
 		if(data==NULL){
 			continue;
 		}
-   		vfs_write(file, data, block_size, &amp;pos);
+   		vfs_write(file, data, block_size, &pos);
 		pos = pos+block_size;
 
 	}
 	filp_close(file,NULL);
 }
 set_fs(old_fs); //Reset to save FS
-kfree(dump_filename);</pre>
+kfree(dump_filename);
 {% endhighlight %}
