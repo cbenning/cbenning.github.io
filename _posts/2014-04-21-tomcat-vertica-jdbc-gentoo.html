@@ -1,0 +1,39 @@
+---
+layout: post
+title: Tomcat 7 on Gentoo cannot find Vertica JDBC Driver 
+categories: []
+tags: [Linux,Gentoo,Tomcat,Scala,Vertica]
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+
+---
+
+I've been working on some stuff related to <em>Clojure</em>,<em>Scala</em> and <a href="http://vertica.com"><em>HP Vertica</em></a> for work. I ran into the problem where my SBT+Jetty 
+dev server worked happily, but when packaged as a WAR and deployed to a Tomcat 7 container my webapp wouldnt come up.
+
+When deploying my app, I copied the JDBC driver to <em>$CATALINA_HOME/lib</em> which is the usual location to put JDBC drivers, as this version of Tomcat AFAIK does not read runtime Jars from <em>WEB-INF/lib</em>. 
+The error message I got was:
+{% highlight bash %}
+Message: java.lang.NullPointerException: Looking for Connection Identifier ConnectionIdentifier(lift) but failed to find either a JNDI data source with the name lift or a lift connection manager with the correct name
+...
+{% endhighlight %}
+
+I'll start with a disclaimer that I am not much of a Gentoo guru, but it is what it is. Searching in the catalina logs, I found:
+{% highlight bash %}
+...
+Caused by: java.lang.ClassNotFoundException: com.vertica.jdbc.Driver
+...
+WARNING: Failed to register in JMX: javax.naming.NamingException: com.vertica.jdbc.Driver\
+...
+{% endhighlight %}
+
+After being confused about why Tomcat was not finding my Jar, I read <em>/etc/init.d/tomcat-7-main</em> which lead me to <em>/usr/share/tomcat-7/package.env</em>. I didn't realize but it seems individual Jars are being
+specified in this file. I appended my Vertica Jar, and it started working:
+
+{% highlight bash %}
+CLASSPATH="...other stuff...:/usr/share/tomcat-7/lib/vertica-jdbc-7.0.1-0.jar"
+{% endhighlight %}
+
