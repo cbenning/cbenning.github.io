@@ -1,0 +1,109 @@
+---
+layout: post
+title: Setting up Tomcat on port 80 on Gentoo
+categories: []
+tags: [Linux,Gentoo,Tomcat]
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '1'
+
+---
+
+Today, I tried to move my Tomcat server from 8080/8443 to 80/443. After changing my Tomcat config I restarted the daemon and the log spewed out exceptions about not having permissions to bind to 80 and 443. Example:
+
+{% highlight bash %}
+SEVERE: Failed to initialize connector [Connector[HTTP/1.1-80]]
+...
+Caused by: org.apache.catalina.LifecycleException: Protocol handler initialization failed
+...
+Caused by: java.net.BindException: Permission denied <null>:80
+...
+SEVERE: Failed to initialize connector [Connector[HTTP/1.1-443]]
+...
+Caused by: org.apache.catalina.LifecycleException: Protocol handler initialization failed
+...
+Caused by: java.net.BindException: Permission denied <null>:443
+{% endhighlight %}
+
+This is to be expected as ports below 1024 are priviledged ports. There are a <a href="https://answers.atlassian.com/questions/103665/jira-on-port-80-443-using-authbind">number of solutions to this problem</a> but I opted to go with the solution of using <em>authbind</em>.
+
+Following instructions such as <a href="http://www.2ality.com/2010/07/running-tomcat-on-port-80-in-user.html">these</a>, Tomcat still didn't fire up and authbind seemed unable to solve my problem.
+I eventually realized it was the way Gentoo handles config files and init scripts and that the common instructions online would not apply.
+
+After some help from one of our local Gentoo guys, we solved the problem in with the following way for Gentoo.
+
+Install authbind
+{% highlight bash %}
+emerge authbind
+{% endhighlight %}
+
+Configure authbind
+{% highlight bash %}
+touch /etc/authbind/byport/80
+touch /etc/authbind/byport/443
+chmod 500 /etc/authbind/byport/80
+chmod 500 /etc/authbind/byport/443
+chown tomcat /etc/authbind/byport/80
+chown tomcat /etc/authbind/byport/443
+{% endhighlight %}
+
+Authbind doesn't play nice with IPv6, so we need to tell java to prefer it. Edit '/etc/conf.d/tomcat-7-main':
+{% highlight bash %}
+...
+JAVA_OPTS="... -Djava.net.preferIPv4Stack=true ..."
+....
+{% endhighlight %}
+
+And finally, tell the Gentoo init script to use authbind and allow child processes to also have the same permission. Edit '/etc/init.d/tomcat-7-main' and change:
+{% highlight bash %}
+...
+        start-stop-daemon  --start \
+                --quiet --background \
+                --chdir "${CATALINA_TMPDIR}" \
+                --user ${CATALINA_USER}:${CATALINA_GROUP} \
+                --make-pidfile --pidfile ${PIDFILE} \
+                --exec ${JAVA_HOME}/bin/${cmd} \
+                        ${JAVA_OPTS} \
+                        ${args} \
+                        -Dcatalina.base="${CATALINA_BASE}" \
+                        -Dcatalina.home="${CATALINA_HOME}" \
+                        -Djava.io.tmpdir="${CATALINA_TMPDIR}" \
+                        -classpath "${CLASSPATH}" \
+                        org.apache.catalina.startup.Bootstrap \
+                        ${CATALINA_OPTS} \
+                        ${TOMCAT_START}
+...
+{% endhighlight %}
+
+To this:
+{% highlight bash %}
+...
+        start-stop-daemon  --start \
+                --quiet --background \
+                --chdir "${CATALINA_TMPDIR}" \
+                --user ${CATALINA_USER}:${CATALINA_GROUP} \
+                --make-pidfile --pidfile ${PIDFILE} \
+                --exec authbind \
+                -- \
+                --deep ${JAVA_HOME}/bin/${cmd} \
+                        ${JAVA_OPTS} \
+                        ${args} \
+                        -Dcatalina.base="${CATALINA_BASE}" \
+                        -Dcatalina.home="${CATALINA_HOME}" \
+                        -Djava.io.tmpdir="${CATALINA_TMPDIR}" \
+                        -classpath "${CLASSPATH}" \
+                        org.apache.catalina.startup.Bootstrap \
+                        ${CATALINA_OPTS} \
+                        ${TOMCAT_START}
+...
+{% endhighlight %}
+
+Now Tomcat should fire up:
+{% highlight bash %}
+/etc/init.d/tomcat-7-main stop
+/etc/init.d/tomcat-7-main start
+{% endhighlight %}
+
+

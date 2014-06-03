@@ -5,7 +5,7 @@ rdiscount:
   extensions: [smart]
 title : Chris Benninger
 production_url : http://benninger.ca
-description: "Code, rants, utilities, tutorials, projects and other things by Chris Benninger."
+description: "Code, rants, utilities, tutorials, projects and other things by Chris"
 disqus_shortname: benningerca
 analytics: UA-5453717-1
 author :
