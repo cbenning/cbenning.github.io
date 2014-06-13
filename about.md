@@ -5,7 +5,7 @@ title: About Chris
 tags: [about, chris, chrisbenninger, cbenning, benninger]
 modified: 2013-09-13
 image:
-  feature: forest-panorama.png
+  feature: forest-panorama.jpg
   credit: Chris Benninger
   <!-- creditlink: http://mademistakes.com -->
 ---
