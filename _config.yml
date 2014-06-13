@@ -61,4 +61,4 @@ pygments:    true
 markdown:    kramdown
 
 # https://github.com/mojombo/jekyll/wiki/Permalinks
-permalink:   /:posts/:title/
+permalink:   /posts/:title/
