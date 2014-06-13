@@ -1,14 +1,64 @@
-markdown: rdiscount
-pygments: true
-permalink: /posts/:title
-rdiscount:
-  extensions: [smart]
-title : Chris Benninger
-production_url : http://benninger.ca
-description: "Code, rants, utilities, tutorials, projects and other things by Chris"
+#markdown: rdiscount
+#pygments: true
+#permalink: /posts/:title
+#rdiscount:
+#  extensions: [smart]
+#title : The Blog of Chris
+#production_url : http://benninger.ca
+#description: "Code, rants, utilities, tutorials, projects and other things by Chris"
+#disqus_shortname: benningerca
+#analytics: UA-5453717-1
+#author :
+#  name : Chris Benninger
+#  github : cbenning
+#  twitter : chrisbenninger
+
+title:            The Blog of Chris
+description:      Code, utilities and other projects
+logo:             icon-shrunk.jpg
 disqus_shortname: benningerca
-analytics: UA-5453717-1
-author :
-  name : Chris Benninger
-  github : cbenning
-  twitter : chrisbenninger
+search:           false
+# Your site's domain goes here. When working locally use localhost server leave blank
+# PS. If you set this wrong stylesheets and scripts won't load and most links will break.
+# PPS. If you leave it blank for local testing home links won't work, they'll be fine for live domains though.
+url:              http://localhost:4001
+
+# Owner/author information
+owner:
+  name:           Chris
+  avatar:         profile-small.jpg
+  email:          chris@benninger.ca
+  # Social networking links used in footer. Update and remove as you like.
+  twitter:       chrisbenninger
+  #facebook:
+  github:        cbenning
+  linkedin:      christopherbenninger
+  #instagram:
+  #tumblr:
+  # For Google Authorship https://plus.google.com/authorship
+  google_plus:   https://plus.google.com/+ChrisBenninger/
+
+# Analytics and webmaster tools stuff goes here
+google_analytics:   UA-5453717-1
+#google_verify:
+# https://ssl.bing.com/webmaster/configure/verify/ownership Option 2 content= goes here
+#bing_verify:
+
+# Links to include in top navigation
+# For external links add external: true
+links:
+  - title: About
+    url: /about
+  - title: Articles
+    url: /articles
+#  - title: Projects
+#    url: /projects
+    #external: true
+
+# http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+timezone:    America/Vancouver
+pygments:    true
+markdown:    kramdown
+
+# https://github.com/mojombo/jekyll/wiki/Permalinks
+permalink:   /:posts/:title/

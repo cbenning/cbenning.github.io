@@ -1,149 +1,21 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
+---
+layout: nil
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>
-            http://benninger.ca/posts/winter-olympics-silverlight-streams-now-working-with-linux
-        </loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
+        <loc>{{ site.url }}</loc>
     </url>
+    
+    {% for page in site.pages %}
     <url>
-        <loc>
-            http://benninger.ca/posts/building-xen-3-4-testing-and-linux-2-6-31-10-domain0-kernel-on-debian-testing
-        </loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
+        <loc>{{ site.url }}{{ page.url }}</loc>
     </url>
+    {% endfor %}
+
+    {% for post in site.posts %}
     <url>
-        <loc>
-            http://benninger.ca/posts/keeping-files-safe-and-available-with-unison-and-backuppc
-        </loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
+        <loc>{{ site.url }}{{ post.url }}</loc>
     </url>
-    <url>
-        <loc>http://benninger.ca/posts/generating-ioctl-commands-for-char-drivers</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/udev-and-optiarc-high-cpu-utilization-fix</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/omega-gedit-theme-v0-1</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/syfor-com-benninger-ca</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/adding-support-for-unsupported-switches-to-emulab</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/omega-eclipse-theme-v0-1</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>
-            http://benninger.ca/posts/adding-support-for-an-unsupported-power-manager-in-emulab
-        </loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/attachmates-canadian-offices</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/debugging-kernel-hard-locks-with-netconsole</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/debian-squeeze-xen-4-kernel-2-6-32-27-misery</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/sbx00-azalia-hda-sound-with-debian-squeeze</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>
-            http://benninger.ca/posts/importerror-no-module-named-xen-on-fresh-compiled-xen-4-0-1-with-debianubuntu
-        </loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/writing-to-a-file-from-the-kernel</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/pyvizer</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/vim-use-selected-text-as-input-to-a-shell-command</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/converting-those-pesky-m4a-files-to-mp3-on-linux</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/how-to-get-answers-on-a-developer-or-help-irc-channel</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/graduation-maitland-and-career-seeking</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/cloud-2012-and-sophoslabs-and-scala-oh-my</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>
-            http://benninger.ca/posts/creating-an-akka-actor-from-a-dynamically-loaded-jar-file-in-scala
-        </loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/akkascala-deploying-an-actor-remotely</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/virtualizing-osx-nic-card-setup</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>
-            http://benninger.ca/posts/how-to-force-snow-leopard-to-consider-a-shell-script-safe
-        </loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/posts/aerofs-problems-on-archlinux</loc>
-        <lastmod>2013-09-06T08:44:10-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/about/about/</loc>
-        <lastmod>2013-09-06T08:44:10-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/404.html</loc>
-        <lastmod>2013-08-22T13:29:28-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/projects/omega-editor-theme/projects/omega-editor-theme/</loc>
-        <lastmod>2013-09-06T08:44:10-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/projects/workviz/projects/workviz/</loc>
-        <lastmod>2013-09-06T08:44:10-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/projects/projects/</loc>
-        <lastmod>2013-09-06T08:44:10-07:00</lastmod>
-    </url>
-    <url>
-        <loc>http://benninger.ca/</loc>
-        <lastmod>2013-09-06T08:44:10-07:00</lastmod>
-    </url>
+    {% endfor %}
 </urlset>
