@@ -1,0 +1,66 @@
+==================================================================
+https://keybase.io/cbenninger
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://benninger.ca
+  * I am cbenninger (https://keybase.io/cbenninger) on keybase.
+  * I have a public key with fingerprint E899 61C1 CE26 4199 7159  0D3A 3A02 87FE 0509 AB5A
+
+To claim this, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "fingerprint": "e89961c1ce26419971590d3a3a0287fe0509ab5a",
+            "host": "keybase.io",
+            "key_id": "3a0287fe0509ab5a",
+            "uid": "e41ad64ce92527561092d4ad67731900",
+            "username": "cbenninger"
+        },
+        "service": {
+            "hostname": "benninger.ca",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1410374448,
+    "expire_in": 157680000,
+    "prev": "c9950e335d16715dabeca37abbb12d518abbda9f4550b3b611023d958ac51a68",
+    "seqno": 3,
+    "tag": "signature"
+}
+
+with the aforementioned key, yielding the PGP signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v1.0.3
+Comment: https://keybase.io/crypto
+
+yMHjAnicO8LLzMDFyLtSQaVq1RJlxtMHPpcyhAjMNqhWSspPqVSyqlbKTgVTaZl5
+6alFBUWZeSVKVkqpFpaWZobJhsmpRmYmhpaW5oamlgYpxonGiQZGFuZpqQamBpaJ
+SaaJSjpKGfnFIB1AY5ISi1P1MvOBYkBOfGYKUBSL+lKwRKqJYWKKmUlyqqWRqZG5
+qZmhgaVRiglQyNzc2NDSwACksDi1KC8xNxWoOjkpNS8P7EClWh0loHhZZnIqyNUg
+y6Fq4Er0kkHWFBTll+Qn5+cAZTJKSgqsQBpLKgtAKstTk+KhZsQnZealAHUBNZSl
+FhVn5ucpWRkCVSaXZIIMNTQxNDA2NzExsdBRSq0oyCxKjc8EqTA1N7MwAAKQNall
+IAdaWpoapBobm6YYmgHDKiUxKTU50dg8MSkpydAoxdTQAshKSbRMMzE1NUgyTjIz
+NDQwMk6xNLVITDY1TDSzUAL5qjAvX8nKGOjMxHSgkcWZ6XmJJaVFqUq1hw7EsDAw
+cjGwsTKB4o6Bi1MAFqM3+Nj/6fOFvpulXueg48I2d1M50//EmAOp/ceqGwomnFz4
+Zq/dc8VHmq0Xljhel3q5Mnb14Wf3jUMnb5lxStLa1q5tfeef02KZ6d411tvfeizS
+NpR7VX3tQuPsLmvf+JaDyfXb97T2molcdd1jPzN5zXGFZZXbPaZsjlv5Y6Kmw62b
+R4oCMnIK5VU6zQOWhDLydk9T+nTz/oUpt+IWLD78d5tVZdtCifX9Pepunje2fSj6
+apKzeHPokf67DdXGqSJzrHcrymz+kcT2YNXuG+9P5+yIiuj6b/ztrUyK3IvKCpfs
+114LpA2sVJSm9c/kufY/yztT+Np94cMbrydNXxn/6EeHvNruvuA0nuC5Z7Vcl/S/
+BwBhnRSx
+=xXPd
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/cbenninger
+
+==================================================================
+
