@@ -1,0 +1,74 @@
+---
+layout: post
+title: Making HTML5 work with Firefox on Debian Jessie
+categories: []
+tags: [Linux,Debian,HTML5,Firefox]
+status: publish
+type: post
+published: true
+comments: true
+meta:
+  _edit_last: '1'
+
+---
+
+I was getting a bit annoyed at all the disjoint posts around the internet about making HTML5 work with my Firefox install on my work laptop so I thought I'd contribute to the noise.
+
+Getting started, if you go to <a href="http://youtube.com/html5">http://youtube.com/html5</a> and you see something like the screenshot below, you might want to try out my instructions.
+
+![HTML5 No worky]({{ site.url }}/assets/img/html5-before.png)
+
+You might see x264 also in red, this guide should fix that as well. 
+
+<h2>Install Debian Multimedia Repo</h2>
+
+As root, add the repo to your sources:
+{% highlight bash %}
+echo "http://www.deb-multimedia.org jessie main non-free" >> /etc/apt/sources.list.d/deb-multimedia.list
+{% endhighlight %}
+
+<br />
+Update sources and install keyring and update sources again:
+{% highlight bash %}
+sudo apt-get update
+sudo apt-get install deb-multimedia-keyring
+sudo apt-get update
+{% endhighlight %}
+
+<h2>Install Codecs</h2>
+
+Remove any leftover ffmpeg implementation from the original repo:
+{% highlight bash %}
+sudo apt-get remove ffmpeg
+{% endhighlight %}
+
+<br />
+
+Install Packages:
+{% highlight bash %}
+sudo apt-get install ffmpeg x264 gstreamer0.10-ffmpeg
+{% endhighlight %}
+
+<h2>Enable Media Sources in Firefox</h3>
+
+Open firefox, go to 'about:config' in your addressbar
+
+<br />
+Search for 'mediasource'
+
+<br />
+Set both <pre>media.mediasource.enabled</pre> and <pre>media.mediasource.webm.enabled</pre> to true.
+
+<br />
+Restart firefox
+
+<h2>Validate Changes</h2>
+
+Go back to <a href="http://youtube.com/html5">http://youtube.com/html5</a> in firefox and hopefully you will see more blue:
+
+![HTML5 No worky]({{ site.url }}/assets/img/html5-after.png)
+
+<h2>Profit!</h2>
+
+See! Linux users can have nice things too.
+
