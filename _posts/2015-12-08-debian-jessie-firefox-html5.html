@@ -20,9 +20,9 @@ Getting started, if you go to <a href="http://youtube.com/html5">http://youtube.
 
 You might see x264 also in red, this guide should fix that as well. 
 
-<h2>Install Debian Multimedia Repo</h2>
+<h2>Install Debian multimedia repository</h2>
 
-As root, add the repo to your sources:
+(As root) Add the repo to your sources:
 {% highlight bash %}
 echo "http://www.deb-multimedia.org jessie main non-free" >> /etc/apt/sources.list.d/deb-multimedia.list
 {% endhighlight %}
@@ -49,24 +49,23 @@ Install Packages:
 sudo apt-get install ffmpeg x264 gstreamer0.10-ffmpeg
 {% endhighlight %}
 
-<h2>Enable Media Sources in Firefox</h3>
+<h2>Enable Mediasources in Firefox</h3>
 
-Open firefox, go to 'about:config' in your addressbar
-
-<br />
-Search for 'mediasource'
+Open firefox, go to 'about:config' in your addressbar. Search for 'mediasource'.
 
 <br />
-Set both <pre>media.mediasource.enabled</pre> and <pre>media.mediasource.webm.enabled</pre> to true.
+Set the following two keys to 'true':
+<pre>media.mediasource.enabled
+media.mediasource.webm.enabled</pre>
 
 <br />
-Restart firefox
+Restart Firefox
 
 <h2>Validate Changes</h2>
 
 Go back to <a href="http://youtube.com/html5">http://youtube.com/html5</a> in firefox and hopefully you will see more blue:
 
-![HTML5 No worky]({{ site.url }}/assets/img/html5-after.png)
+![HTML5 Worky]({{ site.url }}/assets/img/html5-after.png)
 
 <h2>Profit!</h2>
 
