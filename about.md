@@ -10,7 +10,7 @@ image:
   <!-- creditlink: http://mademistakes.com -->
 ---
 
-Chris is a Senior Developer at <a href="http://www.shadownetworks.com">Shadow Networks Canada</a> in beautiful Vancouver, British Columbia, Canada. 
+	Chris is a Senior Developer at <a href="https://phemi.com">PHEMI Systems</a> in beautiful Vancouver, British Columbia, Canada. 
 
   If he's not trying out a new programming language, working on a side project or trying to automate something, you can probably find him hiking or learning about amateur photography. 
   
