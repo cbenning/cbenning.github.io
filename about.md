@@ -6,8 +6,7 @@ tags: [about, chris, chrisbenninger, cbenning, benninger]
 modified: 2013-09-13
 image:
   feature: forest-panorama.jpg
-  credit: Chris Benninger
-  <!-- creditlink: http://mademistakes.com -->
+  <!-- credit: Chris Benninger -->
 ---
 
   Chris is a Senior Developer at <a href="https://phemi.com">PHEMI Systems</a> in beautiful Vancouver, British Columbia, Canada.
