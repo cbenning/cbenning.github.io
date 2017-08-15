@@ -1,0 +1,74 @@
+---
+layout: post
+title: A System76 Galago Pro review from a Developer's perspective
+categories: [system76,galago,galagopro,hardware,development]
+tags: [Linux,system76,development]
+status: publish
+type: post
+published: true
+comments: true
+meta:
+  _edit_last: '1'
+
+---
+
+I have not actually had a reason to buy a laptop for years, as my old thinkpad serves me just fine for personal stuff and work always provides one. 
+
+Recently, however I was provided the opportunity to be a guinea pig and select a new Galago Pro while our IT staff was deciding what we should be getting with the caveat that if it doesnt work out and we decide to get something else, I'm stuck with mine. For better or for worse, I said yes. This is a short description of my experience thus far.
+
+I'm not going to get into the unboxing or the "product experience" as youtube is completely awash in those and they add no value to me. However I did notice there are very few reviews after people have used them as a daily driver for a few months and I found that suspicious.
+
+I've now been using my Galago Pro for about 2 months as my main development machine. The specs are as follows:
+
+<ul>
+<li>Ubuntu 16.04 (Gnome)</li>
+<li>7-7500U - 2.7GHz-3.5GHz 4MB Cache with 2 Cores and 4 threads</li>
+<li>2GB DDR4 @ 2133 MHz</li>
+<li>12GB NVMe SSD</li>
+<li>67 Mbps Intel Wifi card (the faster one on the customization page)</li>
+<li>200x1800 (16:9) resolution screen</li>
+</ul>
+
+
+<h3>Initial notes and observations</h3>
+
+As with most tech companies, laptops are required to have encrypted disks. The OS that came on it was not setup with disk encryption so I was forced to nuke and pave and reinstall ubuntu 16.04. When I booted up, the wifi did not work. Turns out the intel wifi driver for this card requires kernel 4.8 and higher. Once I installed that kernel things started working. I also added the system76-diver package using their public PPA in order to get their special sauce.
+
+
+<h3>Pros</h3>
+
+The screen is incredibly vibrant and sharp. The nicest screen I've ever used. (There is a caveat though, see cons)
+
+The keyboard is fantastic. For a developer this is a biggie and they hit the nail on the head. It feels tight and crisp the spacing is great. Backlight works nicely too and I enjoy it.
+
+The touchpad is decent. Not the best but it's probably slightly above par for most consumer laptops
+
+It's as fast as one expects given the specs I put in this thing.
+
+It's very light
+
+
+<h3>Cons</h3>
+
+The power adapter feels cheap
+
+While the screen is incredible, it has now hit home just how badly most linux UI's support HiDPI screens. You can fuss and fiddle with your setup (gnome in my case) and get it to fit beatifully on the small screen. That being said, most developers like myself have external monitors. If you have a monitor anything less than 3200x1800, none of the desktops I've tried can handle two radically different scales for each monitor. So to use my two 1080p monitors at work I have to actually disable the laptop screen otherwise it is unusable.
+
+The battery life is really not good at all. I get around 4 hours, 6 if I'm very conservative and it's likely due to that screen resolution. Before anyone asks, yes I have TLP enabled and powertop has done it's thing on startup. I never thought I'd say this but on laptop this small I regret not getting 1080p.
+
+The case is only aluminum on the outside edges from what I can tell, where I put my hands it definitely does not feel the coolness of metal. 
+
+Fit and finish is sadly not what I would like to see on something supposedly high end. When you look closely there are tinly little gaps where the case components arent entirely flush with each other and I notice there is a little extra separation at the very top where the webcam is.
+
+The fan is more noticible than on any laptop I've ever owned. I understand it's small and needs to use its little fan to get it's job done with minimal space and surface area to make use of, but wow it's startling sometimes. There seems to be a threshold where rather than slightly increasing fan RPM in order to reduce below the threshold, it will just got to 100% RPM for a few seconds and then back down. Quite odd.
+
+<h3>Summary</h3>
+
+All in all, I am enjoying the laptop simply because it's my first small laptop and I like the mobility. I enjoy working on it with the awesome keyboard, the performance and that screen. Because it's for work and just a tool I'll keep it, use it for my work and enjoy doing so. Knowing what I know now, if I was looking for a laptop of my own to purchase with my own heard-earned cash, I might be hesitant to make the purchase for myself.
+
+
+
+
+
+
+
