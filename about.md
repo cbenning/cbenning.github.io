@@ -3,13 +3,13 @@ layout: page
 permalink: /about/
 title: About Chris
 tags: [about, chris, chrisbenninger, cbenning, benninger]
-modified: 2013-09-13
+modified: 2019-03-26
 image:
   feature: forest-panorama.jpg
   <!-- credit: Chris Benninger -->
 ---
 
-  Chris is a Senior Developer at <a href="https://phemi.com">PHEMI Systems</a> in beautiful Vancouver, British Columbia, Canada.
+  Chris is a Senior Developer at <a href="https://xmatters.com">XMatters Inc.</a> in beautiful Victoria, British Columbia, Canada.
 
   If he's not trying out a new programming language, working on a side project or trying to automate something, you can probably find him hiking or learning about amateur photography.
 
