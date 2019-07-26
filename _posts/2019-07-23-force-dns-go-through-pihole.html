@@ -42,18 +42,18 @@ There are other ways, but the easiest way is to use a firewall (in my case iptab
     <li>All outgoing DNS requests (port 53) coming from the pi-hole should be allowed.</li>
 </ul>
 Assuming your pi-hole's IP address is for example 192.168.1.10, what I ended up with is something like this.
-<code>
+<pre>
 iptables -t nat -A POSTROUTING -j MASQUERADE
 iptables -t nat -I PREROUTING -i br+ ! -s 192.168.1.10 -p tcp --dport 53 -j DNAT --to 192.168.1.10:53
 iptables -t nat -I PREROUTING -i br+ ! -s 192.168.1.10 -p udp --dport 53 -j DNAT --to 192.168.1.10:53
-</code>
+</pre>
 <br/>
 <br/>
 Notes:
 <ul>
-    <li><mark>-i br+</mark> : apply to all bridged traffic (this may be different if your router's nic card are named differently?)</li>
-    <li><mark>-p tcp</mark> and <mark>-p udp</mark> : apply to tcp and udp</li>
-    <li><mark>! -s 192.168.1.10</mark> : apply to all ips except for 192.168.1.10</li>
+    <li><pre>-i br+</pre> : apply to all bridged traffic (this may be different if your router's nic card are named differently?)</li>
+    <li><pre>-p tcp</pre> and <pre>-p udp</pre> : apply to tcp and udp</li>
+    <li><pre>! -s 192.168.1.10</pre> : apply to all ips except for 192.168.1.10</li>
 </ul>
 To make this work on Tomato go to Administration > Scripts > Firewall and paste the above 3 lines (with the ip updated) and hit save.
 <br/>
