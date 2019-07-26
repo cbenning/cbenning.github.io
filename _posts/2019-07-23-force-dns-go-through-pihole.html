@@ -1,0 +1,73 @@
+---
+layout: post
+title: How to force all your outgoing DNS queries to go through a pihole
+categories: [privacy,security,pihole,network,dns]
+tags: [Linux,network,privacy]
+status: publish
+type: post
+published: true
+comments: true
+meta:
+  _edit_last: '1'
+
+---
+
+<h1>The Pi-hole</h1>
+
+I've been having great success with my <a href="https://pi-hole.net/">pi-hole</a>. For those unaware of what pi-hole is, it is a DNS black-hole tailored to run on the <a href="https://www.raspberrypi.org/">rasperry pi</a>.
+The way it works is, you set it up as the upstream DNS in your DHCP server (which is usually your router) and then when clients ask for an IP address the router also tells them to use the pi-hole as their upstream DNS.
+<br/>
+<br/>
+So what happens now, is when a machine on your network asks for a domain like "google.com" the pi-hole receives it checks it against its list of malicious tracker domains and then happily forwards it up to the real upstream DNS server (in my case CloudFlare)
+However, when a website tries to pull down some file like "https://someadnetwork.biz/tracker.js", the pihole will receive the DNS lookup for `someadnetwork.biz`, recognize it as a tracking domain and just pretend it cannot find it.
+<br/>
+<br/>
+This will result in a significant reduction in ads you see on most websites and a snappier experience as the amount of traffic is reduced. In my case, I saw a rate of 14% of all DNS queries being blocked by my pi-hole. 14%!
+
+<h1>The Problem</h1>
+
+When you have good quality standard computer hardware, things work out just as outlined above. Proper network devices will honor the settings given to them by the DHCP server and use your pi-hole as their upstream DNS allowing it to filter their DNS requests.
+<br/>
+<br/>
+Unfortunately in the ad-revenue-driven world of subsidized devices from Amazon and Google (to name two of many), the cost of the device is heavily subsidized by the manufacturer by means of collecting, storing and selling the ever-living-sh*t out of everthing
+they can. Sadly I am forced to have a few of these devices running on my network and I keep them pretty isolated, however I was noticing that I was still receiving ads on these devices and seeing some strange outbound traffic from them. I realized they were 
+Not playing nice and listening to my configured upstream DNS and instead were using their own company's DNS (8.8.8.8 in Google's case)  regardless of what I told it to do. This is how these companies manage to transparently track more and more of what you do, 
+even without really realizing it. Google DNS servers store and track every request made to them and you can bet they are cross referenced back to your device. 
+
+<h1>The Solution (mostly)</h1>
+
+There are other ways, but the easiest way is to use a firewall (in my case iptables) I have a Netlink router running the tomato firmware. With this tool we can break down what we want to:
+<ul>
+    <li>All outgoing DNS requests (port 53) from any hosts (other than the pi-hole) should be redirected to the pi-hole.</li>
+    <li>All outgoing DNS requests (port 53) coming from the pi-hole should be allowed.</li>
+</ul>
+<br/>
+<br/>
+Assuming your pi-hole's IP address is for example 192.168.1.10, what I ended up with is something like this.
+<pre>
+iptables -t nat -A POSTROUTING -j MASQUERADE
+iptables -t nat -I PREROUTING -i br+ ! -s 192.168.1.10 -p tcp --dport 53 -j DNAT --to 192.168.1.10:53
+iptables -t nat -I PREROUTING -i br+ ! -s 192.168.1.10 -p udp --dport 53 -j DNAT --to 192.168.1.10:53
+</pre>
+<br/>
+<br/>
+Notes:
+<ul>
+    <li>`-i br+` : apply to all bridged traffic (this may be different if your router's nic card are named differently?)</li>
+    <li>`-p tcp` and `-p udp` : apply to tcp and udp</li>
+    <li>`! -s 192.168.1.10` : apply to all ips except for 192.168.1.10</li>
+</ul>
+<br/>
+<br/>
+To make this work on Tomato go to Administration > Scripts > Firewall and paste the above 3 lines (with the ip updated) and hit save.
+<br/>
+<br/>
+After doing this, my pi-hole rent from block 14% of all DNS requests to about 24%. Success! Even more of my devices stopped firing ads at me at this point. However, there is one final gotcha...
+
+<h1>Unsolved problem 1</h1>
+Some companies have figured out that if they don't have their tracking stuff on a distinguishable hostname and instead for example, just in a sub-path that they can get around this specific mechanism of blocking requests.
+
+<h1>Unsolved problem 2</h1>
+You will notice also that some browsers like Amazon Silk, which is the only place you can get HD youtube on a fire TV, will still somehow be pushing ads. How is this? Under the guise of an "enhanced experience", Silk renders "content"
+(read as: webpages with pre-embedded tracking and ads) on the AWS backend servers and sends it all to you as one big chunk, so your browser never actually makes a DNS request to the tracking site.
+
