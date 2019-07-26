@@ -51,9 +51,9 @@ iptables -t nat -I PREROUTING -i br+ ! -s 192.168.1.10 -p udp --dport 53 -j DNAT
 <br/>
 Notes:
 <ul>
-    <li><pre>-i br+</pre> : apply to all bridged traffic (this may be different if your router's nic card are named differently?)</li>
-    <li><pre>-p tcp</pre> and <pre>-p udp</pre> : apply to tcp and udp</li>
-    <li><pre>! -s 192.168.1.10</pre> : apply to all ips except for 192.168.1.10</li>
+    <li><pre>-i br+</pre>apply to all bridged traffic (this may be different if your router's nic card are named differently?)</li>
+    <li><pre>-p tcp and -p udp</pre>apply to tcp and udp</li>
+    <li><pre>! -s 192.168.1.10</pre>apply to all ips except for 192.168.1.10</li>
 </ul>
 To make this work on Tomato go to Administration > Scripts > Firewall and paste the above 3 lines (with the ip updated) and hit save.
 <br/>
