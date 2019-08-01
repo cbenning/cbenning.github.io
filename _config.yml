@@ -22,6 +22,7 @@ search:           false
 # PS. If you set this wrong stylesheets and scripts won't load and most links will break.
 # PPS. If you leave it blank for local testing home links won't work, they'll be fine for live domains though.
 url:              https://benninger.ca
+remote_theme: "mmistakes/so-simple-theme"
 
 # Owner/author information
 owner:
@@ -57,7 +58,7 @@ links:
 
 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 timezone:    America/Vancouver
-highlighter:    true
+highlighter:   'rouge'
 markdown:    kramdown
 
 # https://github.com/mojombo/jekyll/wiki/Permalinks
