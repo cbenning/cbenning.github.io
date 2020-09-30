@@ -30,7 +30,7 @@ owner:
   avatar:         profile-small.jpg
   email:          chris@benninger.ca
   # Social networking links used in footer. Update and remove as you like.
-  twitter:       chrisbenninger
+  #twitter:       chrisbenninger
   #facebook:
   github:        cbenning
   linkedin:      christopherbenninger
@@ -40,7 +40,7 @@ owner:
   #authorship google_plus:   https://plus.google.com/+ChrisBenninger/
 
 # Analytics and webmaster tools stuff goes here
-google_analytics:   UA-5453717-1
+#google_analytics:   UA-5453717-1
 #google_verify:
 # https://ssl.bing.com/webmaster/configure/verify/ownership Option 2 content= goes here
 #bing_verify:
@@ -52,8 +52,8 @@ links:
     url: /about
   - title: Articles
     url: /articles
-#  - title: Projects
-#    url: /projects
+  - title: Projects
+    url: /projects
     #external: true
 
 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
