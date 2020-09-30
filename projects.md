@@ -1,6 +1,6 @@
 ---
 layout: page
-permalink: /about/
+permalink: /projects/
 title: About Chris
 tags: [about, chris, chrisbenninger, cbenning, benninger]
 modified: 2019-03-26
