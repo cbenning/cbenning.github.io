@@ -5,7 +5,7 @@ title: About Chris
 tags: [about, chris, chrisbenninger, cbenning, benninger]
 modified: 2019-03-26
 image:
-  feature: forest-panorama.jpg
+  feature: forest-panorama-narrow.jpg
   <!-- credit: Chris Benninger -->
 ---
 
