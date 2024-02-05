@@ -15,5 +15,4 @@ image:
 
   If you'd like to get ahold of Chris, check out his <a href="https://www.linkedin.com/in/christopherbenninger">
       Linkedin Profile
-    </a> or follow him on <a href="https://twitter.com/chrisbenninger">twitter</a>
-
+    </a> 
