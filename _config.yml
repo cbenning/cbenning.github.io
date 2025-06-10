@@ -7,7 +7,7 @@
 #production_url : http://benninger.ca
 #description: "Code, rants, utilities, tutorials, projects and other things by Chris"
 #disqus_shortname: benningerca
-#analytics: UA-5453717-1
+analytics: true
 #author :
 #  name : Chris Benninger
 #  github : cbenning
@@ -36,11 +36,9 @@ owner:
   linkedin:      christopherbenninger
   #instagram:
   #tumblr:
-  # For Google Authorship https://plus.google.com/authorship
-  #authorship google_plus:   https://plus.google.com/+ChrisBenninger/
 
 # Analytics and webmaster tools stuff goes here
-google_analytics:   UA-5453717-1
+#google_analytics:   UA-5453717-1
 #google_verify:
 # https://ssl.bing.com/webmaster/configure/verify/ownership Option 2 content= goes here
 #bing_verify:
