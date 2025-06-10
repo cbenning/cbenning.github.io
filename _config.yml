@@ -7,7 +7,8 @@
 #production_url : http://benninger.ca
 #description: "Code, rants, utilities, tutorials, projects and other things by Chris"
 #disqus_shortname: benningerca
-analytics: true
+site: 
+  analytics: true
 #author :
 #  name : Chris Benninger
 #  github : cbenning
