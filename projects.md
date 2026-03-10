@@ -4,7 +4,6 @@ permalink: /projects/
 title: Projects
 tags: [about, chris, chrisbenninger, cbenning, benninger]
 modified: 2019-03-26
-  <!-- credit: Chris Benninger -->
 ---
 
 # Workviz

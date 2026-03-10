@@ -6,13 +6,11 @@ tags: [about, chris, chrisbenninger, cbenning, benninger]
 modified: 2019-03-26
 image:
   feature: forest-panorama-narrow.jpg
-  <!-- credit: Chris Benninger -->
 ---
 
-  Chris is a Software Engineer in beautiful Victoria, British Columbia, Canada.
+Chris is a software engineer based in Victoria, British Columbia, Canada.
 
-  If he's not trying out a new programming language, working on a side project or trying to automate something, you can probably find him hiking or or binge-watching Sci-fi.
+By day he works with production systems and infrastructure; by night he tinkers with side projects, home‑lab experiments, the occasional half-finished idea.
 
-  If you'd like to get ahold of Chris, check out his <a href="https://www.linkedin.com/in/christopherbenninger">
-      Linkedin Profile
-    </a> 
+If you’d like to get in touch, the best place is  
+[LinkedIn](https://www.linkedin.com/in/christopherbenninger) · [GitHub](https://github.com/cbenning)

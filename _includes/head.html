@@ -35,6 +35,32 @@
 
 <!-- For all browsers -->
 <link rel="stylesheet" href="{{ site.url }}/assets/css/main.min.css">
+<style>
+  /* Disable entrance animations (nav slide, fade-ins, etc.) */
+  .animated,
+  .animated * {
+    -webkit-animation: none !important;
+    -moz-animation: none !important;
+    -o-animation: none !important;
+    animation: none !important;
+  }
+  .drop {
+    -webkit-animation: none !important;
+    -moz-animation: none !important;
+    -o-animation: none !important;
+    animation: none !important;
+  }
+
+  /* Ensure masthead logo sits above feature images on pages like About */
+  .masthead {
+    position: relative;
+    z-index: 2;
+  }
+  #main {
+    position: relative;
+    z-index: 1;
+  }
+</style>
 <!-- Webfonts -->
 <script src="//use.edgefonts.net/source-sans-pro:n2,i2,n3,i3,n4,i4,n6,i6,n7,i7,n9,i9;source-code-pro:n4,n7;volkhov.js"></script>
 
