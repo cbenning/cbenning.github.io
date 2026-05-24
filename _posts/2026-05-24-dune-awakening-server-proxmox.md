@@ -6,6 +6,28 @@ tags: [dune-awakening, proxmox, kvm, self-hosting, kubernetes, gaming]
 description: "Step-by-step guide to running a Dune: Awakening dedicated server in a native Linux VM on Proxmox, bypassing the official Windows + Hyper-V requirement."
 ---
 
+<style>
+.styled-table {
+  border-collapse: collapse;
+  margin: 1em 0;
+  width: 100%;
+}
+.styled-table th,
+.styled-table td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+.styled-table th {
+  background-color: #f4f4f4;
+  font-weight: 600;
+}
+.styled-table tr:nth-child(even) td {
+  background-color: #fafafa;
+}
+</style>
+
 ## For the Live (Non-Beta) Version of the Game
 
 This guide targets the **Live server** (Steam AppID `4754530`) — the version that connects to
@@ -200,6 +222,7 @@ qm create 200 \
 | BIOS | OVMF/UEFI | The VHDX is EFI-bootable; legacy BIOS will hang at SeaBIOS |
 | Disk bus | virtio-scsi | Required — add virtio modules to `/etc/modules` (done in Step 3) |
 | NIC | virtio | On your LAN bridge |
+{: .styled-table}
 
 Start the VM — it should boot to an Alpine login on the serial console. Hostname is `duneawakening`.
 
@@ -415,6 +438,7 @@ The IGW ports are always offset by 111 from the game ports (`7888 = 7777 + 111`)
 | 7777–7830 | 7777–7830 | UDP | Game server partitions (one per active map) |
 | 7888–7941 | 7888–7941 | UDP | IGW ports (inter-server gateway, one per partition) |
 | 31982 | 31982 | TCP | RabbitMQ game queue (TLS-AMQPS, safe to expose) |
+{: .styled-table}
 
 **Why 54 ports per band?** 27 default partitions + headroom for future expansion and Sietches (player housing servers). The IGW range mirrors the game range exactly, just offset by 111. Better to forward too many than too few.
 
@@ -439,6 +463,7 @@ sudo kubectl logs -n <your-world-namespace> -l role=igw-server-gateway | grep "c
 | MQ game mgmt NodePort | RabbitMQ game management UI |
 | 32445 | RabbitMQ admin AMQP (internal) |
 | 15432 | PostgreSQL database |
+{: .styled-table}
 
 **Note:** The admin UI and RabbitMQ management NodePorts (`31805`, `30438`, `30338`) are assigned dynamically by k3s and may differ on your setup. Always verify with: `sudo kubectl get svc -n <your-world-namespace>`
 
@@ -451,6 +476,7 @@ sudo kubectl logs -n <your-world-namespace> -l role=igw-server-gateway | grep "c
 | `http://<VM_LAN_IP>:<bgd-port>` | Battlegroup Director — server health, travel queues, map status |
 | `http://<VM_LAN_IP>:<mq-admin-port>` | RabbitMQ admin queues management |
 | `http://<VM_LAN_IP>:<mq-game-port>` | RabbitMQ game queues management |
+{: .styled-table}
 
 These ports were assigned dynamically by k3s. If yours differ, check with: `sudo kubectl get svc -n <your-world-namespace>`
 
@@ -516,20 +542,29 @@ This issue typically only appears after a reboot or game update — not on initi
 
 ## Gotcha Cheatsheet
 
-| # | Issue | Fix |
-|---|---|---|
-| 1 | Game binary crashes immediately | AVX2 not exposed — set CPU type to `host` in Proxmox |
-| 2 | VM hangs at boot | BIOS set to SeaBIOS — must use OVMF/UEFI |
-| 3 | VM boots but has no network | virtio modules missing from `/etc/modules` |
-| 4 | Clients hang connecting forever | Check `settings.conf` line 4 is your public IP, then restart k3s |
-| 5 | `ImagePullBackOff` after restart | Image tag mismatch — retag `<build>-0-shipping` → `0-0-shipping` |
-| 6 | SSH locked out of fresh VM | Default password is `dune` — use console access in Proxmox to recover |
-| 7 | Can't reach server from internet | Check WAN IP is not CGNAT (`100.64.0.0/10`) |
-| 8 | Admin UI not reachable | Battlegroup not started, or check actual NodePort with `kubectl get svc -A` |
-| 9 | db-dbdepl-util pod in Error | Harmless duplicate role error — the Completed sibling did the work |
-| 10 | High memory usage at idle | Hagga Basin eats 12+ GB idle — allocate 40 GB to the VM |
-| 11 | Gateway/text router crash-loop after reboot | Normal — DB not ready yet, pods self-recover within ~5 minutes |
-| 12 | Pod networking broken after IP change | Restart k3s: `sudo rc-service k3s restart` |
+**1. Game binary crashes immediately** — AVX2 not exposed. Set CPU type to `host` in Proxmox.
+
+**2. VM hangs at boot** — BIOS set to SeaBIOS. Must use OVMF/UEFI.
+
+**3. VM boots but has no network** — virtio modules missing from `/etc/modules`.
+
+**4. Clients hang connecting forever** — Check `settings.conf` line 4 is your public IP, then restart k3s.
+
+**5. `ImagePullBackOff` after restart** — Image tag mismatch. Retag `<build>-0-shipping` → `0-0-shipping`.
+
+**6. SSH locked out of fresh VM** — Default password is `dune`. Use console access in Proxmox to recover.
+
+**7. Can't reach server from internet** — Check WAN IP is not CGNAT (`100.64.0.0/10`).
+
+**8. Admin UI not reachable** — Battlegroup not started, or check actual NodePort with `kubectl get svc -A`.
+
+**9. `db-dbdepl-util` pod in Error** — Harmless duplicate role error. The Completed sibling did the work.
+
+**10. High memory usage at idle** — Hagga Basin eats 12+ GB idle. Allocate 40 GB to the VM.
+
+**11. Gateway/text router crash-loop after reboot** — Normal. DB not ready yet, pods self-recover within ~5 minutes.
+
+**12. Pod networking broken after IP change** — Restart k3s: `sudo rc-service k3s restart`.
 
 ---
 
