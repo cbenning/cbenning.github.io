@@ -4,6 +4,10 @@ title: "Self-Hosting a Dune: Awakening Server on Proxmox / KVM"
 date: 2026-05-24
 tags: [dune-awakening, proxmox, kvm, self-hosting, kubernetes, gaming]
 description: "Step-by-step guide to running a Dune: Awakening dedicated server in a native Linux VM on Proxmox, bypassing the official Windows + Hyper-V requirement."
+status: publish
+type: post
+published: true
+comments: true
 ---
 
 <style>
