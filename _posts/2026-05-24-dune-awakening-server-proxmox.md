@@ -29,21 +29,31 @@ on Proxmox, with no nested virtualisation needed.
 
 The bulk of the reverse-engineering work was done by the community before this guide existed:
 
-- **kwg's community Linux guide** — the original write-up that documented running the VHDX
-  under native KVM. The approach in this guide is derived directly from that work.
-- **[adainrivers/dune-dedicated-server-manager](https://github.com/adainrivers/dune-dedicated-server-manager)**
-  — community tooling and discussion that confirmed the Hyper-V wrapper is removable.
-- **Funcom's `initial-setup.ps1` and `bootstrap/setup` scripts** — shipped in the Windows depot
-  and readable as plain PowerShell / shell. These document the intended setup flow and revealed
-  several details (default `dune`/`dune` credentials, pre-installed bootstrap, automatic disk
-  resize) that the community guide predates.
-- **[Official self-hosted servers page](https://duneawakening.com/self-hosted-servers/)** — the
-  Funcom-supported (Windows + Hyper-V) approach, useful for cross-referencing port requirements
-  and architecture.
+- **[adainrivers/dune-dedicated-server-manager — Issue #1: "Dune Awakening Self-Hosted Server on Linux — Generic Guide"](https://github.com/adainrivers/dune-dedicated-server-manager/issues/1)**
+  — the foundational community write-up that documented running the VHDX under native KVM on
+  the PTC build. This guide is a direct descendant of that work.
+- **[n0logic/dune-linux-tools](https://github.com/n0logic/dune-linux-tools)** — community guide
+  and tooling for bare-metal Linux + k3s deployments (Debian 12). Useful cross-reference for
+  the Live AppID and tuning beyond the default scaling.
+- **[snapetech/DuneAwakeningSelfHost](https://github.com/snapetech/DuneAwakeningSelfHost)** —
+  Docker Compose + Web UI admin panel tooling with thorough troubleshooting docs, including
+  TLS, FLS environment, and LAN reflection notes.
+- **[awakening.wiki — Self-Hosted Server Guide](https://awakening.wiki/Self-Hosted_Server_Guide)**
+  — community wiki page with architecture concepts (battlegroups, sietches, partitions, DBs)
+  and Funcom-supported (Windows + Hyper-V) workflow.
+- **Funcom's own `initial-setup.ps1` and `bootstrap/setup` scripts** — shipped in the Windows
+  depot and readable as plain PowerShell / shell. These document the intended setup flow and
+  revealed several details (default `dune`/`dune` credentials, pre-installed bootstrap, automatic
+  disk resize) that the older PTC-era community guides predate.
+- **[Funcom — Self-Hosted Servers product page](https://duneawakening.com/self-hosted-servers/)**
+  and **[launch announcement](https://duneawakening.com/news/self-hosted-servers-now-live/)** —
+  the official (Windows + Hyper-V) workflow, port requirements, and feature scope.
+- **[Funcom Help Center — How to Self-Host a World?](https://funcom.helpshift.com/hc/en/4-dune-awakening/faq/85-how-to-self-host-a-world-1778514422/)**
+  — official FAQ covering account setup, JWT generation, and the supported workflow.
 
 This guide adds:
 - Live (non-PTC) AppIDs and FLS environment
-- Live-specific bootstrap flow (no pre-baked SSH key, password is `dune`/`dune`)
+- Live-specific bootstrap flow (password is `dune`/`dune` on first boot)
 - Updated port forwarding ranges confirmed from a running server
 - Server password configuration via `UserEngine.ini` instead of `bg-util`
 - Post-reboot recovery and troubleshooting notes
@@ -70,7 +80,7 @@ This guide adds:
 
 ## Step 1 — Download the Windows Steam Depot
 
-You only need the **Windows depot** on your workstation — it contains the VHDX and the SSH key.
+You only need the **Windows depot** on your workstation — it contains the VHDX.
 The Linux game depot (~5 GB) is downloaded later from *inside* the VM itself in Step 6, where
 the setup scripts expect it. Don't bother downloading it here.
 
@@ -86,11 +96,9 @@ steamcmd +@sSteamCmdForcePlatformType windows \
 From this depot you only need one thing:
 - `Virtual Hard Disks/dune-server.vhdx` — the Alpine Linux VM image
 
-> The `bootstrap/setup` script is pre-installed inside the VHDX — you do not need to copy it from the depot.
+The `bootstrap/setup` script is pre-installed inside the VHDX — you do not need to copy it from the depot.
 
-> **Steam AppIDs:** Live Server = `4754530` · PTC Server = `3104830`
-> These are not cross-compatible and connect to different FLS environments.
-> This guide uses the **Live** AppID (`4754530`) throughout.
+> **Steam AppIDs:** Live Server = `4754530` · PTC Server = `3104830`. These are not cross-compatible and connect to different FLS environments. This guide uses the **Live** AppID (`4754530`) throughout.
 
 ---
 
@@ -201,7 +209,7 @@ Start the VM — it should boot to an Alpine login on the serial console. Hostna
 
 ## Step 5 — SSH In and Secure Access
 
-The Live VHDX has no pre-baked SSH key. The default credentials are:
+The Live VHDX has default credentials:
 - **User:** `dune`
 - **Password:** `dune`
 
@@ -267,66 +275,59 @@ Gateway and Director will show `Suspended` — this is normal before starting.
 
 ---
 
-## Step 7 — Set the Public IP
+## Step 7 — Verify and Start
 
-The game servers need to know your public IP so clients can connect. This is set in `settings.conf`
-and should already be written from Step 6. Verify it looks correct:
+Check that the battlegroup is configured correctly and ready to start:
 
 ```bash
-cat /home/dune/.dune/settings.conf
+cat /home/dune/.dune/settings.conf      # line 4 should be your public IP
+~/.dune/bin/battlegroup status          # should show Stopped, Database Ready
+sudo kubectl get pods -A                # all pods should be Running or Completed
 ```
 
-The fourth line should be your public IP. If it's wrong or missing:
+If `settings.conf` line 4 is wrong, fix it and restart k3s:
 ```bash
 printf '\n\n\n<YOUR_PUBLIC_IP>\n' > /home/dune/.dune/settings.conf
-```
-
-On the Live server, `HOST_DATACENTER_IP_ADDRESS` is injected via Kubernetes secrets rather than
-hardcoded in the world yaml — so the manual `sed` patch from older community guides is not needed.
-The setup script handles this correctly during initial setup.
-
-After any IP change, restart k3s to ensure all pods pick up the new value:
-```bash
 sudo rc-service k3s restart
 ```
 
-> **After reboot:** Pods may crash-loop briefly on startup (gateway, text router) because they
-> start before the database is fully ready. This is normal — they will stabilise on their own
-> within a few minutes. Only intervene if they are still crashing after 5+ minutes.
-
----
-
-## Step 8 — Fix Image Tag Mismatch
-
-The world template uses image tag `0-0-shipping` but locally loaded images are tagged
-`<buildnumber>-0-shipping`. This causes `ImagePullBackOff` on some pods after restarts.
-
-Find your actual build tag:
+Start the battlegroup:
 ```bash
-sudo ctr -n k8s.io images list --quiet | grep seabass-
+~/.dune/bin/battlegroup start
 ```
 
-Retag all images (replace `<buildnumber>` with whatever version you see in the previous command):
+Watch pods come up:
 ```bash
-BUILD=<buildnumber>   # e.g. 1960494
-for img in $(sudo ctr -n k8s.io images list --quiet | grep seabass- | grep ${BUILD}-0-shipping); do
-    new="${img/${BUILD}-0-shipping/0-0-shipping}"
-    sudo ctr -n k8s.io images tag --force "$img" "$new"
-done
+sudo kubectl get pods -n <your-world-namespace> -w
 ```
 
-If you see any pods stuck in `ImagePullBackOff`, delete them so they recreate with the retagged image:
+Your world namespace looks like `funcom-seabass-sh-<hash>-<suffix>` and can be found with:
 ```bash
-# Get the stuck pod names
-sudo kubectl get pods -A | grep ImagePullBackOff
-
-# Delete them (they will recreate automatically)
-sudo kubectl delete pod -n <namespace> <pod-name> [<pod-name2> ...]
+sudo kubectl get namespaces | grep funcom-seabass
 ```
 
----
+After a minute or two, verify everything is healthy:
+```bash
+~/.dune/bin/battlegroup status
+```
 
-## Step 9 — Start the Battlegroup
+A healthy battlegroup looks like:
+
+```
+Status     Database   Gateway    Director   Uptime
+---------- ---------- ---------- ---------- --------
+Healthy    Ready      Healthy    Healthy    Xm
+```
+
+With game servers:
+
+```
+Map             Phase     Ready  Players
+Overmap         Running   true   0
+Survival_1      Running   true   0
+```
+
+If pods crash-loop briefly during startup (gateway, text router), that is normal — they start before the database is ready and self-recover within a few minutes.
 
 ```bash
 ~/.dune/bin/battlegroup start
@@ -361,7 +362,7 @@ Survival_1      Running   true   0
 
 ---
 
-## Step 10 — Set a Server Password (Optional)
+## Step 8 — Set a Server Password (Optional)
 
 To restrict your server to friends only, edit `UserEngine.ini`:
 
@@ -395,7 +396,7 @@ Players will be prompted for the password when joining your server from the brow
 
 ---
 
-## Step 11 — Port Forwards
+## Step 9 — Port Forwards
 
 ### Router → VM (`<VM_LAN_IP>`)
 
@@ -493,6 +494,34 @@ TS=$(date -u +%Y%m%dT%H%M%SZ)
 ```bash
 sudo kubectl get namespaces | grep funcom-seabass
 ```
+
+---
+
+## Troubleshooting: Image Tag Mismatch
+
+If after a reboot some pods are stuck in `ImagePullBackOff`, you have likely hit the image tag
+mismatch issue. The world template references images tagged `0-0-shipping` but locally loaded
+images are tagged `<buildnumber>-0-shipping`. Retag them locally:
+
+```bash
+sudo ctr -n k8s.io images list --quiet | grep seabass-
+# Note the build number shown (e.g. 1960494)
+
+BUILD=<buildnumber>
+for img in $(sudo ctr -n k8s.io images list --quiet | grep seabass- | grep ${BUILD}-0-shipping); do
+    new="${img/${BUILD}-0-shipping/0-0-shipping}"
+    sudo ctr -n k8s.io images tag --force "$img" "$new"
+done
+```
+
+Delete the stuck pods so they recreate against the retagged images:
+
+```bash
+sudo kubectl get pods -A | grep ImagePullBackOff
+sudo kubectl delete pod -n <namespace> <pod-name>
+```
+
+This issue typically only appears after a reboot or game update — not on initial setup.
 
 ---
 
