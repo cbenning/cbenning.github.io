@@ -98,7 +98,7 @@ From this depot you only need one thing:
 
 The `bootstrap/setup` script is pre-installed inside the VHDX — you do not need to copy it from the depot.
 
-> **Steam AppIDs:** Live Server = `4754530` · PTC Server = `3104830`. These are not cross-compatible and connect to different FLS environments. This guide uses the **Live** AppID (`4754530`) throughout.
+**Steam AppIDs:** Live Server = `4754530` · PTC Server = `3104830`. These are not cross-compatible and connect to different FLS environments. This guide uses the **Live** AppID (`4754530`) throughout.
 
 ---
 
@@ -136,9 +136,7 @@ iface eth0 inet static
     gateway <GATEWAY_IP>
 ```
 
-> **Important:** Set this before first boot. If the VM boots via DHCP first and gets a different
-> IP, k3s will bind to that IP internally. Changing the IP afterwards requires a k3s restart and
-> may cause pod networking issues until the cluster fully stabilises.
+**Important:** Set this before first boot. If the VM boots via DHCP first and gets a different IP, k3s will bind to that IP internally. Changing the IP afterwards requires a k3s restart and may cause pod networking issues until the cluster fully stabilises.
 
 Set `/mnt/etc/resolv.conf`:
 ```
@@ -269,9 +267,7 @@ sudo kubectl get pods -A
 You should see all operators Running and the battlegroup status showing `Stopped` with Database `Ready`.
 Gateway and Director will show `Suspended` — this is normal before starting.
 
-> **Expected:** Two db-dbdepl-util jobs will appear — one `Completed` and one `Error`.
-> The error is harmless: it's a retry that tried to create the `dune` DB role after the first job
-> already succeeded. The error will read `psycopg2.errors.DuplicateObject: role "dune" already exists`.
+**Expected:** Two db-dbdepl-util jobs will appear — one `Completed` and one `Error`. The error is harmless: it's a retry that tried to create the `dune` DB role after the first job already succeeded. The error will read `psycopg2.errors.DuplicateObject: role "dune" already exists`.
 
 ---
 
@@ -391,8 +387,7 @@ it applies globally to all partitions without needing to set it per-map.
 
 Players will be prompted for the password when joining your server from the browser.
 
-> **Note:** The `bg-util` TUI does have a per-partition password field but it does not
-> reliably propagate to the live server. Use `UserEngine.ini` instead.
+**Note:** The `bg-util` TUI does have a per-partition password field but it does not reliably propagate to the live server. Use `UserEngine.ini` instead.
 
 ---
 
@@ -421,12 +416,9 @@ The IGW ports are always offset by 111 from the game ports (`7888 = 7777 + 111`)
 | 7888–7941 | 7888–7941 | UDP | IGW ports (inter-server gateway, one per partition) |
 | 31982 | 31982 | TCP | RabbitMQ game queue (TLS-AMQPS, safe to expose) |
 
-> **Why 54 ports per band?** 27 default partitions + headroom for future expansion and
-> Sietches (player housing servers). The IGW range mirrors the game range exactly,
-> just offset by 111. Better to forward too many than too few.
+**Why 54 ports per band?** 27 default partitions + headroom for future expansion and Sietches (player housing servers). The IGW range mirrors the game range exactly, just offset by 111. Better to forward too many than too few.
 
-> The RabbitMQ game port (`31982`) uses TLS with cert-manager-issued certs and a randomly
-> generated 64-byte credential, so WAN exposure is acceptable.
+The RabbitMQ game port (`31982`) uses TLS with cert-manager-issued certs and a randomly generated 64-byte credential, so WAN exposure is acceptable.
 
 ### Verify actual ports in use at any time
 
@@ -448,9 +440,7 @@ sudo kubectl logs -n <your-world-namespace> -l role=igw-server-gateway | grep "c
 | 32445 | RabbitMQ admin AMQP (internal) |
 | 15432 | PostgreSQL database |
 
-> **Note:** The admin UI and RabbitMQ management NodePorts (`31805`, `30438`, `30338`)
-> are assigned dynamically by k3s and may differ on your setup. Always verify with:
-> `sudo kubectl get svc -n <your-world-namespace>`
+**Note:** The admin UI and RabbitMQ management NodePorts (`31805`, `30438`, `30338`) are assigned dynamically by k3s and may differ on your setup. Always verify with: `sudo kubectl get svc -n <your-world-namespace>`
 
 ---
 
@@ -462,8 +452,7 @@ sudo kubectl logs -n <your-world-namespace> -l role=igw-server-gateway | grep "c
 | `http://<VM_LAN_IP>:<mq-admin-port>` | RabbitMQ admin queues management |
 | `http://<VM_LAN_IP>:<mq-game-port>` | RabbitMQ game queues management |
 
-> These ports were assigned dynamically by k3s. If yours differ, check with:
-> `sudo kubectl get svc -n <your-world-namespace>`
+These ports were assigned dynamically by k3s. If yours differ, check with: `sudo kubectl get svc -n <your-world-namespace>`
 
 ---
 
