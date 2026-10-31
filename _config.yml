@@ -45,3 +45,11 @@ markdown:    kramdown
 
 # https://github.com/mojombo/jekyll/wiki/Permalinks
 permalink:   /posts/:title/
+
+plugins:
+  - jekyll-remote-theme
+  - jekyll-include-cache
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-feed
+  - jekyll-seo-tag

@@ -2,6 +2,14 @@
 
 source "https://rubygems.org"
 
-git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+gem "jekyll", "~> 4.4"
+gem "webrick"
 
-gem "github-pages", group: :jekyll_plugins
+group :jekyll_plugins do
+  gem "jekyll-remote-theme"
+  gem "jekyll-include-cache"
+  gem "jekyll-paginate"
+  gem "jekyll-sitemap"
+  gem "jekyll-feed"
+  gem "jekyll-seo-tag"
+end
