@@ -1,0 +1,15 @@
+---
+layout: nil
+---
+# {{ site.title }}: full text
+
+Source: {{ site.url }}. Each post below starts with its title, URL and date.
+{% for post in site.posts %}
+---
+
+## {{ post.title | strip_newlines }}
+URL: {{ site.url }}{{ post.url }}
+Date: {{ post.date | date: "%Y-%m-%d" }}
+
+{{ post.content | strip_html | replace: '&lt;', '<' | replace: '&gt;', '>' | replace: '&quot;', '"' | replace: '&#39;', "'" | replace: '&amp;', '&' | strip }}
+{% endfor %}
