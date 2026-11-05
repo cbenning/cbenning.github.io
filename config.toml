@@ -1,0 +1,12 @@
+base_url = "https://benninger.ca"
+title = "Chris Benninger"
+description = "Code, utilities and other projects"
+generate_feeds = false
+
+taxonomies = [{ name = "tags" }]
+
+[markdown]
+
+[markdown.highlighting]
+style = "class"
+theme = "github-dark"
