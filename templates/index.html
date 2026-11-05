@@ -1,4 +1,42 @@
 {% extends "base.html" %}
+{% block description %}{{ section.description }}{% endblock description %}
+{% block og_description %}{{ section.description }}{% endblock og_description %}
 {% block content %}
-<h1>{{ config.title }}</h1>
+<section class="hero">
+  <p class="eyebrow">
+    {% set led_status = "active" %}{% set led_label = false %}{% set led_extra_class = "led--breathe" %}
+    {% include "_led.html" %}
+    sys: online / victoria bc
+  </p>
+  <h1>Chris Benninger</h1>
+  <p class="hero-role">Software architect</p>
+  <p class="hero-intro">Production systems by day. Home-lab experiments and side projects by night.</p>
+  <p class="hero-actions">
+    <a href="/projects/" class="btn btn--primary">SEE PROJECTS</a>
+    <a href="/articles/" class="btn btn--quiet">READ POSTS</a>
+  </p>
+  <img class="hero-art" src="/art/hero-workbench.svg" alt="Pixel art of a workbench with a desk lamp and an open server chassis" loading="eager">
+</section>
+
+<section class="home-section">
+  <h2>Projects</h2>
+  <div class="project-cards">
+    {% set data = load_data(path="data/projects.toml") %}
+    {% for p in data.projects %}
+      {% if p.featured %}
+        {% set partial = "project_card" %}
+        {% include "macros.html" %}
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<section class="home-section">
+  <h2>Latest posts</h2>
+  {% set posts_section = get_section(path="posts/_index.md") %}
+  {% set post_list_pages = posts_section.pages %}
+  {% set post_list_limit = 5 %}
+  {% set partial = "post_list" %}
+  {% include "macros.html" %}
+</section>
 {% endblock content %}

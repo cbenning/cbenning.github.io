@@ -1,22 +1,52 @@
 {#
-  Status LED partial. This Zola/Tera build has no {% macro %} support
-  (confirmed: even the canonical Tera docs example fails to parse), so
-  this is an includable partial driven by pre-set variables instead of
-  a true macro call.
+  Reusable UI fragments. This Zola/Tera build has no {% macro %} support
+  (confirmed in Task 4: even the canonical Tera docs example fails to
+  parse), so this file dispatches on a `partial` variable instead of
+  true macro calls. Set `partial` plus that partial's variables, then
+  `{% include "macros.html" %}`. The LED partial lives in its own file,
+  `_led.html` -- Tera rejects a template including itself, and this
+  file's project_card branch needs a LED too.
 
-  Calling convention:
-    {% set led_status = "active" %}
-    {% set led_label = true %}
-    {% set led_extra_class = "" %}
-    {% include "macros.html" %}
+  partial = "project_card": one project card.
+    p: an entry from data/projects.toml (id, name, pitch, description,
+      category, status, tech, repo, art, and optional demo/post/stars).
 
-  led_status: "active" | "maintenance" | "experimental" | "archived"
-  led_label: when true, renders a visible text label next to the dot;
-    when false, the dot carries title/aria-label instead, so colour is
-    never the only signal either way.
-  led_extra_class: extra CSS class(es) on the dot, e.g. "led--breathe".
+  partial = "post_list": a list of posts.
+    post_list_pages: a list of post pages (title, path, date).
+    post_list_limit: optional int; only the first N are rendered.
 #}
-<span class="led-wrap"{% if not led_label %} title="{{ led_status }}" aria-label="{{ led_status }}"{% endif %}>
-  <span class="led led--{{ led_status }} {{ led_extra_class | default(value="") }}" aria-hidden="true"></span>
-  {%- if led_label %}<span class="led-label">{{ led_status }}</span>{% endif -%}
-</span>
+
+{% if partial == "project_card" %}
+<article class="project-card" id="{{ p.id }}">
+  <div class="project-card-art">
+    <img src="{{ p.art }}" alt="" loading="lazy">
+  </div>
+  <div class="project-card-body">
+    <p class="eyebrow">{{ p.category }}{% if p.stars is defined %} &middot; &#9733; {{ p.stars }}{% endif %}</p>
+    <h3>{{ p.name }}</h3>
+    <p class="project-pitch">{{ p.pitch }}</p>
+    <p class="project-description">{{ p.description }}</p>
+    {% set led_status = p.status %}{% set led_label = true %}{% set led_extra_class = "" %}
+    {% include "_led.html" %}
+    <ul class="tech-list">
+      {% for t in p.tech %}<li class="chip">{{ t }}</li>{% endfor %}
+    </ul>
+    <p class="project-links">
+      <a href="{{ p.repo }}">Code</a>
+      {% if p.demo is defined %}<a href="{{ p.demo }}">Demo</a>{% endif %}
+      {% if p.post is defined %}<a href="{{ p.post }}">Post</a>{% endif %}
+    </p>
+  </div>
+</article>
+
+{% elif partial == "post_list" %}
+<ul class="post-list">
+  {% for post in post_list_pages %}
+    {% if post_list_limit is defined and loop.index > post_list_limit %}{% break %}{% endif %}
+    <li>
+      <time datetime="{{ post.date | date(format="%Y-%m-%d") }}">{{ post.date | date(format="%Y-%m-%d") }}</time>
+      <a href="{{ post.path }}">{{ post.title }}</a>
+    </li>
+  {% endfor %}
+</ul>
+{% endif %}
