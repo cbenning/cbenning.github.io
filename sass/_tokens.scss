@@ -1,0 +1,29 @@
+// Design tokens: graphite + phosphor green. A neutral grey-black base
+// (no blue tint), with a single LED colour doing all the glowing.
+// Amber and red are status indicators only, never large fills.
+// The room is lifted off pure black and the ink softened off white:
+// body text sits around 11:1 rather than 14:1, which is what makes
+// long posts comfortable, while staying dark enough for the LED glow
+// to read and well clear of WCAG AA.
+:root {
+  --bg: #121514;
+  --panel: #1b1f1e;
+  --line: #333937;
+  --text: #c3cac4;
+  --muted: #848d88;
+  --heading: #e0e6df;
+  --led: #4dff91;
+  // A softer green for links in running prose; the full --led is kept
+  // for small lit accents where the heat is the point.
+  --led-ink: #5fd892;
+  // Two-stage glow: a tight core plus a wide, faint halo. The halo is
+  // what makes a lit element read as an LED in a dark room rather than
+  // a flat coloured dot.
+  --led-glow: rgba(77, 255, 145, 0.55);
+  --led-glow-wide: rgba(77, 255, 145, 0.18);
+  --amber: #ffb000;
+  --amber-glow: rgba(255, 176, 0, 0.5);
+  --amber-glow-wide: rgba(255, 176, 0, 0.16);
+  --red: #ff4b3e;
+  --red-glow: rgba(255, 75, 62, 0.35);
+}

@@ -1,0 +1,18 @@
+{#
+  Status LED partial (dot + optional label). Split out of macros.html
+  because Tera rejects a template including itself (even with
+  different variables each time), and macros.html's project_card
+  branch needs a LED too.
+
+  led_status: "active" | "maintenance" | "experimental" | "archived"
+  led_label: when true, a visible text label next to the dot; when
+    false, a visually-hidden text node carries the status instead (a
+    bare <span> has no ARIA role, so aria-label on it is a prohibited
+    attribute per WCAG/axe -- an .sr-only text node works everywhere),
+    so colour is never the only signal either way.
+  led_extra_class: extra class(es) on the dot, e.g. "led--breathe".
+#}
+<span class="led-wrap" title="{{ led_status }}">
+  <span class="led led--{{ led_status }} {{ led_extra_class | default(value="") }}" aria-hidden="true"></span>
+  {%- if led_label %}<span class="led-label">{{ led_status }}</span>{% else %}<span class="sr-only">{{ led_status }}</span>{% endif -%}
+</span>

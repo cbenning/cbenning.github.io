@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Projects{% endblock title %}
+{% block content %}
+<h1>Projects</h1>
+<div class="project-cards">
+  {% set data = load_data(path="data/projects.toml") %}
+  {% set sorted_projects = data.projects | sort(attribute="order") %}
+  {% for p in sorted_projects %}
+    {% set partial = "project_card" %}
+    {% include "macros.html" %}
+  {% endfor %}
+</div>
+{% endblock content %}

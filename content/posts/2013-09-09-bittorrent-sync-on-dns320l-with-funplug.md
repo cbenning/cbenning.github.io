@@ -1,0 +1,44 @@
++++
+title = "Setting up BitTorrent Sync on a DNS-320L NAS with fun_plug 0.7"
+date = 2013-09-09
+[taxonomies]
+tags = ["Linux", "Sync", "Backup"]
++++
+
+This information assumes you have already setup fun_plug on your DNS-320L NAS as per <a href="http://nas-tweaks.net/371/hdd-installation-of-the-fun_plug-0-7-on-nas-devices/"> these instructions</a>. I started by following the following instructions which I found <a href="http://forum.bittorrent.com/topic/19278-sync-to-nas-d-link-dns-320/">here</a>.
+
+
+```bash
+cd /ffp/start/
+wget http://btsync.s3-website-us-east-1.amazonaws.com/btsync_arm.tar.gz
+tar zxvf btsync_arm.tar.gz
+```
+
+
+Once extracted, I tested it by running:
+
+
+```bash
+chmod x btsync
+./btsync
+```
+
+
+And then accessing *my-nas-ip*:8888 in my browser. The issue I keep seeing people encounter is that they cannot select outside of their '/ffp' folder. This is because the bash shell that funplug starts is run inside a chroot at '/ffp'. However, when you go to select a folder, the root of the filesystem is still in '/mnt'. In my case it is '/mnt/HD/HD_a2/'. It's a simple hurdle, so hopefully this saves a few people a little time.
+
+Once it's working, make it start automatically by adding something like this to your '/mnt/HD/HD_a2/ffp/fun_plug' file:
+
+
+```bash
+chmod a+x /ffp/start/btsync
+/ffp/start/./btsync
+```
+
+
+Happy syncing!
+
+
+
+
+
+

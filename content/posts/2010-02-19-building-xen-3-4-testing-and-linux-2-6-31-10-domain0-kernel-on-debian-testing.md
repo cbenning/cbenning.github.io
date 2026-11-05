@@ -1,0 +1,170 @@
++++
+title = "Building Xen-3.4 testing and linux-2.6.31.10 domain0 kernel on Debian-testing"
+date = 2010-02-19
+[extra]
+categories = ["Kernel", "Linux", "Opensource", "Virtualization", "Xen"]
++++
+
+This is a howto on compiling and installing Xen 3.4 testing from the repository and linux kernel 2.6.31.10 for a Debian squeeze domain0.</
+<br /><br />
+Note: Try and do everything as root. If you do a make and then make install with different users, it will completely recompile over again.
+Now even though <a href="http://xenbits.xensource.com/linux-2.6.18-xen.hg">linux-2.6.18-xen</a> is the proper kernel to be using for a Xen domain0, the new version of udev in all the usable distros do not support the older kernels (anything before 2.6.25 I believe). So I will be using the 2.6.31.10 kernel along with the gentoo Xen patches. Lets see how this goes.<!--more-->
+<h2>Getting the source:</h2>
+Install Mercurial
+
+```sh
+> aptitude install mercurial
+```
+
+Get the Xen Source
+
+```sh
+> hg clone http://xenbits.xensource.com/xen-3.4-testing.hg
+```
+
+Get the Xen domain0 Linux kernel source and the patches from <a href="http://www.kernel.org/pub/linux/kernel/v2.6/linux-2.6.31.10.tar.bz2">here</a> and <a href="http://gentoo-xen-kernel.googlecode.com/files/xen-patches-2.6.31-10.tar.bz2">here</a> respectively:
+
+```sh
+> wget http://www.kernel.org/pub/linux/kernel/v2.6/linux-2.6.31.10.tar.bz2
+> wget http://gentoo-xen-kernel.googlecode.com/files/xen-patches-2.6.31-10.tar.bz2
+```
+
+Now unpack them with
+
+```sh
+> tar -jxvf linux-2.6.31.10.tar.bz2
+> mkdir xen-patches
+> cd xen-patches
+> tar -jxvf ../xen-patches-2.6.31-10.tar.bz2
+> cd ~/
+```
+
+<h2>Apply the patches</h2>
+
+```sh
+>cd linux-2.6.31.10
+>cat ../xen-patches/* | patch -p1
+```
+
+Now you probably want to rename your kernel to indicate is has been patched. You can also modify the "Extra version" variable in make menuconfig later on if you want the kernel to have a different name to show up with 'uname'.
+
+```sh
+> cd ~/
+> mv linux-2.6.31.10 linux-2.6.31.10-xen
+```
+
+<h2>Get Dependencies:</h2>
+There are quite a lot of dependencies. Too many to list individually, but here's how to install them all:
+
+```sh
+> aptitude install gawk bzip2 mercurial transfig bzip2 screen ssh debootstrap iproute bridge-utils python-twisted binutils zlib1g-dev python-dev python python-central libssl-dev install libcurl3-dev libncurses5-dev x-dev build-essential gettext libx11-dev make bin86 bcc gcc ncurses-dev patch xorg-dev transfig libsdl1.2-dev libvncserver-dev udev pciutils-dev graphviz texlive-latex-base git-core texinfo texlive-latex-extra texlive-font-utils texlive-fonts-extra texlive-fonts-recommended
+```
+
+Grab a coffee...
+<h2>Compiling:</h2>
+Enter the Xen source directory
+
+```sh
+> cd xen-3.4-testing.hg
+```
+
+
+Cross your fingers and start compiling
+
+```sh
+> make
+```
+
+
+Or if you have a fast machine with lots of cores, use the -j switch. Usually you use the number of cores you have plus 2.
+
+```sh
+> make -j 4
+```
+
+
+This will take a long time...grab another coffee, If the build fails anywhere I may have missed a dependency. Its usually pretty obvious what the dependency is by the build error message. Just go install it and try again.
+Xen is hopefully compiled so we can take care of the kernel. Onward with our linux-2.6.31.10-xen kernel.
+
+```sh
+cd linux-2.6.31.10-xen
+> make menuconfig
+```
+
+
+You need to enable Xen Support (under processor type and features) as well as Priviledged Domain (under device drivers-&gt;Xen) and I also set Xen compatibility to 3.3.0 and above (under device drivers-&gt;Xen-&gt;Xen Version compatibility). Once you've enabled everything you think you'll need, start compiling.
+
+```sh
+> make
+```
+
+
+Once its done without errors, go ahead and install it, but do not use the -j option for the install.
+
+```sh
+> make install
+```
+
+
+Also you need to install the modules
+
+```sh
+> make modules_install
+```
+
+
+Once that is done, look in the /boot directory
+
+```sh
+> cd /boot && ls
+```
+
+
+You should see some files: xen-3.4.3-rc3-pre.gz and vmlinuz-2.6.31.10. If not, you need to go back and deal with the problem because nothing will work past this point.
+Also check the /lib/modules directory for a directory called 2.6.31.10
+<h2>Generate an initrd image:</h2>
+So you've got Xen and the linux kernel compiled, now you need an initrd image to go along with the kernel. Enter the /boot directory:
+
+```sh
+> cd /boot
+```
+
+
+Setup the dependencies for the initrd image:
+
+```sh
+> depmod -a 2.6.31.10
+```
+
+
+Now generate an initrd image using the mkinitramfs command
+
+```sh
+> mkinitramfs -o initrd.img-xen 2.6.31.10
+```
+
+There should now be a file called initrd.img-xen in /boot
+<h2>Grub2:</h2>
+This can be a bit of a pain because of grub2 being rather....Beta, but we cant let that stop us. (If you have grub legacy, look <a href="http://www.infohit.net/blog/post/compiling-a-xen-dom0-kernel-for-ubuntu-jaunty.html">here</a>)
+Make sure you have a livecd available in case you make a mistake with the config file formatting and grub fails. Now open the grub config file using your favorite editor (which is probably vim because otherwise your insane) like this
+
+```sh
+> vim /boot/grub/grub.cfg
+```
+
+Scoll down to where you see the menuentries. Add your own entry with something like this.
+
+```sh
+menuentry "Xen, with Linux 2.6.31.10" {
+        echo    Loading Linux 2.6.18.8-xen ...
+        multiboot       /boot/xen-3.4.3-rc3-pre.gz
+        module  /boot/vmlinuz-2.6.31.10 dummy=dummy root=/dev/sda1 ro
+        module  /boot/initrd.img-xen
+}
+```
+
+You may notice a few things different. You need to use multiboot and modules to pass Xen, the kernel and your initrd img into grub2. Also you may notice the parameter dummy=dummy going into the kernel, this is because at the time of writing this, there is a bug in grub2 which causes the first parameter not to be passed into the kernel. So we can create a useless one as the first parameter. That way when they fix the bug nothing horrible will happen to our bootup. Also you may not want to put your new entry at the top until you are sure everything works because grub defaults to the top entry.
+<h2>Booting:</h2>
+Cross your fingers and reboot! Hold shift to get grub to show you a list if it doesnt by default. If it boots congratulations.
+<h2>Testing a guest domain:</h2>
+Now you probably want to setup a Virtual Machine to test your setup. <a href="http://stacklet.com/">http://stacklet.com/</a> has some pre-build appliance images you can grab and test with. Check out <a href="http://www.linuxjournal.com/magazine/simple-virtual-appliances-linux-and-xen">this</a> post for more info on starting a virtual machine.

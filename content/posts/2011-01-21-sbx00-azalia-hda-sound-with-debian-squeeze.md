@@ -1,0 +1,17 @@
++++
+title = "SBx00 Azalia HDA sound with Debian Squeeze"
+date = 2011-01-21
++++
+
+I got a new motherboard yesterday with an integrated ASUS chipset and SBx00 Azalia (Intel HDA) audio card. The sound worked out of the box and then after installing the FGLRX video driver, it suddenly stopped. Anyway, long story short I noticed a message in <code>/var/log/kern.log</code> talking about the snd-hda-intel driver "failing to set MSI" whatever that is.
+
+<br/><br />
+I found that there were two issues, the snd-hda-intel driver was not detecting the correct model and was improperly trying to enable msi. I fixed it by adding the follwing to <code>/etc/modprobe.d/alsa-base.conf</code> :
+
+```sh
+options snd-hda-intel model=asus enable_msi=0
+```
+
+...and then reboot.
+<br /><br />
+If you have a different chip model, you can find yours out at: <a href="http://www.kernel.org/doc/Documentation/sound/alsa/HD-Audio-Models.txt">http://www.kernel.org/doc/Documentation/sound/alsa/HD-Audio-Models.txt</a>. Good luck.

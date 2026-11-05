@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }}{% endblock title %}
+{% block content %}
+<h1>{{ page.title }}</h1>
+{% set section = get_section(path="posts/_index.md") %}
+{% set_global current_year = "" %}
+{% for p in section.pages %}
+  {% set year = p.date | date(format="%Y") %}
+  {% if year != current_year %}
+    {% if not loop.first %}</ul>{% endif %}
+    <h2>{{ year }}</h2>
+    <ul class="post-list">
+    {% set_global current_year = year %}
+  {% endif %}
+  <li>
+    <time datetime="{{ p.date | date(format="%Y-%m-%d") }}">{{ p.date | date(format="%Y-%m-%d") }}</time>
+    <a href="{{ p.path }}">{{ p.title }}</a>
+    {% if p.taxonomies.tags %}
+      <span class="archive-tags">
+        {% for tag in p.taxonomies.tags %}<a href="/tags/{{ tag | slugify }}/" class="chip">{{ tag }}</a>{% endfor %}
+      </span>
+    {% endif %}
+  </li>
+  {% if loop.last %}</ul>{% endif %}
+{% endfor %}
+{% endblock content %}

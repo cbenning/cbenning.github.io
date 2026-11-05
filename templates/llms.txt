@@ -1,0 +1,17 @@
+# {{ config.title }}
+
+> {{ config.description }}. Personal blog by Chris Benninger: Linux, self-hosting, kernel and systems hacking, Scala, and small projects.
+
+Full text of every post in one file: [llms-full.txt]({{ config.base_url }}/llms-full.txt)
+Atom feed: [feed.xml]({{ config.base_url }}/feed.xml)
+Sitemap: [sitemap.xml]({{ config.base_url }}/sitemap.xml)
+
+## Posts
+{% for p in pages -%}
+- [{{ p.title }}]({{ p.permalink }}){% if p.description %}: {{ p.description }}{% endif %} ({{ p.date | date(format="%Y-%m-%d") }})
+{% endfor -%}
+
+## Other
+- [About]({{ config.base_url }}/about/)
+- [Projects]({{ config.base_url }}/projects/)
+- [Articles index]({{ config.base_url }}/articles/)

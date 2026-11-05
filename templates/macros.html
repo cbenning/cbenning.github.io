@@ -1,0 +1,69 @@
+{#
+  Reusable UI fragments. This Zola/Tera build has no {% macro %} support
+  (confirmed in Task 4: even the canonical Tera docs example fails to
+  parse), so this file dispatches on a `partial` variable instead of
+  true macro calls. Set `partial` plus that partial's variables, then
+  `{% include "macros.html" %}`. The LED partial lives in its own file,
+  `_led.html` -- Tera rejects a template including itself, and this
+  file's project_card branch needs a LED too.
+
+  partial = "project_card": one project card.
+    p: an entry from data/projects.toml (id, name, pitch, description,
+      category, status, tech, repo, art, and optional demo/post/stars).
+
+  partial = "post_list": a list of posts.
+    post_list_pages: a list of post pages (title, path, date).
+    post_list_limit: optional int; only the first N are rendered.
+#}
+
+{% if partial == "project_card" %}
+<article class="project-card" id="{{ p.id }}">
+  <div class="project-card-art">
+    <img src="{{ p.art }}" alt="" width="{{ p.art_width }}" height="{{ p.art_height }}" loading="lazy">
+  </div>
+  <div class="project-card-body">
+    <h2>{{ p.name }}</h2>
+    <p class="project-pitch">{{ p.pitch }}</p>
+    <p class="project-description">{{ p.description }}</p>
+    {% set led_status = p.status %}{% set led_label = true %}
+    {% set led_extra_class = "led--breathe" if p.status == "active" else "" %}
+    {% include "_led.html" %}
+    <ul class="tech-list">
+      {%- set tech_colors = load_data(path="data/tech-colors.toml") -%}
+      {%- for t in p.tech %}
+      {%- set key = t | lower %}
+      <li class="chip" style="--lang: {{ tech_colors.colors[key] | default(value='#8d9aa6') }}">{{ t }}</li>
+      {%- endfor %}
+    </ul>
+    <p class="project-links">
+      {% if p.site is defined %}<a href="{{ p.site }}">Site</a>{% endif %}
+      {% if p.repo is defined %}<a href="{{ p.repo }}">Code</a>{% endif %}
+      {% if p.docs is defined %}<a href="{{ p.docs }}">Docs</a>{% endif %}
+      {% if p.demo is defined %}<a href="{{ p.demo }}">Demo</a>{% endif %}
+      {% if p.post is defined %}<a href="{{ p.post }}">Post</a>{% endif %}
+      {% if p.stars is defined and p.repo is defined %}
+      <a class="stars-badge" href="{{ p.repo }}/stargazers">
+        <span aria-hidden="true">&#9733;</span> {{ p.stars }}
+        <span class="sr-only">GitHub stars</span>
+      </a>
+      {% elif p.stars is defined %}
+      <span class="stars-badge">
+        <span aria-hidden="true">&#9733;</span> {{ p.stars }}
+        <span class="sr-only">GitHub stars</span>
+      </span>
+      {% endif %}
+    </p>
+  </div>
+</article>
+
+{% elif partial == "post_list" %}
+<ul class="post-list">
+  {% for post in post_list_pages %}
+    {% if post_list_limit is defined and loop.index > post_list_limit %}{% break %}{% endif %}
+    <li>
+      <time datetime="{{ post.date | date(format="%Y-%m-%d") }}">{{ post.date | date(format="%Y-%m-%d") }}</time>
+      <a href="{{ post.path }}">{{ post.title }}</a>
+    </li>
+  {% endfor %}
+</ul>
+{% endif %}

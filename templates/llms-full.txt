@@ -1,0 +1,12 @@
+# {{ config.title }}: full text
+
+Source: {{ config.base_url }}. Each post below starts with its title, URL and date.
+{% for p in pages -%}
+---
+
+## {{ p.title }}
+URL: {{ p.permalink }}
+Date: {{ p.date | date(format="%Y-%m-%d") }}
+
+{{ p.content | striptags | replace(from="&lt;", to="<") | replace(from="&gt;", to=">") | replace(from="&quot;", to='"') | replace(from="&#39;", to="'") | replace(from="&amp;", to="&") | trim }}
+{% endfor -%}

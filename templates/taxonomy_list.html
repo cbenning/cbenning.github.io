@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Tags{% endblock title %}
+{% block content %}
+<h1>Tags</h1>
+<ul class="tag-index">
+{% for term in terms %}
+  <li><a href="{{ term.path }}" class="chip">{{ term.name }} <span class="tag-count">{{ term.pages | length }}</span></a></li>
+{% endfor %}
+</ul>
+{% endblock content %}

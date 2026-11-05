@@ -1,0 +1,64 @@
+[[projects]]
+id = "davlog"
+name = "davlog"
+pitch = "A WebDAV server where every save is a git commit."
+description = "davlog is a WebDAV server that keeps your files in a git repository. Every upload, delete and move becomes a commit, so anything synced over WebDAV gets a history and an undo button, while plain git does the work."
+category = "self-hosting tool"
+status = "active"
+tech = ["Rust", "WebDAV", "git"]
+repo = "https://github.com/cbenning/davlog"
+post = "/posts/davlog/"
+art = "/art/davlog.svg"
+art_width = 64
+art_height = 40
+featured = true
+order = 1
+
+[[projects]]
+id = "lanby"
+name = "Lanby"
+pitch = "Host your services. Not your monitoring."
+description = "Lanby is a hosted monitoring service for self-hosters: active probes and passive heartbeats for HTTP, TCP, ICMP, DNS and TLS expiry, plus scheduled jobs that have to check in. A relay container runs inside your network and reports out over outbound HTTPS, so it listens on no ports and response bodies never leave. Alerts route by topic to webhooks, Telegram and more."
+category = "monitoring service"
+status = "experimental"
+tech = ["Docker", "REST API", "TLS"]
+site = "https://lanby.dev"
+docs = "https://docs.lanby.dev"
+art = "/art/lanby.svg"
+art_width = 64
+art_height = 40
+featured = true
+order = 2
+
+[[projects]]
+id = "fussel"
+name = "Fussel"
+pitch = "A static photo gallery generator with face-tag albums."
+description = "Fussel is a static photo gallery generator that builds mobile-friendly photo galleries from a directory of photos. Once generated, the gallery is a completely static site with no server-side code required, and it can build per-person galleries from XMP face tags."
+category = "photo gallery generator"
+status = "active"
+tech = ["Python"]
+repo = "https://github.com/cbenning/fussel"
+demo = "http://photos.benninger.ca"
+post = "/posts/fussel/"
+stars = 314
+art = "/art/fussel.svg"
+art_width = 64
+art_height = 40
+featured = true
+order = 3
+
+[[projects]]
+id = "ticktick-to-todoist-migrator"
+name = "ticktick-to-todoist-migrator"
+pitch = "Migrate a TickTick CSV export into Todoist, with a preview run before anything is written."
+description = "Migrates a TickTick CSV export into Todoist, with a full preview of the plan before anything is written. It's read-only by default, so it can be run as many times as needed before adding --live."
+category = "migration tool"
+status = "active"
+tech = ["Python"]
+repo = "https://github.com/cbenning/ticktick-to-todoist-migrator"
+art = "/art/ticktick-to-todoist-migrator.svg"
+art_width = 64
+art_height = 40
+featured = true
+order = 4

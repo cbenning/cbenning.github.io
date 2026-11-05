@@ -1,0 +1,26 @@
++++
+title = "Vim: Use selected text as input to a shell command"
+date = 2011-07-19
+[extra]
+categories = ["Linux", "Opensource", "Programming", "Python", "Vim"]
++++
+
+</a>This is most likely common knowledge but I keep forgetting how to do it. If you want to run shell command on a small section of text in file you have open in vim, here is how. 
+<!--more-->
+In visual-mode, select the text.
+<p style="text-align: center;">
+	<a href="/images/posts/vim-screenshot.png"><img style="border-style: initial; border-color: initial;" title="Screenshot" src="/images/posts/vim-screenshot.png" alt="" width="490" height="308" /></a></p>
+&nbsp;
+<div>Now hit : and you should see :'&lt;, '&gt; at the prompt</div>
+&nbsp;
+<div><a href="/images/posts/vim-screenshot-1.png"><img title="Screenshot-1" src="/images/posts/vim-screenshot-1.png" alt="" width="494" height="305" /></a></div>
+&nbsp;
+<div>Now following that, type :w !&lt;command&gt;, where &lt;command&gt; is the command you want to run. In my case I wanted to see how many characters were in the selected text, so I used 'wc -w'. Then hit enter.</div>
+&nbsp;
+<div><a href="/images/posts/vim-screenshot-2.png"><img title="Screenshot-2" src="/images/posts/vim-screenshot-2.png" alt="" width="491" height="306" /></a></div>
+&nbsp;
+<div>The result should show itself in the output section. In my case, there were 22 words.</div>
+&nbsp;
+<div><a href="/images/posts/vim-screenshot-3.png"><img title="Screenshot-3" src="/images/posts/vim-screenshot-3.png" alt="" width="493" height="332" /></a></div>
+&nbsp;
+<div>Happy Viming!</div>

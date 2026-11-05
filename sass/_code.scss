@@ -1,0 +1,37 @@
+// Overrides the generated giallo.css theme (linked before this
+// stylesheet) so code blocks sit on our panel/line tokens instead of
+// the theme's own background. Loaded after giallo.css so these rules
+// win on equal specificity without needing !important.
+pre.giallo {
+  background: var(--panel);
+  border: 2px solid var(--line);
+  border-radius: 0;
+  padding: 16px;
+  font-family: $font-mono;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+code {
+  font-family: $font-mono;
+}
+
+// The generated github-dark theme's comment colour (#6A737D, class
+// .z-3) is only 3.71:1 against --panel, below WCAG AA's 4.5:1 for
+// normal text (found via Lighthouse). Comments are common in these
+// posts' shell snippets, so this isn't a one-off: override with
+// --muted, which clears 4.5:1 and matches the rest of the palette.
+.z-3 {
+  color: var(--muted);
+}
+
+:not(pre) > code {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  padding: 1px 5px;
+  font-size: 0.9em;
+  // Long inline paths/commands in prose would otherwise overflow the
+  // viewport at phone widths; pre blocks already scroll via overflow-x.
+  overflow-wrap: anywhere;
+}

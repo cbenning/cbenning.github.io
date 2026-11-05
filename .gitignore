@@ -2,3 +2,7 @@
 vendor/
 .sass-cache/
 _site/
+.superpowers/
+.bin/
+public/
+__pycache__/
