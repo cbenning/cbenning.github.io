@@ -4,9 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Chris Benninger's personal site (benninger.ca), built with [Zola](https://www.getzola.org/) (a Rust static site generator, pinned to **0.23.6**). It was migrated from Jekyll in November 2026; the design and migration are recorded in `docs/superpowers/specs/2026-11-05-site-redesign-design.md` and `docs/superpowers/plans/2026-11-05-site-redesign.md` — read those for the *why* behind the structure below before making structural changes.
-
-Dark "home-lab/workshop" theme: blocky panels, hard offset shadows, a single LED-green accent for status/interactive elements, original pixel art, self-hosted pixel + mono fonts. No client JavaScript except GoatCounter analytics.
+Chris Benninger's personal site (benninger.ca), built with [Zola](https://www.getzola.org/) (a Rust static site generator, pinned to **0.23.6**). Dark theme: blocky panels, hard offset shadows, a single LED-green accent for status/interactive elements, original pixel art, self-hosted pixel + mono fonts. No client JavaScript except GoatCounter analytics.
 
 ## Commands
 
