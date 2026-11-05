@@ -96,6 +96,28 @@ class TestSeoMeta(unittest.TestCase):
         self.assertIn('og:title" content="davlog', html)
         self.assertNotIn('og:title" content="Chris Benninger"', html)
 
+    def test_og_type(self):
+        """A post is an article; everything else defaults to website.
+        The old Jekyll site set og:type on every page, which this
+        rebuild dropped entirely until a review caught it."""
+        post_html = (PUBLIC / "posts" / "davlog" / "index.html").read_text()
+        self.assertIn('og:type" content="article"', post_html)
+        home_html = (PUBLIC / "index.html").read_text()
+        self.assertIn('og:type" content="website"', home_html)
+
+    def test_icons_present(self):
+        """favicon.ico and the apple-touch-icon files exist in
+        static/images/ but had no <link> tags pointing at them -- iOS
+        does not reliably auto-probe apple-touch-icon, unlike
+        favicon.ico, so "Add to Home Screen" fell back to a generic
+        screenshot thumbnail."""
+        home_html = (PUBLIC / "index.html").read_text()
+        self.assertIn('rel="shortcut icon" href="/favicon.ico"', home_html)
+        self.assertIn('rel="apple-touch-icon-precomposed"', home_html)
+        for rel in ("144x144", "114x114", "72x72"):
+            with self.subTest(size=rel):
+                self.assertIn(f"apple-touch-icon-{rel}-precomposed.png", home_html)
+
     def test_no_empty_descriptions(self):
         for page in html_pages():
             text = page.read_text()

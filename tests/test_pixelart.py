@@ -18,6 +18,18 @@ class TestParseArt(unittest.TestCase):
             pixelart.parse_art(text)
         self.assertIn("row 2", str(ctx.exception))
 
+    def test_embedded_blank_row_raises(self):
+        """Found via code review: parse_art filtered out every blank
+        line in the grid section instead of only the trailing ones
+        from the file's closing newline, so a stray blank row in the
+        middle of a grid silently shifted every row below it up by
+        one instead of raising -- exactly the kind of malformed input
+        test_ragged_rows exists to catch for a row of the wrong width."""
+        text = "A = #ff0000\n\nAA\n\nAA\n"
+        with self.assertRaises(ValueError) as ctx:
+            pixelart.parse_art(text)
+        self.assertIn("row 2", str(ctx.exception))
+
     def test_unknown_char(self):
         text = "A = #ff0000\n\nAZ\n"
         with self.assertRaises(ValueError) as ctx:

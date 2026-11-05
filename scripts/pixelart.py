@@ -55,9 +55,14 @@ def parse_art(text: str) -> Art:
     while i < len(lines) and lines[i] == "":
         i += 1
 
-    rows = [line for line in lines[i:] if line != ""]
+    rows = lines[i:]
+    while rows and rows[-1] == "":  # trailing blank line(s) from the file's closing newline
+        rows.pop()
     if not rows:
         raise ValueError("no grid rows found")
+    for row_num, row in enumerate(rows, start=1):
+        if row == "":
+            raise ValueError(f"row {row_num} is blank; grid rows must be contiguous")
 
     width = len(rows[0])
     for row_num, row in enumerate(rows, start=1):

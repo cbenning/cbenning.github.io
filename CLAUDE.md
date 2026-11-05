@@ -12,8 +12,8 @@ Dark "home-lab/workshop" theme: blocky panels, hard offset shadows, a single LED
 
 ```bash
 bash scripts/test.sh          # the one command: installs pinned Zola, builds the site, runs all tests
-python3 -m unittest tests.test_pages -v                    # one test module (run from tests/, or discover -s tests)
-python3 -m unittest tests.test_pages.TestHomePage.test_home -v   # one test
+cd tests && python3 -m unittest test_pages -v                    # one test module (must run from inside tests/)
+cd tests && python3 -m unittest test_pages.TestHomePage.test_home -v   # one test
 .bin/zola serve                                             # local dev server with live reload (localhost:1111)
 python3 scripts/pixelart.py art static/art                  # regenerate all pixel-art SVGs after editing art/*.txt
 ```

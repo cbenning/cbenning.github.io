@@ -1,7 +1,11 @@
+import pathlib
 import re
+import shutil
+import subprocess
+import tempfile
 import unittest
 
-from helpers import PUBLIC
+from helpers import PUBLIC, REPO_ROOT
 
 # Confirmed 404 on the live site, so the new site not having them either
 # is not a regression; each entry notes how it was checked.
@@ -43,6 +47,37 @@ class TestProjectsPage(unittest.TestCase):
         fussel = self._card_html("fussel")
         self.assertIn("http://photos.benninger.ca", fussel)
 
+    def test_stars_without_repo_does_not_break_the_build(self):
+        """A project can legitimately have `stars` without `repo` (e.g.
+        a GitLab-only project with a mirror star count), and `stars`
+        with no `repo` used to crash the *entire* site build, not just
+        that card: the badge linked unconditionally to `{{ p.repo
+        }}/stargazers`. Proven directly against zola build, not just
+        template text, since that's where the real failure was."""
+        data_path = REPO_ROOT / "data" / "projects.toml"
+        original = data_path.read_text()
+        # lanby has no `repo` in the real data; temporarily give it stars
+        mutated = original.replace(
+            'id = "lanby"\nname = "Lanby"', 'id = "lanby"\nname = "Lanby"\nstars = 1'
+        )
+        self.assertNotEqual(mutated, original, "fixture assumption broke: no lanby entry found")
+        scratch = tempfile.mkdtemp()
+        try:
+            data_path.write_text(mutated)
+            result = subprocess.run(
+                [str(REPO_ROOT / ".bin" / "zola"), "build", "-o", scratch, "--force"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, f"zola build failed:\n{result.stderr}")
+            html = (pathlib.Path(scratch) / "projects" / "index.html").read_text()
+            self.assertRegex(html, r"&#9733;</span>\s*1\s*<")
+            self.assertNotIn('href="/stargazers"', html)  # no repo -> no dangling link
+        finally:
+            data_path.write_text(original)
+            shutil.rmtree(scratch, ignore_errors=True)
+
 
 class TestHomePage(unittest.TestCase):
     def test_home(self):
@@ -58,6 +93,35 @@ class TestHomePage(unittest.TestCase):
         post_links = re.findall(r'href="(/posts/[^"]+/)"', list_html)
         self.assertEqual(len(post_links), 5)
         self.assertEqual(post_links[0], "/posts/davlog/")
+
+    def test_home_cards_follow_order_field_not_declaration_order(self):
+        """Home used to iterate data.projects in raw TOML declaration
+        order while /projects/ explicitly sorted by `order` -- today
+        the two happen to coincide, so this is proven by swapping two
+        `order` values, not by reading the current page."""
+        data_path = REPO_ROOT / "data" / "projects.toml"
+        original = data_path.read_text()
+        # davlog is order=1, lanby is order=2; swap them
+        mutated = original.replace("order = 1", "order = 9").replace("order = 2", "order = 1").replace(
+            "order = 9", "order = 2"
+        )
+        self.assertNotEqual(mutated, original, "fixture assumption broke: order fields not found")
+        scratch = tempfile.mkdtemp()
+        try:
+            data_path.write_text(mutated)
+            result = subprocess.run(
+                [str(REPO_ROOT / ".bin" / "zola"), "build", "-o", scratch, "--force"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, f"zola build failed:\n{result.stderr}")
+            html = (pathlib.Path(scratch) / "index.html").read_text()
+            cards = re.findall(r'<article class="project-card" id="([^"]+)"', html)
+            self.assertEqual(cards[:2], ["lanby", "davlog"])
+        finally:
+            data_path.write_text(original)
+            shutil.rmtree(scratch, ignore_errors=True)
 
 
 class TestArchivePage(unittest.TestCase):

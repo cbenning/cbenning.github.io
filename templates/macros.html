@@ -41,11 +41,16 @@
       {% if p.docs is defined %}<a href="{{ p.docs }}">Docs</a>{% endif %}
       {% if p.demo is defined %}<a href="{{ p.demo }}">Demo</a>{% endif %}
       {% if p.post is defined %}<a href="{{ p.post }}">Post</a>{% endif %}
-      {% if p.stars is defined %}
+      {% if p.stars is defined and p.repo is defined %}
       <a class="stars-badge" href="{{ p.repo }}/stargazers">
         <span aria-hidden="true">&#9733;</span> {{ p.stars }}
         <span class="sr-only">GitHub stars</span>
       </a>
+      {% elif p.stars is defined %}
+      <span class="stars-badge">
+        <span aria-hidden="true">&#9733;</span> {{ p.stars }}
+        <span class="sr-only">GitHub stars</span>
+      </span>
       {% endif %}
     </p>
   </div>
