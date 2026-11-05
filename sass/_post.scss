@@ -4,6 +4,10 @@
   margin: 0 auto;
   font-size: 1.05rem;
   line-height: 1.7;
+  // Long unbroken URLs/paths in prose would otherwise push the page
+  // wider than the viewport at phone widths (pre/table already scroll
+  // inside their own box via overflow-x; this covers plain text).
+  overflow-wrap: anywhere;
 }
 
 .post-body h1,
@@ -23,6 +27,13 @@
   border-left: 2px solid var(--line);
   padding-left: 1em;
   color: var(--muted);
+}
+
+// --led on --text is only 1.07:1 contrast, so colour alone can't mark
+// a link in long-form prose (WCAG 1.4.1); underline it at rest.
+.post-body a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .post-meta {

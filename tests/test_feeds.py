@@ -12,6 +12,14 @@ def _entry_ids(xml_text: str) -> list[str]:
     return [entry.find(f"{ATOM_NS}id").text for entry in root.findall(f"{ATOM_NS}entry")]
 
 
+def _entry_updated_by_id(xml_text: str) -> dict[str, str]:
+    root = ET.fromstring(xml_text)
+    return {
+        entry.find(f"{ATOM_NS}id").text: entry.find(f"{ATOM_NS}updated").text
+        for entry in root.findall(f"{ATOM_NS}entry")
+    }
+
+
 def _slug_from_id(entry_id: str) -> str:
     return entry_id.rstrip("/").rsplit("/", 1)[-1]
 
@@ -59,6 +67,20 @@ class TestFeeds(unittest.TestCase):
         self.assertEqual(date_sequence(atom_ids), date_sequence(baseline["atom.xml"]))
         self.assertEqual(set(feed_ids), set(baseline["feed.xml"]))
         self.assertEqual(date_sequence(feed_ids), date_sequence(baseline["feed.xml"]))
+
+    def test_feed_updated_matches_baseline_timezone(self):
+        """Found via code review: entries rendered <updated> in UTC
+        (+00:00) while the live feeds used America/Vancouver, shifting
+        every timestamp by 7-8 hours. A reader that tracks <updated>
+        (not just <id>) could re-surface every entry, and Pacific-time
+        readers would see each post's date a day early."""
+        baseline = load_fixture("legacy-feeds.json")
+        baseline_atom = dict(zip(baseline["atom.xml"], baseline["atom.xml_updated"]))
+        baseline_feed = dict(zip(baseline["feed.xml"], baseline["feed.xml_updated"]))
+        new_atom = _entry_updated_by_id((PUBLIC / "atom.xml").read_text())
+        new_feed = _entry_updated_by_id((PUBLIC / "feed.xml").read_text())
+        self.assertEqual(new_atom, baseline_atom)
+        self.assertEqual(new_feed, baseline_feed)
 
     def test_llms_txt(self):
         text = (PUBLIC / "llms.txt").read_text()

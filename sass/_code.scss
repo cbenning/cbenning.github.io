@@ -31,4 +31,7 @@ code {
   border-radius: 0;
   padding: 1px 5px;
   font-size: 0.9em;
+  // Long inline paths/commands in prose would otherwise overflow the
+  // viewport at phone widths; pre blocks already scroll via overflow-x.
+  overflow-wrap: anywhere;
 }

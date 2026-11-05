@@ -4,7 +4,7 @@
  <title>{{ config.title }}</title>
  <link href="{{ config.base_url }}/atom.xml" rel="self"/>
  <link href="{{ config.base_url }}/"/>
- <updated>{{ pages | first | get(key="date") | date(format="%Y-%m-%dT%H:%M:%S%:z") }}</updated>
+ <updated>{{ pages | first | get(key="date") | date(format="%Y-%m-%dT%H:%M:%S%:z", timezone="America/Vancouver") }}</updated>
  <id>{{ config.base_url }}</id>
  <author>
    <name>{{ config.title }}</name>
@@ -14,7 +14,7 @@
  <entry>
    <title>{{ p.title }}</title>
    <link href="{{ p.permalink }}"/>
-   <updated>{{ p.date | date(format="%Y-%m-%dT%H:%M:%S%:z") }}</updated>
+   <updated>{{ p.date | date(format="%Y-%m-%dT%H:%M:%S%:z", timezone="America/Vancouver") }}</updated>
    <id>/posts/{{ p.slug }}</id>
    <content type="html">{{ p.content | escape }}</content>
  </entry>

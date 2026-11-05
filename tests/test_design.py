@@ -75,6 +75,41 @@ def _is_redirect_page(html: str) -> bool:
     return "<title>Redirect</title>" in html
 
 
+class TestSeoMeta(unittest.TestCase):
+    """Found via code review: post/page templates never overrode the
+    og:title block (every page showed "Chris Benninger" in social
+    previews), `default()` doesn't fire on a front-matter field that's
+    present but null (every post had an empty description), and there
+    was no og:image at all."""
+
+    def test_post_og_title_matches_page_title(self):
+        html = (PUBLIC / "posts" / "davlog" / "index.html").read_text()
+        self.assertIn('og:title" content="davlog', html)
+        self.assertNotIn('og:title" content="Chris Benninger"', html)
+
+    def test_no_empty_descriptions(self):
+        for page in html_pages():
+            text = page.read_text()
+            if _is_redirect_page(text):
+                continue
+            with self.subTest(page=str(page.relative_to(PUBLIC))):
+                self.assertNotIn('name="description" content="">', text)
+                self.assertNotIn('og:description" content="">', text)
+
+    def test_og_image_present(self):
+        for page in html_pages():
+            text = page.read_text()
+            if _is_redirect_page(text):
+                continue
+            with self.subTest(page=str(page.relative_to(PUBLIC))):
+                self.assertRegex(text, r'og:image" content="https://[^"]+"')
+
+    def test_404_has_no_misleading_canonical(self):
+        html = (PUBLIC / "404.html").read_text()
+        self.assertNotIn('rel="canonical"', html)
+        self.assertNotIn('og:url"', html)
+
+
 class TestGoatCounter(unittest.TestCase):
     def test_goatcounter_everywhere(self):
         for page in html_pages():
@@ -118,6 +153,29 @@ class TestCss(unittest.TestCase):
         img_rule = re.search(r"img\s*\{([^}]*)\}", self.css)
         self.assertIsNotNone(img_rule, "no rule found for img")
         self.assertIn("max-width", img_rule.group(1))
+
+    def test_long_text_wraps_instead_of_overflowing(self):
+        """Found via a real 360px layout check: long unbroken URLs/paths
+        in prose and un-wrapped tag-chip rows pushed several pages wider
+        than the viewport, even though pre/table already scroll inside
+        their own box (test_css_overflow_rules)."""
+        body_rule = re.search(r"\.post-body\s*\{([^}]*)\}", self.css)
+        self.assertIsNotNone(body_rule, "no rule found for .post-body")
+        self.assertIn("overflow-wrap", body_rule.group(1))
+        inline_code_rule = re.search(r':not\(pre\)>code\s*\{([^}]*)\}', re.sub(r"\s+", "", self.css))
+        self.assertIsNotNone(inline_code_rule, "no rule found for :not(pre) > code")
+        self.assertIn("overflow-wrap", inline_code_rule.group(1))
+        post_list_li_rule = re.search(r"\.post-list li\s*\{([^}]*)\}", self.css)
+        self.assertIsNotNone(post_list_li_rule, "no rule found for .post-list li")
+        self.assertIn("flex-wrap", post_list_li_rule.group(1))
+
+    def test_post_body_links_have_a_non_color_cue(self):
+        """WCAG 1.4.1: colour alone can't be the only way to tell a link
+        from body text. --led on --text is only 1.07:1, so a reader who
+        can't distinguish the hue sees no link at all without this."""
+        rule = re.search(r"\.post-body a\s*\{([^}]*)\}", self.css)
+        self.assertIsNotNone(rule, "no rule found for .post-body a")
+        self.assertIn("underline", rule.group(1))
 
     def test_css_accessibility_rules(self):
         self.assertIn("prefers-reduced-motion: reduce", self.css)

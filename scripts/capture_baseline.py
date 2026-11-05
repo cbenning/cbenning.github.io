@@ -139,6 +139,21 @@ def capture_feed_ids(path: str) -> list[str]:
     return ids
 
 
+def capture_feed_updated(path: str) -> list[str]:
+    """Returns the <updated> of each <entry>, in document order. Used
+    to check the new feeds keep the same per-entry timestamp (same
+    timezone offset), not just the same id -- a reader that tracks
+    <updated> can re-surface an entry whose id it already has."""
+    xml = fetch(path)
+    entries = re.findall(r"<entry>.*?</entry>", xml, re.DOTALL)
+    updated = []
+    for entry in entries:
+        match = re.search(r"<updated>([^<]*)</updated>", entry)
+        if match:
+            updated.append(match.group(1))
+    return updated
+
+
 def main() -> None:
     FIXTURES.mkdir(parents=True, exist_ok=True)
 
@@ -172,6 +187,8 @@ def main() -> None:
     feeds = {
         "atom.xml": capture_feed_ids("/atom.xml"),
         "feed.xml": capture_feed_ids("/feed.xml"),
+        "atom.xml_updated": capture_feed_updated("/atom.xml"),
+        "feed.xml_updated": capture_feed_updated("/feed.xml"),
     }
     (FIXTURES / "legacy-feeds.json").write_text(json.dumps(feeds, indent=2))
 
