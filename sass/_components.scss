@@ -98,14 +98,6 @@
   border-color: var(--led);
 }
 
-// Panel: a raised, blocky surface. 2px border, hard offset shadow.
-.panel {
-  background: var(--panel);
-  border: 2px solid var(--line);
-  border-radius: 0;
-  box-shadow: 5px 5px 0 #000;
-}
-
 // Eyebrow: a small glowing LED-colour label.
 .eyebrow {
   font-family: $font-mono;

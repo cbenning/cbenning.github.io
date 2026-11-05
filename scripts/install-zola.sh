@@ -20,7 +20,7 @@ mkdir -p "${BIN_DIR}"
 WORK_DIR="$(mktemp -d)"
 trap 'rm -rf "${WORK_DIR}"' EXIT
 
-curl -sL -o "${WORK_DIR}/${ZOLA_TARBALL}" "${ZOLA_URL}"
+curl -fsSL -o "${WORK_DIR}/${ZOLA_TARBALL}" "${ZOLA_URL}"
 echo "${ZOLA_SHA256}  ${WORK_DIR}/${ZOLA_TARBALL}" | sha256sum -c -
 tar -xzf "${WORK_DIR}/${ZOLA_TARBALL}" -C "${WORK_DIR}"
 mv "${WORK_DIR}/zola" "${ZOLA_BIN}"
