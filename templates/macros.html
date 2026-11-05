@@ -22,7 +22,6 @@
     <img src="{{ p.art }}" alt="" width="{{ p.art_width }}" height="{{ p.art_height }}" loading="lazy">
   </div>
   <div class="project-card-body">
-    <p class="eyebrow">{{ p.category }}{% if p.stars is defined %} &middot; &#9733; {{ p.stars }}{% endif %}</p>
     <h2>{{ p.name }}</h2>
     <p class="project-pitch">{{ p.pitch }}</p>
     <p class="project-description">{{ p.description }}</p>
@@ -36,6 +35,12 @@
       <a href="{{ p.repo }}">Code</a>
       {% if p.demo is defined %}<a href="{{ p.demo }}">Demo</a>{% endif %}
       {% if p.post is defined %}<a href="{{ p.post }}">Post</a>{% endif %}
+      {% if p.stars is defined %}
+      <a class="stars-badge" href="{{ p.repo }}/stargazers">
+        <span aria-hidden="true">&#9733;</span> {{ p.stars }}
+        <span class="sr-only">GitHub stars</span>
+      </a>
+      {% endif %}
     </p>
   </div>
 </article>

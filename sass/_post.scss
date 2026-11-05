@@ -32,6 +32,7 @@
 // --led on --text is only 1.07:1 contrast, so colour alone can't mark
 // a link in long-form prose (WCAG 1.4.1); underline it at rest.
 .post-body a {
+  color: var(--led-ink);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -70,13 +71,13 @@
   justify-content: space-between;
   gap: 16px;
   font-family: $font-pixel;
-  font-size: 0.82rem;
+  font-size: 1.02rem;
 }
 
 // Archive page: grouped by year.
 .site-main > h2 {
   margin-top: 2em;
-  font-size: 1rem;
+  font-size: 1.3rem;
   color: var(--muted);
 }
 

@@ -72,7 +72,7 @@ class TestGeneratedArt(unittest.TestCase):
 
     def test_art_sizes(self):
         sizes = {
-            "hero-workbench": (96, 64),
+            "hero-workbench": (224, 72),
             "davlog": (64, 40),
             "fussel": (64, 40),
             "ticktick-to-todoist-migrator": (64, 40),
