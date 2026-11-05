@@ -1,0 +1,27 @@
+// Self-hosted fonts only. No Google Fonts or other runtime font CDN.
+@font-face {
+  font-family: "Silkscreen";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/silkscreen-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono-700.woff2") format("woff2");
+}
+
+$font-pixel: "Silkscreen", "JetBrains Mono", ui-monospace, monospace;
+$font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;

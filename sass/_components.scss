@@ -1,0 +1,178 @@
+// Site chrome: header, nav, footer.
+.site-header {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.brand {
+  font-family: $font-pixel;
+  color: var(--heading);
+  font-size: 1rem;
+  text-decoration: none;
+}
+
+.primary-nav {
+  display: flex;
+  gap: 18px;
+  font-family: $font-pixel;
+  font-size: 0.82rem;
+}
+
+.primary-nav a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.primary-nav a[aria-current="page"] {
+  color: var(--heading);
+  box-shadow: inset 0 -3px 0 var(--led);
+  padding-bottom: 2px;
+}
+
+.site-footer {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 20px 40px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: var(--muted);
+  border-top: 2px solid var(--line);
+}
+
+.site-footer a {
+  color: var(--muted);
+}
+
+.site-footer a:hover {
+  color: var(--led);
+}
+
+// Buttons: square corners, hard offset shadow, chunky stepped hover/press.
+.btn {
+  display: inline-block;
+  font-family: $font-pixel;
+  font-size: 0.86rem;
+  padding: 10px 16px;
+  border: 2px solid var(--line);
+  border-radius: 0;
+  text-decoration: none;
+  transition: transform 0.12s steps(2, end), box-shadow 0.12s steps(2, end);
+}
+
+.btn--primary {
+  background: var(--led);
+  color: var(--bg);
+  border-color: var(--line);
+  box-shadow: 5px 5px 0 var(--line);
+}
+
+.btn--primary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--line);
+}
+
+.btn--primary:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--line);
+}
+
+.btn--quiet {
+  background: transparent;
+  color: var(--text);
+}
+
+.btn--quiet:hover {
+  color: var(--led);
+  border-color: var(--led);
+}
+
+// Panel: a raised, blocky surface. 2px border, hard offset shadow.
+.panel {
+  background: var(--panel);
+  border: 2px solid var(--line);
+  border-radius: 0;
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.4);
+}
+
+// Eyebrow: a small glowing LED-colour label.
+.eyebrow {
+  font-family: $font-mono;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--led);
+  text-shadow: 0 0 6px var(--led-glow);
+}
+
+// Status LED: a small glowing dot plus a plain-text label, so colour is
+// never the only signal (4.5 / 4.6).
+.led-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.led {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 0;
+}
+
+.led--active {
+  background: var(--led);
+  box-shadow: 0 0 6px 2px var(--led-glow);
+}
+
+.led--maintenance,
+.led--experimental {
+  background: var(--amber);
+  box-shadow: 0 0 5px 1px rgba(255, 176, 0, 0.5);
+}
+
+.led--archived {
+  background: var(--red);
+  opacity: 0.55;
+}
+
+.led--breathe {
+  animation: led-breathe 2.8s ease-in-out infinite;
+}
+
+@keyframes led-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.led-label {
+  font-family: $font-mono;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+// Chip: a small tech tag.
+.chip {
+  display: inline-block;
+  font-family: $font-mono;
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  color: var(--muted);
+}

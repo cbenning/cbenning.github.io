@@ -1,0 +1,41 @@
+// Long-form reading: comfortable measure, no glow anywhere in here.
+.post-body {
+  max-width: 72ch;
+  margin: 0 auto;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.post-body h1,
+.post-body h2,
+.post-body h3 {
+  margin-top: 1.6em;
+}
+
+.post-body p,
+.post-body ul,
+.post-body ol,
+.post-body blockquote {
+  margin: 0 0 1.2em;
+}
+
+.post-body blockquote {
+  border-left: 2px solid var(--line);
+  padding-left: 1em;
+  color: var(--muted);
+}
+
+.post-meta {
+  font-family: $font-mono;
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 1.6em;
+}
+
+.post-meta a {
+  color: var(--muted);
+}
+
+.post-meta a:hover {
+  color: var(--led);
+}

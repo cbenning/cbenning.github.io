@@ -1,6 +1,7 @@
 base_url = "https://benninger.ca"
 title = "Chris Benninger"
 description = "Code, utilities and other projects"
+compile_sass = true
 generate_feeds = true
 feed_filenames = ["atom.xml", "feed.xml", "llms.txt", "llms-full.txt"]
 

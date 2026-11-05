@@ -5,8 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ config.title }}{% endblock title %}</title>
   <meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}">
+  {% set current = current_path | default(value="/") %}
+  <link rel="canonical" href="{{ config.base_url }}{{ current }}">
+  <meta property="og:title" content="{% block og_title %}{{ config.title }}{% endblock og_title %}">
+  <meta property="og:description" content="{% block og_description %}{{ config.description }}{% endblock og_description %}">
+  <meta property="og:url" content="{{ config.base_url }}{{ current }}">
+  <link rel="alternate" type="application/atom+xml" href="/atom.xml">
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/silkscreen-400.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/jetbrains-mono-400.woff2" crossorigin>
+  <link rel="stylesheet" href="/giallo.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  {% block content %}{% endblock content %}
+  <header class="site-header">
+    <a class="brand" href="/">{{ config.title }}</a>
+    <nav class="primary-nav" aria-label="Primary navigation">
+      <a href="/"{% if current == "/" %} aria-current="page"{% endif %}>HOME</a>
+      <a href="/projects/"{% if current is starting_with(pat="/projects/") %} aria-current="page"{% endif %}>PROJECTS</a>
+      <a href="/articles/"{% if current == "/articles/" or current is starting_with(pat="/posts/") or current is starting_with(pat="/tags/") %} aria-current="page"{% endif %}>POSTS</a>
+    </nav>
+  </header>
+  <main class="site-main">
+    {% block content %}{% endblock content %}
+  </main>
+  <footer class="site-footer">
+    <a href="https://github.com/cbenning">GitHub</a>
+    <a href="https://www.linkedin.com/in/christopherbenninger">LinkedIn</a>
+    <a href="mailto:chris@benninger.ca">chris@benninger.ca</a>
+    <a href="/atom.xml">Feed</a>
+  </footer>
+  <script data-goatcounter="https://benninger.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

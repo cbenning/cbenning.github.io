@@ -1,0 +1,25 @@
+// Overrides the generated giallo.css theme (linked before this
+// stylesheet) so code blocks sit on our panel/line tokens instead of
+// the theme's own background. Loaded after giallo.css so these rules
+// win on equal specificity without needing !important.
+pre.giallo {
+  background: var(--panel);
+  border: 2px solid var(--line);
+  border-radius: 0;
+  padding: 16px;
+  font-family: $font-mono;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+code {
+  font-family: $font-mono;
+}
+
+:not(pre) > code {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  padding: 1px 5px;
+  font-size: 0.9em;
+}

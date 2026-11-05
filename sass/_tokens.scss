@@ -1,0 +1,15 @@
+// Design tokens: graphite + phosphor green. A neutral grey-black base
+// (no blue tint), with a single LED colour doing all the glowing.
+// Amber and red are status indicators only, never large fills.
+:root {
+  --bg: #0b0c0c;
+  --panel: #151817;
+  --line: #2b302e;
+  --text: #d6dbd4;
+  --muted: #7b847f;
+  --heading: #f1f5ef;
+  --led: #4dff91;
+  --led-glow: rgba(77, 255, 145, 0.55);
+  --amber: #ffb000;
+  --red: #ff4b3e;
+}
