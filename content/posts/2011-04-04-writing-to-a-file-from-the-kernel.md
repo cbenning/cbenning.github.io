@@ -1,0 +1,49 @@
++++
+title = "Writing to a file from the Kernel"
+date = 2011-04-04
+[extra]
+categories = ["C", "Kernel", "Linux", "Opensource", "Programming"]
++++
+
+Writing to a file in C is a fairly trivial affair. The Linux kernel does not have access to the usual user-land tools for interacting with files. Because this is generally a highly frowned upon practice (consider that a disclaimer) It took a while to pry the functions in question out of the people who knew them. A "preferred" technique would be to pass the parameters in via <em>IOCTLs</em> and implement a <code>read()</code> function in your module. Then reading the dump from the module and writing into the file from userspace. That just seemed like a lot of work for a one-time test so...
+
+<br/> <br/>
+
+My application was just a simple, one-time functional test to see what the contents memory were without doing a full core-dump, which should really be all you use this for, consider yourself warned.
+
+<br/> <br/>
+I found a good example <a title="Kernel File stuff" href="http://www.linuxjournal.com/article/8110?page=0,1">here</a> which I later realized did not work because the author seemed to be trying to obfuscate the actual solution with fake functions. Anyway here is an example of writing several blocks of data to a file:
+
+
+```c
+char* dump_filename; //Set to the file you are targeting
+struct file *file;
+int i;
+void* data;  //Needs to be a kernel pointer, not userspace pointer
+int block_count; //Set me to something
+int block_size; //Set me to something
+loff_t pos = 0;
+mm_segment_t old_fs;
+
+old_fs = get_fs();  //Save the current FS segment
+set_fs(get_ds());
+
+file = filp_open(dump_filename, O_WRONLY|O_CREAT, 0644);
+
+if(file){
+	for(i=0; i < block_count ; i++){
+
+        data=<somewhere>+block_count*i //Wherever your data is
+		if(data==NULL){
+			continue;
+		}
+   		vfs_write(file, data, block_size, &pos);
+		pos = pos+block_size;
+
+	}
+	filp_close(file,NULL);
+}
+set_fs(old_fs); //Reset to save FS
+kfree(dump_filename);
+```
+

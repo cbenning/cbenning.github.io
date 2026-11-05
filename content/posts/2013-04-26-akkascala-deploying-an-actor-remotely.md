@@ -1,0 +1,71 @@
++++
+title = "Akka+Scala: Deploying an actor remotely"
+date = 2013-04-26
+[extra]
+categories = ["Akka", "Linux", "Programming", "Scala"]
++++
+
+In my use case, I have a variable number of independent <em>ActorSystems</em>. As a new system starts up, it initiates a simple Syn/Ack procedure with the command and control system, allowing the C&C to deploy remote actors. Just for fun, here is some example code.
+
+Lets start with our remote system:
+
+
+```scala
+object Remote extends App{
+ val system = ActorSystem("RemoteSystem",
+   ConfigFactory.defaultReference(getClass.getClassLoader))
+ val connStr = "akka://CommandSystem@<ip>:2555/user/CommandActor"
+ val cnc = system.actorFor(connStr)
+ val synActor = system.actorOf(Props[SynActor])
+}
+
+class SynActor extends Actor{
+ override def preStart = {
+  //Send the syn
+  Remote.cnc ! new Syn
+ }
+ def receive = {
+  case a:Ack => //
+ }
+}
+```
+
+
+Some shared classes:
+
+
+```scala
+case class Syn()
+case class Ack()
+```
+
+
+Now the Command and Control system and the actual code you want run remotely:
+
+
+```scala
+object Command extends App{
+ val system = ActorSystem("CommandSystem",
+   ConfigFactory.defaultReference(getClass.getClassLoader))
+ val cncActor = system.actorOf(Props[CommandActor])
+}
+
+class CommandActor extends Actor {
+ def receive = {
+  case s:Syn =>
+   //Respond for politeness
+   sender ! new Ack   
+   //Get the remote actorsystem path
+   val addr = AddressFromURIString(sender.path.root.toString)  
+   //Push the actor to the remote system
+   val remoteActor = context.actorOf((Props[RemoteActor]).withDeploy(
+     Deploy(scope = RemoteScope(addr)))) 
+ }
+}
+
+class RemoteActor extends Actor {
+ //Where you put your remote code implementation
+}
+```
+
+From here, you can handle management of remote actors in whichever way you want. Fun stuff!

@@ -1,0 +1,28 @@
++++
+title = "AeroFS on Linux"
+date = 2013-09-06
+[taxonomies]
+tags = ["Linux", "Java"]
++++
+
+AeroFS is a pretty cool (unfortunately not open-source) tool for synchronizing data across your machines. I did bump up against a couple minor issues however which I thought I'd post the solution for. First off if you run Debian, AeroFS provides a <em>.deb</em> which can just be installed, on Arch there is an <a hre="https://aur.archlinux.org/packages/aerofs/">AUR package</a> which, at the time of this writing, is out of date and does not install correctly. So if you arent running a Debian derivative you'll need to install the <em>.tgz</em> version. Other than that there is very little to know.
+
+The main problem I ran into was that when I ran aerofs (or aerofs-cli, from the commandline) it barfed out this useful gem of a message:
+
+<pre>
+ERROR: Sorry, AeroFS couldn't launch. Please contact us at support@aerofs.com:
+Exit code 127.
+</pre>
+
+After some fiddling, I noticed they are using Java under the hood and seeing as how they most likely compiled their code with the standard <em>Oracle Java JDK</em>, my default setup <em>OpenJDK</em> from the Arch repository was probably causing problems (I've had problems before with compatibility with <em>OpenJDK</em>). So I uninstalled the <em>OpenJDK</em> and <em>OpenJRE</em> packages and downloaded the latest <a href="http://java.com/en/download/manual.jsp?locale=en">Oracle JRE</a>. After unpacking it to where I wanted (in this case /opt), I unpacked it and added the following lines to my <em>.bash_profile</em>.
+
+
+```bash
+export PATH=$PATH:/opt/my_jre_version/bin/
+export JAVA_HOME=/opt/my_jre_version/
+```
+
+
+After logging out and back in (or running 'source .bash_profile') AeroFS fires up happily.
+
+

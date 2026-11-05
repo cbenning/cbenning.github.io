@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import pathlib
 import re
+import sys
 import urllib.request
 from html.parser import HTMLParser
 
@@ -17,9 +18,15 @@ BASE_URL = "https://benninger.ca"
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 FIXTURES = REPO_ROOT / "tests" / "fixtures"
 
+sys.path.insert(0, str(REPO_ROOT / "tests"))
+from helpers import normalize  # noqa: E402 (needs sys.path set first)
+
 # Static files Jekyll copies verbatim; enumerated locally rather than
 # crawled, since they are binary and already in the repo.
-LOCAL_STATIC_DIRS = ["images"]
+# Searched in order; the first that exists is used. Jekyll served these
+# from the repo root; after the Zola migration they live under static/,
+# which Zola publishes at the same root-relative URLs.
+LOCAL_STATIC_DIR_CANDIDATES = ["images", "static/images"]
 EXTRA_STATIC_FILES = [
     "/llms.txt",
     "/llms-full.txt",
@@ -49,14 +56,23 @@ def sitemap_post_paths() -> list[str]:
     return paths
 
 
+_VOID_ELEMENTS = {
+    "area", "base", "br", "col", "embed", "hr", "img", "input",
+    "link", "meta", "param", "source", "track", "wbr",
+}
+
+
 class EntryContentExtractor(HTMLParser):
     """Pulls plain text and <pre> count out of the first element whose
-    class attribute contains 'entry-content'."""
+    class attribute contains 'entry-content'. Tracks open tags on a
+    stack so a stray/unmatched closing tag (the live posts have a few)
+    doesn't end the capture early, the way a real browser's error
+    recovery would ignore it instead of naive depth counting."""
 
     def __init__(self) -> None:
         super().__init__()
-        self.depth: int | None = None
-        self.cursor = 0
+        self.capturing = False
+        self._stack: list[str] = []
         self.text_parts: list[str] = []
         self.code_blocks = 0
         self.title: str | None = None
@@ -68,26 +84,32 @@ class EntryContentExtractor(HTMLParser):
         classes = (attr_dict.get("class") or "").split()
         if tag == "title":
             self._in_title = True
-        if self.depth is not None:
-            self.cursor += 1
+        if not self.capturing and "entry-content" in classes:
+            self.capturing = True
+            self._stack = [tag]
+            return
+        if self.capturing:
             if tag == "pre":
                 self.code_blocks += 1
-        elif "entry-content" in classes:
-            self.depth = 0
-            self.cursor = 1
+            if tag not in _VOID_ELEMENTS:
+                self._stack.append(tag)
 
     def handle_endtag(self, tag: str) -> None:
         if tag == "title":
             self._in_title = False
-        if self.depth is not None:
-            self.cursor -= 1
-            if self.cursor == 0:
-                self.depth = None
+        if not self.capturing or tag not in self._stack:
+            return
+        while self._stack and self._stack[-1] != tag:
+            self._stack.pop()
+        if self._stack:
+            self._stack.pop()
+        if not self._stack:
+            self.capturing = False
 
     def handle_data(self, data: str) -> None:
         if self._in_title:
             self._title_parts.append(data)
-        if self.depth is not None:
+        if self.capturing:
             self.text_parts.append(data)
 
     def get_title(self) -> str:
@@ -99,7 +121,7 @@ def capture_post(path: str) -> tuple[str, dict]:
     parser = EntryContentExtractor()
     parser.feed(html)
     slug = path.strip("/").removeprefix("posts/")
-    words = re.findall(r"[a-z0-9']+", "".join(parser.text_parts).lower())
+    words = normalize("".join(parser.text_parts))
     return slug, {
         "title": parser.get_title(),
         "words": words,
@@ -130,10 +152,18 @@ def main() -> None:
     for loc in re.findall(r"<loc>([^<]+)</loc>", sitemap_xml):
         urls.append(loc.removeprefix(BASE_URL) or "/")
     urls.extend(EXTRA_STATIC_FILES)
-    for d in LOCAL_STATIC_DIRS:
-        for f in sorted((REPO_ROOT / d).rglob("*")):
-            if f.is_file():
-                urls.append("/" + str(f.relative_to(REPO_ROOT)))
+    images_dir = next(
+        (REPO_ROOT / d for d in LOCAL_STATIC_DIR_CANDIDATES if (REPO_ROOT / d).is_dir()),
+        None,
+    )
+    if images_dir is None:
+        raise FileNotFoundError(
+            f"none of {LOCAL_STATIC_DIR_CANDIDATES} exist under {REPO_ROOT}"
+        )
+    url_root = images_dir.relative_to(REPO_ROOT).parts[-1]  # "images", regardless of parent
+    for f in sorted(images_dir.rglob("*")):
+        if f.is_file():
+            urls.append("/" + url_root + "/" + str(f.relative_to(images_dir)))
     (FIXTURES / "legacy-urls.txt").write_text("\n".join(urls) + "\n")
 
     posts = {}

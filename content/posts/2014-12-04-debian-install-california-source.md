@@ -1,0 +1,45 @@
++++
+title = "Installing the California calendar application on Debian Jessie"
+date = 2014-12-04
+[taxonomies]
+tags = ["Linux", "Debian", "Source"]
++++
+
+Decided I wanted to try out the new <a href="https://wiki.gnome.org/Apps/California">California</a> calendar application from the Yorba folks. Sometimes it can be hard to find ever dev library you need on your platform so I thought I'd write up which packages I needed to install.
+
+<br/>First pull down the source from either their git repo or from <a href="https://wiki.gnome.org/Apps/California">here</a>
+
+Then install the following packages on your debian jessie:
+
+
+```bash
+sudo apt-get install libgtk-3-dev libgee-0.8-dev libecal1.2-dev libsoup2.4-dev libgdata-dev libgoa-1.0-dev libgirepository1.0-dev itstool valac
+```
+
+
+Now just follow the instructions in the INSTALL file:
+
+
+```bash
+./configure
+make
+```
+
+
+For easy usage you can make a .desktop file with something like this(/home/username/.local/share/applications/california.desktop):
+
+
+```bash
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Icon=/usr/share/icons/gnome/48x48/mimetypes/x-office-calendar.png
+Exec=/path-to-california/california-0.2.0/src/california
+Name=California
+Comment=California
+```
+
+
+Now you can just find it in your menu, or in Gnome just hit the 'Super' key and type California.
+
