@@ -56,6 +56,32 @@ class TestHomePage(unittest.TestCase):
         self.assertEqual(post_links[0], "/posts/davlog/")
 
 
+class TestArchivePage(unittest.TestCase):
+    def test_archive(self):
+        html = _read(PUBLIC / "articles" / "index.html")
+        post_links = re.findall(r'href="(/posts/[^"]+/)"', html)
+        self.assertEqual(len(post_links), 40)
+        self.assertIn("2026", html)
+        self.assertIn("2010", html)
+        self.assertLess(html.index("2026"), html.index("2010"))
+
+
+class TestPostPage(unittest.TestCase):
+    def test_post_page(self):
+        html = _read(PUBLIC / "posts" / "davlog" / "index.html")
+        h1 = re.search(r"<h1[^>]*>(.*?)</h1>", html, re.DOTALL)
+        self.assertIsNotNone(h1, "no <h1> found")
+        self.assertIn("davlog", h1.group(1).lower())
+        self.assertIn('<time datetime="2026-10-30', html)
+        self.assertRegex(html, r'<a href="/tags/[^"]+/"')
+
+
+class TestTagsPage(unittest.TestCase):
+    def test_tags_page(self):
+        html = _read(PUBLIC / "tags" / "index.html")
+        self.assertIn('href="/tags/linux/"', html)
+
+
 def _iter_html_pages():
     return sorted(PUBLIC.rglob("*.html"))
 

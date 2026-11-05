@@ -19,11 +19,11 @@
 {% if partial == "project_card" %}
 <article class="project-card" id="{{ p.id }}">
   <div class="project-card-art">
-    <img src="{{ p.art }}" alt="" loading="lazy">
+    <img src="{{ p.art }}" alt="" width="{{ p.art_width }}" height="{{ p.art_height }}" loading="lazy">
   </div>
   <div class="project-card-body">
     <p class="eyebrow">{{ p.category }}{% if p.stars is defined %} &middot; &#9733; {{ p.stars }}{% endif %}</p>
-    <h3>{{ p.name }}</h3>
+    <h2>{{ p.name }}</h2>
     <p class="project-pitch">{{ p.pitch }}</p>
     <p class="project-description">{{ p.description }}</p>
     {% set led_status = p.status %}{% set led_label = true %}{% set led_extra_class = "" %}

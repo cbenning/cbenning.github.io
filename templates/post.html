@@ -1,7 +1,26 @@
 {% extends "base.html" %}
 {% block title %}{{ page.title }}{% endblock title %}
+{% block description %}{{ page.description | default(value=config.description) }}{% endblock description %}
+{% block og_description %}{{ page.description | default(value=config.description) }}{% endblock og_description %}
 {% block content %}
-<article class="post-body">
-{{ page.content | safe }}
+<article>
+  <header class="post-meta">
+    <h1>{{ page.title }}</h1>
+    <time datetime="{{ page.date | date(format="%Y-%m-%d") }}">{{ page.date | date(format="%B %d, %Y") }}</time>
+    {% if page.taxonomies.tags %}
+      {% for tag in page.taxonomies.tags %}
+        <a href="/tags/{{ tag | slugify }}/" class="chip">{{ tag }}</a>
+      {% endfor %}
+    {% endif %}
+  </header>
+  <div class="post-body">
+    {{ page.content | safe }}
+  </div>
+  {% if page.lower or page.higher %}
+  <nav class="post-nav">
+    {% if page.lower %}<a href="{{ page.lower.permalink }}">&larr; {{ page.lower.title }}</a>{% endif %}
+    {% if page.higher %}<a href="{{ page.higher.permalink }}">{{ page.higher.title }} &rarr;</a>{% endif %}
+  </nav>
+  {% endif %}
 </article>
 {% endblock content %}

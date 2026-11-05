@@ -43,6 +43,21 @@ class TestColorContrast(unittest.TestCase):
                     )
 
 
+class TestImagesSized(unittest.TestCase):
+    def test_images_have_explicit_dimensions(self):
+        """Every <img> needs width and height attributes, so the
+        browser reserves its space before the image loads instead of
+        shifting the layout (found via a real Lighthouse CLS of 0.20
+        on /projects/ before this was fixed)."""
+        for page in html_pages():
+            text = page.read_text()
+            for match in re.finditer(r"<img\b[^>]*>", text):
+                tag = match.group(0)
+                with self.subTest(page=str(page.relative_to(PUBLIC)), tag=tag):
+                    self.assertRegex(tag, r'\bwidth="\d+"')
+                    self.assertRegex(tag, r'\bheight="\d+"')
+
+
 class TestNoThirdParty(unittest.TestCase):
     def test_no_third_party(self):
         forbidden = ["fonts.googleapis", "fonts.gstatic", "cloudflareinsights", "disqus", "778-288-9371"]

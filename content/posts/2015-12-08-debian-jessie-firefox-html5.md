@@ -11,7 +11,7 @@ Getting started, if you go to <a href="http://youtube.com/html5">http://youtube.
 
 <br />
 <br />
-<img src="/assets/img/html5-before.png"></img>
+<img src="/assets/img/html5-before.png" width="1676" height="1009" alt="Firefox before enabling HTML5 video">
 <br />
 <br />
 
@@ -72,7 +72,7 @@ Go back to <a href="http://youtube.com/html5">http://youtube.com/html5</a> in fi
 
 <br />
 <br />
-<img src="/assets/img/html5-after.png"></img>
+<img src="/assets/img/html5-after.png" width="1547" height="879" alt="Firefox after enabling HTML5 video">
 <br />
 <br />
 

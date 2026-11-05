@@ -9,6 +9,8 @@ tech = ["Rust", "WebDAV", "git"]
 repo = "https://github.com/cbenning/davlog"
 post = "/posts/davlog/"
 art = "/art/davlog.svg"
+art_width = 64
+art_height = 40
 featured = true
 order = 1
 
@@ -25,6 +27,8 @@ demo = "http://photos.benninger.ca"
 post = "/posts/fussel/"
 stars = 314
 art = "/art/fussel.svg"
+art_width = 64
+art_height = 40
 featured = true
 order = 2
 
@@ -38,5 +42,7 @@ status = "active"
 tech = ["Python"]
 repo = "https://github.com/cbenning/ticktick-to-todoist-migrator"
 art = "/art/ticktick-to-todoist-migrator.svg"
+art_width = 64
+art_height = 40
 featured = true
 order = 3

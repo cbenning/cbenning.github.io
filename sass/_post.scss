@@ -26,10 +26,20 @@
 }
 
 .post-meta {
+  max-width: 72ch;
+  margin: 0 auto 1.6em;
   font-family: $font-mono;
   font-size: 0.82rem;
   color: var(--muted);
-  margin-bottom: 1.6em;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.post-meta h1 {
+  width: 100%;
+  margin: 0 0 4px;
 }
 
 .post-meta a {
@@ -38,4 +48,42 @@
 
 .post-meta a:hover {
   color: var(--led);
+}
+
+.post-nav {
+  max-width: 72ch;
+  margin: 2em auto 0;
+  padding-top: 1.2em;
+  border-top: 2px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: $font-pixel;
+  font-size: 0.82rem;
+}
+
+// Archive page: grouped by year.
+.site-main > h2 {
+  margin-top: 2em;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+.archive-tags {
+  margin-left: 10px;
+}
+
+// Tag index page.
+.tag-index {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+.tag-count {
+  color: var(--muted);
+  margin-left: 4px;
 }
