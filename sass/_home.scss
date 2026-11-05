@@ -125,12 +125,12 @@
   padding: 3px 8px;
   border: 1px solid var(--line);
   background: var(--bg);
-  color: var(--led);
+  color: var(--amber);
   text-decoration: none;
 }
 
 .stars-badge:hover {
-  border-color: var(--led);
+  border-color: var(--amber);
   text-decoration: none;
 }
 

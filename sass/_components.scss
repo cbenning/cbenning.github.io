@@ -170,7 +170,9 @@
   letter-spacing: 0.04em;
 }
 
-// Chip: a small tech tag.
+// Chip: a small tech tag. A chip carrying a --lang colour shows it as
+// a lit dot rather than tinted text, so the label stays legible and
+// the colour reads as part of the LED language.
 .chip {
   display: inline-block;
   font-family: $font-mono;
@@ -180,4 +182,19 @@
   border: 1px solid var(--line);
   border-radius: 0;
   color: var(--muted);
+}
+
+.tech-list .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tech-list .chip::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  flex: none;
+  background: var(--lang, var(--muted));
+  box-shadow: 0 0 5px 1px var(--lang, transparent);
 }

@@ -60,7 +60,16 @@ class TestImagesSized(unittest.TestCase):
 
 class TestNoThirdParty(unittest.TestCase):
     def test_no_third_party(self):
-        forbidden = ["fonts.googleapis", "fonts.gstatic", "cloudflareinsights", "disqus", "778-288-9371"]
+        forbidden = [
+            "fonts.googleapis",
+            "fonts.gstatic",
+            "cloudflareinsights",
+            "disqus",
+            "778-288-9371",
+            # personal contact details stay off the public site
+            "chris@benninger.ca",
+            "mailto:",
+        ]
         texts = [p.read_text() for p in html_pages()]
         if STYLE_CSS.is_file():
             texts.append(STYLE_CSS.read_text())

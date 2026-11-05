@@ -29,10 +29,16 @@
     {% set led_extra_class = "led--breathe" if p.status == "active" else "" %}
     {% include "_led.html" %}
     <ul class="tech-list">
-      {% for t in p.tech %}<li class="chip">{{ t }}</li>{% endfor %}
+      {%- set tech_colors = load_data(path="data/tech-colors.toml") -%}
+      {%- for t in p.tech %}
+      {%- set key = t | lower %}
+      <li class="chip" style="--lang: {{ tech_colors.colors[key] | default(value='#8d9aa6') }}">{{ t }}</li>
+      {%- endfor %}
     </ul>
     <p class="project-links">
-      <a href="{{ p.repo }}">Code</a>
+      {% if p.site is defined %}<a href="{{ p.site }}">Site</a>{% endif %}
+      {% if p.repo is defined %}<a href="{{ p.repo }}">Code</a>{% endif %}
+      {% if p.docs is defined %}<a href="{{ p.docs }}">Docs</a>{% endif %}
       {% if p.demo is defined %}<a href="{{ p.demo }}">Demo</a>{% endif %}
       {% if p.post is defined %}<a href="{{ p.post }}">Post</a>{% endif %}
       {% if p.stars is defined %}

@@ -1,0 +1,37 @@
+# Colour per technology, used for the dot on a tech chip. Keys are
+# lowercased chip labels; anything not listed falls back to a neutral
+# grey, so adding a project never requires touching this file.
+#
+# Language colours follow the conventional ones (same source GitHub
+# uses), so they read as "that's Rust" rather than as decoration.
+[colors]
+rust = "#dea584"
+python = "#4b8bbe"
+go = "#00add8"
+golang = "#00add8"
+scala = "#c22d40"
+c = "#a8b9cc"
+"c++" = "#f34b7d"
+java = "#e76f00"
+javascript = "#f1e05a"
+typescript = "#3178c6"
+perl = "#0298c3"
+php = "#777bb4"
+ruby = "#cc342d"
+shell = "#89e051"
+bash = "#89e051"
+gdscript = "#6a9fd8"
+css = "#563d7c"
+html = "#e34c26"
+
+# Tools and protocols: picked to sit alongside the language colours
+# without pretending to be languages.
+git = "#f1502f"
+webdav = "#8fa3b0"
+docker = "#2496ed"
+kubernetes = "#326ce5"
+linux = "#f5bd0c"
+xen = "#8fa3b0"
+postgres = "#336791"
+redis = "#d82c20"
+kafka = "#8fa3b0"

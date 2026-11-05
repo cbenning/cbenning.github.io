@@ -113,13 +113,9 @@ class TestFeeds(unittest.TestCase):
         for slug in baseline:
             with self.subTest(slug=slug):
                 self.assertIn(f"https://benninger.ca/posts/{slug}/", text)
-        for slug in [
-            "scala-declaring-multiple-vars-as-null-and-enforcing-a-type",
-            "what-is-sphinux-os-",
-            "jvm-more-than-just-java",
-        ]:
-            with self.subTest(slug=slug):
-                self.assertNotIn(f"/posts/{slug}/", text)
+        # the sitemap lists exactly the live posts and nothing else
+        sitemap_posts = set(re.findall(r"https://benninger\.ca/posts/([a-z0-9][a-z0-9-]*)/", text))
+        self.assertEqual(sitemap_posts, set(baseline))
 
 
 if __name__ == "__main__":

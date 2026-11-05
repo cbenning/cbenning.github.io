@@ -19,12 +19,16 @@ class TestProjectsPage(unittest.TestCase):
 
     def test_projects_page_cards(self):
         cards = re.findall(r'<article class="project-card" id="([^"]+)"', self.html)
-        self.assertEqual(cards, ["davlog", "fussel", "ticktick-to-todoist-migrator"])
+        self.assertEqual(
+            cards, ["davlog", "lanby", "fussel", "ticktick-to-todoist-migrator"]
+        )
         for card_id in cards:
             with self.subTest(card_id=card_id):
                 card_html = self._card_html(card_id)
-                self.assertIn("led--active", card_html)
-                self.assertIn("active", card_html)
+                # the status LED always carries a readable text label,
+                # so colour is never the only signal
+                self.assertRegex(card_html, r'class="led led--\w+[^"]*"')
+                self.assertRegex(card_html, r'class="led-label">\w+<')
 
     def _card_html(self, card_id):
         start = self.html.index(f'<article class="project-card" id="{card_id}"')
@@ -46,7 +50,7 @@ class TestHomePage(unittest.TestCase):
         self.assertIn("Chris Benninger", html)
         self.assertIn("/art/hero-workbench.svg", html)
         self.assertIn("led--breathe", html)
-        self.assertEqual(html.count('class="project-card"'), 3)
+        self.assertEqual(html.count('class="project-card"'), 4)
         # Scoped to the latest-posts list, not the whole page -- project
         # cards also link to their own /posts/<slug>/ write-up.
         list_start = html.index('class="post-list"')

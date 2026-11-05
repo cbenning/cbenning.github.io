@@ -4,14 +4,6 @@ import unittest
 
 from helpers import PUBLIC, REPO_ROOT, article_text, count_pre_blocks, load_fixture, normalize
 
-DRAFT_SLUGS = [
-    "scala-declaring-multiple-vars-as-null-and-enforcing-a-type",
-    "what-is-sphinux-os",
-    "what-is-sphinux-os-",
-    "jvm-more-than-just-java",
-]
-
-
 class TestProjectPages(unittest.TestCase):
     def test_legacy_project_pages_build(self):
         for slug in ["workviz", "omega-editor-theme"]:
@@ -69,12 +61,12 @@ class TestPosts(unittest.TestCase):
                     f"{slug}: expected {data['code_blocks']} <pre> blocks, got {count}",
                 )
 
-    def test_drafts_not_built(self):
-        for slug in DRAFT_SLUGS:
-            with self.subTest(slug=slug):
-                self.assertFalse(
-                    (PUBLIC / "posts" / slug).exists(), f"draft was built: {slug}"
-                )
+    def test_only_live_posts_are_built(self):
+        """public/posts/ holds exactly the 40 posts that were live on
+        the Jekyll site -- no more (a draft leaking out) and no fewer
+        (a post lost in migration)."""
+        built = {p.name for p in (PUBLIC / "posts").iterdir() if p.is_dir()}
+        self.assertEqual(built, set(self.baseline))
 
     def test_no_liquid_left(self):
         content_dir = REPO_ROOT / "content"

@@ -15,6 +15,15 @@
 </section>
 
 <section class="home-section">
+  <h2>Latest posts</h2>
+  {% set posts_section = get_section(path="posts/_index.md") %}
+  {% set post_list_pages = posts_section.pages %}
+  {% set post_list_limit = 5 %}
+  {% set partial = "post_list" %}
+  {% include "macros.html" %}
+</section>
+
+<section class="home-section">
   <h2>Projects</h2>
   <div class="project-cards">
     {% set data = load_data(path="data/projects.toml") %}
@@ -25,14 +34,5 @@
       {% endif %}
     {% endfor %}
   </div>
-</section>
-
-<section class="home-section">
-  <h2>Latest posts</h2>
-  {% set posts_section = get_section(path="posts/_index.md") %}
-  {% set post_list_pages = posts_section.pages %}
-  {% set post_list_limit = 5 %}
-  {% set partial = "post_list" %}
-  {% include "macros.html" %}
 </section>
 {% endblock content %}
