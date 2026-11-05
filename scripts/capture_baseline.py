@@ -7,6 +7,7 @@ Run manually, once, before migrating content:
 """
 from __future__ import annotations
 
+import html
 import json
 import pathlib
 import re
@@ -76,14 +77,14 @@ class EntryContentExtractor(HTMLParser):
         self.text_parts: list[str] = []
         self.code_blocks = 0
         self.title: str | None = None
-        self._in_title = False
-        self._title_parts: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attr_dict = dict(attrs)
         classes = (attr_dict.get("class") or "").split()
-        if tag == "title":
-            self._in_title = True
+        if tag == "meta" and attr_dict.get("property") == "og:title":
+            # The page <title> has a " - <site title>" suffix; og:title
+            # is the clean post title.
+            self.title = attr_dict.get("content")
         if not self.capturing and "entry-content" in classes:
             self.capturing = True
             self._stack = [tag]
@@ -95,8 +96,6 @@ class EntryContentExtractor(HTMLParser):
                 self._stack.append(tag)
 
     def handle_endtag(self, tag: str) -> None:
-        if tag == "title":
-            self._in_title = False
         if not self.capturing or tag not in self._stack:
             return
         while self._stack and self._stack[-1] != tag:
@@ -107,13 +106,11 @@ class EntryContentExtractor(HTMLParser):
             self.capturing = False
 
     def handle_data(self, data: str) -> None:
-        if self._in_title:
-            self._title_parts.append(data)
         if self.capturing:
             self.text_parts.append(data)
 
     def get_title(self) -> str:
-        return "".join(self._title_parts).strip()
+        return html.unescape(self.title or "").strip()
 
 
 def capture_post(path: str) -> tuple[str, dict]:

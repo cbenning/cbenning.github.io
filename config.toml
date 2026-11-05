@@ -1,7 +1,8 @@
 base_url = "https://benninger.ca"
 title = "Chris Benninger"
 description = "Code, utilities and other projects"
-generate_feeds = false
+generate_feeds = true
+feed_filenames = ["atom.xml", "feed.xml", "llms.txt", "llms-full.txt"]
 
 taxonomies = [{ name = "tags" }]
 

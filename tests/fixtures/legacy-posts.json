@@ -1,7 +1,7 @@
 {
   "adding-support-for-an-unsupported-power-manager-in-emulab": {
     "code_blocks": 3,
-    "title": "Adding support for an unsupported power controller in Emulab \u2013 The Blog of Benninger",
+    "title": "Adding support for an unsupported power controller in Emulab",
     "words": [
       "as",
       "a",
@@ -589,7 +589,7 @@
   },
   "adding-support-for-unsupported-switches-to-emulab": {
     "code_blocks": 1,
-    "title": "Adding support for unsupported switches to Emulab \u2013 The Blog of Benninger",
+    "title": "Adding support for unsupported switches to Emulab",
     "words": [
       "emulab",
       "is",
@@ -1350,7 +1350,7 @@
   },
   "aerofs-problems-on-archlinux": {
     "code_blocks": 2,
-    "title": "AeroFS on Linux \u2013 The Blog of Benninger",
+    "title": "AeroFS on Linux",
     "words": [
       "aerofs",
       "is",
@@ -1609,7 +1609,7 @@
   },
   "akkascala-deploying-an-actor-remotely": {
     "code_blocks": 3,
-    "title": "Akka+Scala: Deploying an actor remotely \u2013 The Blog of Benninger",
+    "title": "Akka+Scala: Deploying an actor remotely",
     "words": [
       "in",
       "my",
@@ -1831,7 +1831,7 @@
   },
   "attachmates-canadian-offices": {
     "code_blocks": 0,
-    "title": "Attachmate's Canadian Offices \u2013 The Blog of Benninger",
+    "title": "Attachmate's Canadian Offices",
     "words": [
       "i",
       "was",
@@ -1991,7 +1991,7 @@
   },
   "bittorrent-sync-on-dns320l-with-funplug": {
     "code_blocks": 3,
-    "title": "Setting up BitTorrent Sync on a DNS-320L NAS with fun_plug 0.7 \u2013 The Blog of Benninger",
+    "title": "Setting up BitTorrent Sync on a DNS-320L NAS with fun_plug 0.7",
     "words": [
       "this",
       "information",
@@ -2182,7 +2182,7 @@
   },
   "building-xen-3-4-testing-and-linux-2-6-31-10-domain0-kernel-on-debian-testing": {
     "code_blocks": 20,
-    "title": "Building Xen-3.4 testing and linux-2.6.31.10 domain0 kernel on Debian-testing \u2013 The Blog of Benninger",
+    "title": "Building Xen-3.4 testing and linux-2.6.31.10 domain0 kernel on Debian-testing",
     "words": [
       "this",
       "is",
@@ -3228,7 +3228,7 @@
   },
   "celery-serializer-pydantic": {
     "code_blocks": 6,
-    "title": "Automatic Serialization with Celery and Pydantic Models \u2013 The Blog of Benninger",
+    "title": "Automatic Serialization with Celery and Pydantic Models",
     "words": [
       "automatic",
       "serialization",
@@ -3567,7 +3567,7 @@
   },
   "cloud-2012-and-sophoslabs-and-scala-oh-my": {
     "code_blocks": 0,
-    "title": "Cloud 2012 and SophosLabs and Scala, Oh my! \u2013 The Blog of Benninger",
+    "title": "Cloud 2012 and SophosLabs and Scala, Oh my!",
     "words": [
       "it's",
       "been",
@@ -3776,7 +3776,7 @@
   },
   "converting-those-pesky-m4a-files-to-mp3-on-linux": {
     "code_blocks": 1,
-    "title": "Converting those pesky .m4a files to .mp3 on Linux \u2013 The Blog of Benninger",
+    "title": "Converting those pesky .m4a files to .mp3 on Linux",
     "words": [
       "here",
       "is",
@@ -3825,7 +3825,7 @@
   },
   "creating-an-akka-actor-from-a-dynamically-loaded-jar-file-in-scala": {
     "code_blocks": 4,
-    "title": "Creating an Akka actor from a dynamically loaded Jar file in Scala \u2013 The Blog of Benninger",
+    "title": "Creating an Akka actor from a dynamically loaded Jar file in Scala",
     "words": [
       "creating",
       "actors",
@@ -4203,7 +4203,7 @@
   },
   "davlog": {
     "code_blocks": 1,
-    "title": "davlog: a WebDAV server where every save is a git commit \u2013 The Blog of Benninger",
+    "title": "davlog: a WebDAV server where every save is a git commit",
     "words": [
       "why",
       "i",
@@ -4641,7 +4641,7 @@
   },
   "debian-64bit-crashing-google-hangouts-plugin": {
     "code_blocks": 2,
-    "title": "Google Hangouts plugin crashes in Debian Testing 64-bit \u2013 The Blog of Benninger",
+    "title": "Google Hangouts plugin crashes in Debian Testing 64-bit",
     "words": [
       "after",
       "an",
@@ -4876,7 +4876,7 @@
   },
   "debian-install-california-source": {
     "code_blocks": 3,
-    "title": "Installing the California calendar application on Debian Jessie \u2013 The Blog of Benninger",
+    "title": "Installing the California calendar application on Debian Jessie",
     "words": [
       "decided",
       "i",
@@ -5060,7 +5060,7 @@
   },
   "debian-jessie-firefox-html5": {
     "code_blocks": 5,
-    "title": "Making HTML5 work with Firefox on Debian Jessie \u2013 The Blog of Benninger",
+    "title": "Making HTML5 work with Firefox on Debian Jessie",
     "words": [
       "i",
       "was",
@@ -5298,7 +5298,7 @@
   },
   "debian-squeeze-xen-4-kernel-2-6-32-27-misery": {
     "code_blocks": 0,
-    "title": "Debian Squeeze + Xen 4 + Kernel 2.6.32.27 = Misery \u2013 The Blog of Benninger",
+    "title": "Debian Squeeze + Xen 4 + Kernel 2.6.32.27 = Misery",
     "words": [
       "i",
       "recently",
@@ -5812,7 +5812,7 @@
   },
   "debugging-kernel-hard-locks-with-netconsole": {
     "code_blocks": 3,
-    "title": "Debugging Kernel hard locks with netconsole \u2013 The Blog of Benninger",
+    "title": "Debugging Kernel hard locks with netconsole",
     "words": [
       "there",
       "is",
@@ -6304,7 +6304,7 @@
   },
   "dune-awakening-server-proxmox": {
     "code_blocks": 38,
-    "title": "Self-Hosting a Dune: Awakening Server on Proxmox / KVM \u2013 The Blog of Benninger",
+    "title": "Self-Hosting a Dune: Awakening Server on Proxmox / KVM",
     "words": [
       "styled",
       "table",
@@ -9128,7 +9128,7 @@
   },
   "force-dns-go-through-pihole": {
     "code_blocks": 4,
-    "title": "How to force all your outgoing DNS queries to go through a pihole \u2013 The Blog of Benninger",
+    "title": "How to force all your outgoing DNS queries to go through a pihole",
     "words": [
       "the",
       "pi",
@@ -10019,7 +10019,7 @@
   },
   "fussel": {
     "code_blocks": 0,
-    "title": "Fussel Project \u2013 The Blog of Benninger",
+    "title": "Fussel Project",
     "words": [
       "fussel",
       "gallery",
@@ -10087,7 +10087,7 @@
   },
   "generating-ioctl-commands-for-char-drivers": {
     "code_blocks": 3,
-    "title": "Generating IOCTL commands for char drivers \u2013 The Blog of Benninger",
+    "title": "Generating IOCTL commands for char drivers",
     "words": [
       "in",
       "a",
@@ -10426,7 +10426,7 @@
   },
   "graduation-maitland-and-career-seeking": {
     "code_blocks": 0,
-    "title": "Graduation, Maitland and career seeking. \u2013 The Blog of Benninger",
+    "title": "Graduation, Maitland and career seeking.",
     "words": [
       "well",
       "it's",
@@ -10541,7 +10541,7 @@
   },
   "how-to-force-snow-leopard-to-consider-a-shell-script-safe": {
     "code_blocks": 1,
-    "title": "How to Force Snow Leopard+ to consider a shell script safe. \u2013 The Blog of Benninger",
+    "title": "How to Force Snow Leopard+ to consider a shell script safe.",
     "words": [
       "you",
       "can",
@@ -10646,7 +10646,7 @@
   },
   "how-to-get-answers-on-a-developer-or-help-irc-channel": {
     "code_blocks": 0,
-    "title": "How to get answers on a developer or help IRC channel. \u2013 The Blog of Benninger",
+    "title": "How to get answers on a developer or help IRC channel.",
     "words": [
       "i've",
       "spent",
@@ -11058,7 +11058,7 @@
   },
   "importerror-no-module-named-xen-on-fresh-compiled-xen-4-0-1-with-debianubuntu": {
     "code_blocks": 2,
-    "title": "ImportError: No module named xen... on fresh compiled Xen 4.0.1 with Debian/Ubuntu \u2013 The Blog of Benninger",
+    "title": "ImportError: No module named xen... on fresh compiled Xen 4.0.1 with Debian/Ubuntu",
     "words": [
       "this",
       "took",
@@ -11217,7 +11217,7 @@
   },
   "intel-throttling": {
     "code_blocks": 5,
-    "title": "Intel CPU Throttling \u2013 The Blog of Benninger",
+    "title": "Intel CPU Throttling",
     "words": [
       "finding",
       "a",
@@ -11814,7 +11814,7 @@
   },
   "keeping-files-safe-and-available-with-unison-and-backuppc": {
     "code_blocks": 1,
-    "title": "Keeping files safe and available with Unison and BackupPC \u2013 The Blog of Benninger",
+    "title": "Keeping files safe and available with Unison and BackupPC",
     "words": [
       "over",
       "the",
@@ -12705,7 +12705,7 @@
   },
   "omega-eclipse-theme-v0-1": {
     "code_blocks": 0,
-    "title": "Omega Eclipse Theme v0.1 \u2013 The Blog of Benninger",
+    "title": "Omega Eclipse Theme v0.1",
     "words": [
       "thanks",
       "to",
@@ -12732,7 +12732,7 @@
   },
   "omega-gedit-theme-v0-1": {
     "code_blocks": 0,
-    "title": "Omega Gedit Theme v0.1 \u2013 The Blog of Benninger",
+    "title": "Omega Gedit Theme v0.1",
     "words": [
       "omega",
       "is",
@@ -12805,7 +12805,7 @@
   },
   "pyvizer": {
     "code_blocks": 0,
-    "title": "Workviz \u2013 The Blog of Benninger",
+    "title": "Workviz",
     "words": [
       "workviz",
       "is",
@@ -12898,7 +12898,7 @@
   },
   "sbx00-azalia-hda-sound-with-debian-squeeze": {
     "code_blocks": 1,
-    "title": "SBx00 Azalia HDA sound with Debian Squeeze \u2013 The Blog of Benninger",
+    "title": "SBx00 Azalia HDA sound with Debian Squeeze",
     "words": [
       "i",
       "got",
@@ -13045,7 +13045,7 @@
   },
   "syfor-com-benninger-ca": {
     "code_blocks": 0,
-    "title": "syfor.com --> benninger.ca \u2013 The Blog of Benninger",
+    "title": "syfor.com --> benninger.ca",
     "words": [
       "the",
       "syfor",
@@ -13080,7 +13080,7 @@
   },
   "system76-galago-pro-review-developer": {
     "code_blocks": 0,
-    "title": "A Developer's review of the System76 Galago Pro \u2013 The Blog of Benninger",
+    "title": "A Developer's review of the System76 Galago Pro",
     "words": [
       "i",
       "have",
@@ -14164,7 +14164,7 @@
   },
   "tomcat-authbind-gentoo": {
     "code_blocks": 7,
-    "title": "Setting up Tomcat on port 80 on Gentoo \u2013 The Blog of Benninger",
+    "title": "Setting up Tomcat on port 80 on Gentoo",
     "words": [
       "today",
       "i",
@@ -14584,7 +14584,7 @@
   },
   "tomcat-vertica-jdbc-gentoo": {
     "code_blocks": 3,
-    "title": "Tomcat 7 on Gentoo cannot find Vertica JDBC Driver \u2013 The Blog of Benninger",
+    "title": "Tomcat 7 on Gentoo cannot find Vertica JDBC Driver",
     "words": [
       "i've",
       "been",
@@ -14827,7 +14827,7 @@
   },
   "udev-and-optiarc-high-cpu-utilization-fix": {
     "code_blocks": 0,
-    "title": "Udev and Optiarc high-cpu utilization fix \u2013 The Blog of Benninger",
+    "title": "Udev and Optiarc high-cpu utilization fix",
     "words": [
       "for",
       "months",
@@ -14955,7 +14955,7 @@
   },
   "vim-use-selected-text-as-input-to-a-shell-command": {
     "code_blocks": 0,
-    "title": "Vim: Use selected text as input to a shell command \u2013 The Blog of Benninger",
+    "title": "Vim: Use selected text as input to a shell command",
     "words": [
       "this",
       "is",
@@ -15071,7 +15071,7 @@
   },
   "virtualizing-osx-nic-card-setup": {
     "code_blocks": 1,
-    "title": "Virtualizing OSX: Nic card setup \u2013 The Blog of Benninger",
+    "title": "Virtualizing OSX: Nic card setup",
     "words": [
       "if",
       "you",
@@ -15165,7 +15165,7 @@
   },
   "winter-olympics-silverlight-streams-now-working-with-linux": {
     "code_blocks": 1,
-    "title": "Winter Olympics Silverlight streams now working with linux! \u2013 The Blog of Benninger",
+    "title": "Winter Olympics Silverlight streams now working with linux!",
     "words": [
       "i",
       "finally",
@@ -15234,7 +15234,7 @@
   },
   "writing-to-a-file-from-the-kernel": {
     "code_blocks": 1,
-    "title": "Writing to a file from the Kernel \u2013 The Blog of Benninger",
+    "title": "Writing to a file from the Kernel",
     "words": [
       "writing",
       "to",

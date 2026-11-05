@@ -116,7 +116,7 @@ Also you need to install the modules
 Once that is done, look in the /boot directory
 
 ```sh
-> cd /boot &amp;&amp; ls
+> cd /boot && ls
 ```
 
 
