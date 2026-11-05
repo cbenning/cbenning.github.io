@@ -9,7 +9,11 @@
   --muted: #7b847f;
   --heading: #f1f5ef;
   --led: #4dff91;
+  // Two-stage glow: a tight core plus a wide, faint halo. The halo is
+  // what makes a lit element read as an LED in a dark room rather than
+  // a flat coloured dot.
   --led-glow: rgba(77, 255, 145, 0.55);
+  --led-glow-wide: rgba(77, 255, 145, 0.18);
   --amber: #ffb000;
   --red: #ff4b3e;
 }

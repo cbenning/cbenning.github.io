@@ -1,6 +1,19 @@
 // Home page hero and the project-cards grid (home + /projects/).
+// Copy and art sit side by side on wide screens (as in the approved
+// mockup) and stack on narrow ones.
 .hero {
   padding: 24px 0 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  gap: 32px;
+  align-items: center;
+}
+
+@media (max-width: 760px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
 }
 
 .hero h1 {
@@ -22,14 +35,15 @@
 
 .hero-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-  margin: 0 0 28px;
+  margin: 0;
 }
 
 .hero-art {
   image-rendering: pixelated;
-  max-width: 420px;
   width: 100%;
+  height: auto;
 }
 
 .home-section {
@@ -51,7 +65,7 @@
   background: var(--panel);
   border: 2px solid var(--line);
   border-radius: 0;
-  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 5px 5px 0 #000;
   overflow: hidden;
   display: flex;
   flex-direction: column;

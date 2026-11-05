@@ -26,7 +26,8 @@
     <h2>{{ p.name }}</h2>
     <p class="project-pitch">{{ p.pitch }}</p>
     <p class="project-description">{{ p.description }}</p>
-    {% set led_status = p.status %}{% set led_label = true %}{% set led_extra_class = "" %}
+    {% set led_status = p.status %}{% set led_label = true %}
+    {% set led_extra_class = "led--breathe" if p.status == "active" else "" %}
     {% include "_led.html" %}
     <ul class="tech-list">
       {% for t in p.tech %}<li class="chip">{{ t }}</li>{% endfor %}

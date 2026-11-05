@@ -3,18 +3,15 @@
 {% block og_description %}{{ section.description }}{% endblock og_description %}
 {% block content %}
 <section class="hero">
-  <p class="eyebrow">
-    {% set led_status = "active" %}{% set led_label = false %}{% set led_extra_class = "led--breathe" %}
-    {% include "_led.html" %}
-    sys: online / victoria bc
-  </p>
-  <h1>Chris Benninger</h1>
-  <p class="hero-role">Software architect</p>
-  <p class="hero-intro">Production systems by day. Home-lab experiments and side projects by night.</p>
-  <p class="hero-actions">
-    <a href="/projects/" class="btn btn--primary">SEE PROJECTS</a>
-    <a href="/articles/" class="btn btn--quiet">READ POSTS</a>
-  </p>
+  <div class="hero-copy">
+    <h1>Chris Benninger</h1>
+    <p class="hero-role">Software architect</p>
+    <p class="hero-intro">Production systems by day. Home-lab experiments and side projects by night.</p>
+    <p class="hero-actions">
+      <a href="/projects/" class="btn btn--primary">SEE PROJECTS</a>
+      <a href="/articles/" class="btn btn--quiet">READ POSTS</a>
+    </p>
+  </div>
   <img class="hero-art" src="/art/hero-workbench.svg" width="96" height="64" alt="Pixel art of a workbench with a desk lamp and an open server chassis" loading="eager">
 </section>
 
