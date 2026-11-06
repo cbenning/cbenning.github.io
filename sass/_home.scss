@@ -73,6 +73,13 @@
 
 .project-card-body {
   padding: 16px 18px 18px;
+  // The grid stretches every card in a row to the tallest one's height
+  // (see .project-cards above). Without this, that extra height just
+  // becomes dead space below the body instead of moving the links row
+  // down with it, so the links sit at a different height card to card.
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 // Card titles use the mono face, not the pixel face: at this size the
@@ -119,7 +126,7 @@
   // now real words (a domain, "GitHub", "Blog post"), not glyphs.
   font-family: $font-mono;
   font-size: 0.86rem;
-  margin: 0;
+  margin: auto 0 0;
 }
 
 // Site/Code/Docs/Demo/Post: a filled pill, not coloured text on a
