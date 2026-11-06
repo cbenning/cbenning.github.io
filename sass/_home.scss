@@ -113,10 +113,28 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   font-family: $font-pixel;
   font-size: 1.02rem;
   margin: 0;
+}
+
+// Site/Code/Docs/Demo/Post: a bordered pill in the same weight as the
+// stars badge below, instead of a plain link easy to miss next to it.
+.project-links a:not(.stars-badge) {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--led);
+  text-decoration: none;
+}
+
+.project-links a:not(.stars-badge):hover {
+  border-color: var(--led);
+  box-shadow: 0 0 5px 1px var(--led-glow);
+  text-decoration: none;
 }
 
 // GitHub stars: a readable badge at the end of the links row, not a
