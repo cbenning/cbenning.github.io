@@ -1,0 +1,21 @@
+A = #0e0d10
+B = #2c2f3d
+D = #0a110e
+E = #4dff91 glow
+
+................
+................
+.AAAAAAAAAAAAAA.
+.ADDDDDDDDDDDDA.
+.ADDDDDDDDDDDDA.
+.ADEEEEEEEDDDDA.
+.ADDDDDDDDDDDDA.
+.ADEEEEEDDDDDDA.
+.ADDDDDDDDDDDDA.
+.ADDDDDDDDDDDDA.
+.ABBBBBBBBBBEBA.
+.AAAAAAAAAAAAAA.
+.......BB.......
+.....BBBBBB.....
+................
+................
