@@ -9,16 +9,19 @@
   branches need both.
 
   partial = "project_card": one compact project card, for the home
-    page. The title links to its larger write-up on /projects/.
+    page. The title links to its larger write-up on /projects/, which
+    is also where the Site/GitHub/Docs/etc. link pills live -- the
+    card itself shows no links of its own, to stay compact.
     p: an entry from data/projects.toml (id, name, pitch, category,
       status, tech, art, and optional repo, site, docs, demo, post,
-      stars, description -- description is not shown here, only on
-      project_section).
+      stars, description -- none of the link fields or description
+      are shown here, only on project_section).
 
   partial = "project_section": one full-width project section, for
-    /projects/. Same `p` as project_card, but shows `description`
-    too (when present) for more context, and the title is plain text
-    -- the anchor is the thing being linked to, not a link itself.
+    /projects/. Same `p` as project_card, but shows `description` and
+    the link pills (via _project_links.html) for more context, and
+    the title is plain text -- the anchor is the thing being linked
+    to, not a link itself.
 
   partial = "post_list": a list of posts.
     post_list_pages: a list of post pages (title, path, date).
@@ -38,6 +41,9 @@
       {% include "_led.html" %}
     </div>
     <p class="project-pitch">{{ p.pitch }}</p>
+    {#- No link pills here: Site/GitHub/Docs/etc. live on the
+       project's full section on /projects/, which this card's title
+       already links to -- the compact card stays compact. #}
     <ul class="tech-list">
       {%- set tech_colors = load_data(path="data/tech-colors.toml") -%}
       {%- for t in p.tech %}
@@ -45,7 +51,6 @@
       <li class="chip" style="--lang: {{ tech_colors.colors[key] | default(value='#8d9aa6') }}">{{ t }}</li>
       {%- endfor %}
     </ul>
-    {% include "_project_links.html" %}
   </div>
 </article>
 

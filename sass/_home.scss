@@ -197,12 +197,17 @@
   }
 }
 
+// On the compact home card this is the last thing in the body (no
+// link pills there -- see macros.html), so it's the one pinned to
+// the bottom of .project-card-body's flex column (margin-top: auto);
+// on /projects/ the body isn't a flex column, so this is a no-op and
+// .project-links (below) is the last element instead.
 .tech-list {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 0 0 14px;
+  margin: auto 0 14px;
   padding: 0;
 }
 
@@ -216,7 +221,7 @@
   // now real words (a domain, "GitHub", "Blog post"), not glyphs.
   font-family: $font-mono;
   font-size: 0.86rem;
-  margin: auto 0 0;
+  margin: 0;
 }
 
 // Site/Code/Docs/Demo/Post: a filled pill, not coloured text on a
