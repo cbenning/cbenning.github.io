@@ -41,12 +41,14 @@
 
 .project-cards {
   display: grid;
-  // minmax(300px, 1fr) alone can't shrink below 300px, so on a narrow
-  // phone (content column under ~340px, once .site-main's padding is
-  // subtracted) the card overflows the viewport. min(300px, 100%) caps
-  // the floor at the available width.
-  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-  gap: 20px;
+  // minmax(240px, 1fr) alone can't shrink below 240px, so on a narrow
+  // phone (content column under ~280px, once .site-main's padding is
+  // subtracted) the card overflows the viewport. min(240px, 100%) caps
+  // the floor at the available width. 240px (was 300px): cards only
+  // carry a one-line pitch now, not a full paragraph, so they read
+  // better narrower -- more fit per row instead of sitting half-empty.
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 16px;
 }
 
 .project-card {
@@ -72,7 +74,7 @@
 }
 
 .project-card-body {
-  padding: 16px 18px 18px;
+  padding: 14px 16px 16px;
   // The grid stretches every card in a row to the tallest one's height
   // (see .project-cards above). Without this, that extra height just
   // becomes dead space below the body instead of moving the links row
@@ -85,26 +87,24 @@
 // Card titles use the mono face, not the pixel face: at this size the
 // pixel font is hard to read, and the names carry real information.
 .project-card h2 {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   font-family: $font-mono;
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1.12rem;
   letter-spacing: 0;
   color: var(--heading);
 }
 
+// The card's one line of copy: pitch and description used to be two
+// separate paragraphs; now it's just this, so it carries the
+// description's muted colour and keeps a little more room below it.
 .project-pitch {
-  margin: 0 0 10px;
-}
-
-.project-description {
   color: var(--muted);
-  font-size: 0.92rem;
   margin: 0 0 12px;
 }
 
 .project-card .led-wrap {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .tech-list {

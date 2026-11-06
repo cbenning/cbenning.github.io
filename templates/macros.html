@@ -24,7 +24,6 @@
   <div class="project-card-body">
     <h2>{{ p.name }}</h2>
     <p class="project-pitch">{{ p.pitch }}</p>
-    <p class="project-description">{{ p.description }}</p>
     {% set led_status = p.status %}{% set led_label = true %}
     {% set led_extra_class = "led--breathe" if p.status == "active" else "" %}
     {% include "_led.html" %}
