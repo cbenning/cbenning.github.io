@@ -114,25 +114,43 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  font-family: $font-pixel;
-  font-size: 1.02rem;
+  // Mono, not pixel: same reasoning as project-card h2 above -- the
+  // pixel face is hard to read at small sizes, and these labels are
+  // now real words (a domain, "GitHub", "Blog post"), not glyphs.
+  font-family: $font-mono;
+  font-size: 0.86rem;
   margin: 0;
 }
 
-// Site/Code/Docs/Demo/Post: a bordered pill in the same weight as the
-// stars badge below, instead of a plain link easy to miss next to it.
+// Site/Code/Docs/Demo/Post: a filled pill, not coloured text on a
+// dark background -- the led-green text alone read as low-contrast
+// body copy rather than a button. Text stays neutral and legible;
+// the accent dot carries the colour instead, same split already used
+// by .tech-list .chip.
 .project-links a:not(.stars-badge) {
   display: inline-flex;
   align-items: center;
-  padding: 3px 9px;
+  gap: 6px;
+  padding: 4px 10px;
   border: 1px solid var(--line);
   background: var(--bg);
-  color: var(--led);
+  color: var(--heading);
+  font-weight: 700;
   text-decoration: none;
+}
+
+.project-links a:not(.stars-badge)::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  flex: none;
+  background: var(--led);
+  box-shadow: 0 0 4px 1px var(--led-glow);
 }
 
 .project-links a:not(.stars-badge):hover {
   border-color: var(--led);
+  background: var(--led-glow-wide);
   box-shadow: 0 0 5px 1px var(--led-glow);
   text-decoration: none;
 }
