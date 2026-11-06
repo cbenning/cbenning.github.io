@@ -36,11 +36,21 @@
       {%- endfor %}
     </ul>
     <p class="project-links">
-      {% if p.site is defined %}<a href="{{ p.site }}">Site</a>{% endif %}
-      {% if p.repo is defined %}<a href="{{ p.repo }}">Code</a>{% endif %}
-      {% if p.docs is defined %}<a href="{{ p.docs }}">Docs</a>{% endif %}
-      {% if p.demo is defined %}<a href="{{ p.demo }}">Demo</a>{% endif %}
-      {% if p.post is defined %}<a href="{{ p.post }}">Post</a>{% endif %}
+      {#- Labels name the actual destination (its domain, or "GitHub" for
+         a repo, or "Blog post" for an internal page) instead of a bare
+         category word like "Code" or "Docs", so the link carries real
+         information rather than just acting as a nav label. -#}
+      {% if p.site is defined %}
+      {%- set host = p.site | replace(from="https://", to="") | replace(from="http://", to="") | split(pat="/") | first -%}
+      <a href="{{ p.site }}">{{ host }} <span aria-hidden="true">&#8599;</span></a>
+      {%- endif %}
+      {% if p.repo is defined %}<a href="{{ p.repo }}">GitHub <span aria-hidden="true">&#8599;</span></a>{% endif %}
+      {% if p.docs is defined %}<a href="{{ p.docs }}">Docs <span aria-hidden="true">&#8599;</span></a>{% endif %}
+      {% if p.demo is defined %}
+      {%- set host = p.demo | replace(from="https://", to="") | replace(from="http://", to="") | split(pat="/") | first -%}
+      <a href="{{ p.demo }}">{{ host }} <span aria-hidden="true">&#8599;</span></a>
+      {%- endif %}
+      {% if p.post is defined %}<a href="{{ p.post }}">Blog post <span aria-hidden="true">&#8599;</span></a>{% endif %}
       {% if p.stars is defined and p.repo is defined %}
       <a class="stars-badge" href="{{ p.repo }}/stargazers">
         <span aria-hidden="true">&#9733;</span> {{ p.stars }}
