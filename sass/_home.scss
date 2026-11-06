@@ -41,7 +41,11 @@
 
 .project-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  // minmax(300px, 1fr) alone can't shrink below 300px, so on a narrow
+  // phone (content column under ~340px, once .site-main's padding is
+  // subtracted) the card overflows the viewport. min(300px, 100%) caps
+  // the floor at the available width.
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 20px;
 }
 
