@@ -40,7 +40,9 @@ When adding a new reusable fragment, follow this same pattern and document the v
 
 ### Pixel art pipeline
 
-`art/*.txt` (hand-authored text grids: a palette header, then rows of characters, `.` = transparent) → `scripts/pixelart.py art static/art` → `static/art/*.svg`. The SVGs are committed; `tests/test_pixelart.py::test_generated_files_current` fails the build if a `.txt` source and its `.svg` have drifted apart, so always regenerate after editing an art source. Art files are authored as small Python scripts using `scripts/pixelart.py`'s `Grid` helper during design (see commit history for examples) and then hand-tuned; there is no separate "art builder" committed to the repo.
+The home-page hero is the exception: `static/art/hero-desk.png` is a hand-made PNG (338×162, exact 49-colour indexed palette), not generated — too many colours at that size to be sensible as SVG rects. If you replace it, keep it an indexed PNG with the exact source palette (a generic quantizer shifts colours), and update the `width`/`height` on the `<img>` in `templates/index.html`; `tests/test_pixelart.py::TestHeroImage` fails if they disagree.
+
+The project-card art follows the generated pipeline: `art/*.txt` (hand-authored text grids: a palette header, then rows of characters, `.` = transparent) → `scripts/pixelart.py art static/art` → `static/art/*.svg`. The SVGs are committed; `tests/test_pixelart.py::test_generated_files_current` fails the build if a `.txt` source and its `.svg` have drifted apart, so always regenerate after editing an art source. Art files are authored as small Python scripts using `scripts/pixelart.py`'s `Grid` helper during design (see commit history for examples) and then hand-tuned; there is no separate "art builder" committed to the repo.
 
 ### Design tokens and CSS
 

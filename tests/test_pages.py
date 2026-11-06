@@ -83,7 +83,7 @@ class TestHomePage(unittest.TestCase):
     def test_home(self):
         html = _read(PUBLIC / "index.html")
         self.assertIn("Chris Benninger", html)
-        self.assertIn("/art/hero-workbench.svg", html)
+        self.assertIn("/art/hero-desk.png", html)
         self.assertIn("led--breathe", html)
         self.assertEqual(html.count('class="project-card"'), 4)
         # Scoped to the latest-posts list, not the whole page -- project
