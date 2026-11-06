@@ -1,4 +1,6 @@
 import pathlib
+import re
+import struct
 import sys
 import unittest
 
@@ -84,8 +86,8 @@ class TestGeneratedArt(unittest.TestCase):
 
     def test_art_sizes(self):
         sizes = {
-            "hero-workbench": (224, 72),
             "davlog": (64, 40),
+            "lanby": (64, 40),
             "fussel": (64, 40),
             "ticktick-to-todoist-migrator": (64, 40),
         }
@@ -94,6 +96,22 @@ class TestGeneratedArt(unittest.TestCase):
                 art = pixelart.parse_art((ART_DIR / f"{stem}.txt").read_text())
                 self.assertEqual(len(art.rows[0]), width)
                 self.assertEqual(len(art.rows), height)
+
+
+
+class TestHeroImage(unittest.TestCase):
+    def test_hero_png_matches_its_declared_size(self):
+        """The hero is a hand-made PNG, not generated from art/*.txt.
+        Its width/height attributes in index.html must match the real
+        file, or the browser reserves the wrong space and the page
+        shifts as it loads."""
+        png = (REPO_ROOT / "static" / "art" / "hero-desk.png").read_bytes()
+        self.assertEqual(png[:8], b"\x89PNG\r\n\x1a\n")
+        width, height = struct.unpack(">II", png[16:24])
+        html = (REPO_ROOT / "templates" / "index.html").read_text()
+        tag = re.search(r'<img class="hero-art"[^>]*>', html).group(0)
+        self.assertIn(f'width="{width}"', tag)
+        self.assertIn(f'height="{height}"', tag)
 
 
 if __name__ == "__main__":

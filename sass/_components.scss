@@ -129,7 +129,8 @@
 }
 
 .led--maintenance,
-.led--experimental {
+.led--experimental,
+.led--beta {
   background: var(--amber);
   box-shadow: 0 0 6px 2px var(--amber-glow), 0 0 16px 5px var(--amber-glow-wide);
 }

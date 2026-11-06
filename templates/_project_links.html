@@ -1,0 +1,39 @@
+{#
+  Project link pills (Site/GitHub/Docs/Demo/Blog post + stars badge).
+  Split out of macros.html so both the compact project_card and the
+  larger project_section partial can use it without duplicating the
+  block -- Tera rejects a template including itself, same reason
+  _led.html lives on its own (see macros.html's header comment).
+
+  p: an entry from data/projects.toml (optional repo, site, docs,
+    demo, post, stars -- links render only for fields that are
+    present).
+#}
+<p class="project-links">
+  {#- Labels name the actual destination (its domain, or "GitHub" for
+     a repo, or "Blog post" for an internal page) instead of a bare
+     category word like "Code" or "Docs", so the link carries real
+     information rather than just acting as a nav label. -#}
+  {% if p.site is defined %}
+  {%- set host = p.site | replace(from="https://", to="") | replace(from="http://", to="") | split(pat="/") | first -%}
+  <a href="{{ p.site }}">{{ host }} <span aria-hidden="true">&#8599;</span></a>
+  {%- endif %}
+  {% if p.repo is defined %}<a href="{{ p.repo }}">GitHub <span aria-hidden="true">&#8599;</span></a>{% endif %}
+  {% if p.docs is defined %}<a href="{{ p.docs }}">Docs <span aria-hidden="true">&#8599;</span></a>{% endif %}
+  {% if p.demo is defined %}
+  {%- set host = p.demo | replace(from="https://", to="") | replace(from="http://", to="") | split(pat="/") | first -%}
+  <a href="{{ p.demo }}">{{ host }} <span aria-hidden="true">&#8599;</span></a>
+  {%- endif %}
+  {% if p.post is defined %}<a href="{{ p.post }}">Blog post <span aria-hidden="true">&#8599;</span></a>{% endif %}
+  {% if p.stars is defined and p.repo is defined %}
+  <a class="stars-badge" href="{{ p.repo }}/stargazers">
+    <span aria-hidden="true">&#9733;</span> {{ p.stars }}
+    <span class="sr-only">GitHub stars</span>
+  </a>
+  {% elif p.stars is defined %}
+  <span class="stars-badge">
+    <span aria-hidden="true">&#9733;</span> {{ p.stars }}
+    <span class="sr-only">GitHub stars</span>
+  </span>
+  {% endif %}
+</p>

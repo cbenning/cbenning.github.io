@@ -22,7 +22,7 @@ class TestProjectsPage(unittest.TestCase):
         cls.html = _read(PUBLIC / "projects" / "index.html")
 
     def test_projects_page_cards(self):
-        cards = re.findall(r'<article class="project-card" id="([^"]+)"', self.html)
+        cards = re.findall(r'<article class="project-section" id="([^"]+)"', self.html)
         self.assertEqual(
             cards, ["davlog", "lanby", "fussel", "ticktick-to-todoist-migrator"]
         )
@@ -35,10 +35,17 @@ class TestProjectsPage(unittest.TestCase):
                 self.assertRegex(card_html, r'class="led-label">\w+<')
 
     def _card_html(self, card_id):
-        start = self.html.index(f'<article class="project-card" id="{card_id}"')
+        start = self.html.index(f'<article class="project-section" id="{card_id}"')
         rest = self.html[start:]
         end = rest.find("</article>")
         return rest[: end + len("</article>")]
+
+    def test_projects_page_shows_fuller_description(self):
+        """/projects/ carries more context than the compact home
+        cards -- the `description` field, shown only here."""
+        davlog = self._card_html("davlog")
+        self.assertIn("project-description", davlog)
+        self.assertIn("gets a history and an undo button", davlog)
 
     def test_project_links(self):
         davlog = self._card_html("davlog")
@@ -83,9 +90,13 @@ class TestHomePage(unittest.TestCase):
     def test_home(self):
         html = _read(PUBLIC / "index.html")
         self.assertIn("Chris Benninger", html)
-        self.assertIn("/art/hero-workbench.svg", html)
+        self.assertIn("/art/hero-desk.png", html)
         self.assertIn("led--breathe", html)
         self.assertEqual(html.count('class="project-card"'), 4)
+        # The compact home cards stay compact: no fuller description,
+        # and the title links to the matching section on /projects/.
+        self.assertNotIn("project-description", html)
+        self.assertIn('<h2><a href="/projects/#davlog">davlog</a></h2>', html)
         # Scoped to the latest-posts list, not the whole page -- project
         # cards also link to their own /posts/<slug>/ write-up.
         list_start = html.index('class="post-list"')

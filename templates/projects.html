@@ -2,11 +2,11 @@
 {% block title %}Projects{% endblock title %}
 {% block content %}
 <h1>Projects</h1>
-<div class="project-cards">
+<div class="project-sections">
   {% set data = load_data(path="data/projects.toml") %}
   {% set sorted_projects = data.projects | sort(attribute="order") %}
   {% for p in sorted_projects %}
-    {% set partial = "project_card" %}
+    {% set partial = "project_section" %}
     {% include "macros.html" %}
   {% endfor %}
 </div>
