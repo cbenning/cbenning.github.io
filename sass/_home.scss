@@ -1,6 +1,8 @@
-// Home page hero and the project-cards grid (home + /projects/).
-// The art is a wide banner that spans the full content column under
-// the copy, so it crosses the page without crowding the text.
+// Home page hero, the compact project-cards grid on home, and the
+// larger project-sections list on /projects/ -- home links to the
+// matching section on /projects/ via its #id anchor.
+// The hero art is a wide banner that spans the full content column
+// under the copy, so it crosses the page without crowding the text.
 .hero {
   padding: 24px 0 8px;
 }
@@ -84,15 +86,48 @@
   flex: 1;
 }
 
+// Title + status LED share one row, LED pushed to the right, instead
+// of the LED sitting on its own line under the title. Wraps on a
+// narrow card if a long title and the status label can't both fit.
+.project-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+  margin: 0 0 8px;
+}
+
+.project-head h2 {
+  margin: 0;
+}
+
+.project-head .led-wrap {
+  flex: none;
+}
+
 // Card titles use the mono face, not the pixel face: at this size the
 // pixel font is hard to read, and the names carry real information.
+// project_section's title is bigger and keeps the page's default
+// pixel heading instead -- see .project-section h2 below.
 .project-card h2 {
-  margin: 0 0 8px;
   font-family: $font-mono;
   font-weight: 700;
   font-size: 1.12rem;
   letter-spacing: 0;
   color: var(--heading);
+}
+
+// The title links to the project's full write-up on /projects/; it
+// should still read as a heading, not as a green inline link.
+.project-card h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.project-card h2 a:hover {
+  color: var(--led);
+  text-decoration: underline;
 }
 
 // The card's one line of copy: pitch and description used to be two
@@ -103,8 +138,63 @@
   margin: 0 0 12px;
 }
 
-.project-card .led-wrap {
-  margin-bottom: 10px;
+// /projects/: each project gets its own full-width section instead of
+// a grid of compact cards, with the fuller `description` text and a
+// bigger pixel-art panel -- "a little more context" per project.
+.project-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.project-section {
+  display: flex;
+  gap: 24px;
+  background: var(--panel);
+  border: 2px solid var(--line);
+  box-shadow: 6px 6px 0 #000;
+  padding: 24px;
+}
+
+.project-section-art {
+  flex: none;
+  width: 200px;
+  align-self: flex-start;
+  background: var(--bg);
+  border: 2px solid var(--line);
+}
+
+.project-section-art img {
+  image-rendering: pixelated;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.project-section-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.project-section h2 {
+  margin: 0;
+}
+
+.project-description {
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+
+@media (max-width: 640px) {
+  .project-section {
+    flex-direction: column;
+  }
+
+  .project-section-art {
+    width: 100%;
+    max-width: 240px;
+  }
 }
 
 .tech-list {

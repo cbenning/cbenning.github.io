@@ -3,13 +3,22 @@
   (confirmed in Task 4: even the canonical Tera docs example fails to
   parse), so this file dispatches on a `partial` variable instead of
   true macro calls. Set `partial` plus that partial's variables, then
-  `{% include "macros.html" %}`. The LED partial lives in its own file,
-  `_led.html` -- Tera rejects a template including itself, and this
-  file's project_card branch needs a LED too.
+  `{% include "macros.html" %}`. The LED partial and the project-links
+  partial each live in their own file (`_led.html`, `_project_links.html`)
+  -- Tera rejects a template including itself, and this file's project
+  branches need both.
 
-  partial = "project_card": one project card.
-    p: an entry from data/projects.toml (id, name, pitch, description,
-      category, status, tech, repo, art, and optional demo/post/stars).
+  partial = "project_card": one compact project card, for the home
+    page. The title links to its larger write-up on /projects/.
+    p: an entry from data/projects.toml (id, name, pitch, category,
+      status, tech, art, and optional repo, site, docs, demo, post,
+      stars, description -- description is not shown here, only on
+      project_section).
+
+  partial = "project_section": one full-width project section, for
+    /projects/. Same `p` as project_card, but shows `description`
+    too (when present) for more context, and the title is plain text
+    -- the anchor is the thing being linked to, not a link itself.
 
   partial = "post_list": a list of posts.
     post_list_pages: a list of post pages (title, path, date).
@@ -22,11 +31,13 @@
     <img src="{{ p.art }}" alt="" width="{{ p.art_width }}" height="{{ p.art_height }}" loading="lazy">
   </div>
   <div class="project-card-body">
-    <h2>{{ p.name }}</h2>
+    <div class="project-head">
+      <h2><a href="/projects/#{{ p.id }}">{{ p.name }}</a></h2>
+      {% set led_status = p.status %}{% set led_label = true %}
+      {% set led_extra_class = "led--breathe" if p.status == "active" else "" %}
+      {% include "_led.html" %}
+    </div>
     <p class="project-pitch">{{ p.pitch }}</p>
-    {% set led_status = p.status %}{% set led_label = true %}
-    {% set led_extra_class = "led--breathe" if p.status == "active" else "" %}
-    {% include "_led.html" %}
     <ul class="tech-list">
       {%- set tech_colors = load_data(path="data/tech-colors.toml") -%}
       {%- for t in p.tech %}
@@ -34,34 +45,32 @@
       <li class="chip" style="--lang: {{ tech_colors.colors[key] | default(value='#8d9aa6') }}">{{ t }}</li>
       {%- endfor %}
     </ul>
-    <p class="project-links">
-      {#- Labels name the actual destination (its domain, or "GitHub" for
-         a repo, or "Blog post" for an internal page) instead of a bare
-         category word like "Code" or "Docs", so the link carries real
-         information rather than just acting as a nav label. -#}
-      {% if p.site is defined %}
-      {%- set host = p.site | replace(from="https://", to="") | replace(from="http://", to="") | split(pat="/") | first -%}
-      <a href="{{ p.site }}">{{ host }} <span aria-hidden="true">&#8599;</span></a>
-      {%- endif %}
-      {% if p.repo is defined %}<a href="{{ p.repo }}">GitHub <span aria-hidden="true">&#8599;</span></a>{% endif %}
-      {% if p.docs is defined %}<a href="{{ p.docs }}">Docs <span aria-hidden="true">&#8599;</span></a>{% endif %}
-      {% if p.demo is defined %}
-      {%- set host = p.demo | replace(from="https://", to="") | replace(from="http://", to="") | split(pat="/") | first -%}
-      <a href="{{ p.demo }}">{{ host }} <span aria-hidden="true">&#8599;</span></a>
-      {%- endif %}
-      {% if p.post is defined %}<a href="{{ p.post }}">Blog post <span aria-hidden="true">&#8599;</span></a>{% endif %}
-      {% if p.stars is defined and p.repo is defined %}
-      <a class="stars-badge" href="{{ p.repo }}/stargazers">
-        <span aria-hidden="true">&#9733;</span> {{ p.stars }}
-        <span class="sr-only">GitHub stars</span>
-      </a>
-      {% elif p.stars is defined %}
-      <span class="stars-badge">
-        <span aria-hidden="true">&#9733;</span> {{ p.stars }}
-        <span class="sr-only">GitHub stars</span>
-      </span>
-      {% endif %}
-    </p>
+    {% include "_project_links.html" %}
+  </div>
+</article>
+
+{% elif partial == "project_section" %}
+<article class="project-section" id="{{ p.id }}">
+  <div class="project-section-art">
+    <img src="{{ p.art }}" alt="" width="{{ p.art_width }}" height="{{ p.art_height }}" loading="lazy">
+  </div>
+  <div class="project-section-body">
+    <div class="project-head">
+      <h2>{{ p.name }}</h2>
+      {% set led_status = p.status %}{% set led_label = true %}
+      {% set led_extra_class = "led--breathe" if p.status == "active" else "" %}
+      {% include "_led.html" %}
+    </div>
+    <p class="project-pitch">{{ p.pitch }}</p>
+    {% if p.description %}<p class="project-description">{{ p.description }}</p>{% endif %}
+    <ul class="tech-list">
+      {%- set tech_colors = load_data(path="data/tech-colors.toml") -%}
+      {%- for t in p.tech %}
+      {%- set key = t | lower %}
+      <li class="chip" style="--lang: {{ tech_colors.colors[key] | default(value='#8d9aa6') }}">{{ t }}</li>
+      {%- endfor %}
+    </ul>
+    {% include "_project_links.html" %}
   </div>
 </article>
 

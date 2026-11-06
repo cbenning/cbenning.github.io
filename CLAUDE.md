@@ -26,8 +26,8 @@ There is no npm/node toolchain. Fonts and the `lighthouse` CLI used during devel
 
 This Zola/Tera build (confirmed empirically, see `templates/macros.html` header comment) does not support macros — not a missing-dependency issue, a real engine limitation. Reusable UI fragments are built as **dispatch-on-variable includes** instead:
 
-- `templates/macros.html` — set a `partial` variable (`"project_card"` or `"post_list"`) plus that partial's own variables, then `{% include "macros.html" %}`.
-- `templates/_led.html` — the status-LED partial lives in its *own* file because Tera also rejects a template including itself, even with different variables each call (so `macros.html`'s `project_card` branch can't `{% include "macros.html" %}` again for its LED).
+- `templates/macros.html` — set a `partial` variable (`"project_card"`, `"project_section"`, or `"post_list"`) plus that partial's own variables, then `{% include "macros.html" %}`.
+- `templates/_led.html`, `templates/_project_links.html` — the status-LED and the project-links-row partials each live in their *own* file because Tera also rejects a template including itself, even with different variables each call (so `macros.html`'s `project_card`/`project_section` branches can't `{% include "macros.html" %}` again for their LED or links row).
 
 When adding a new reusable fragment, follow this same pattern and document the variable contract in a comment at the top of the file, as the existing ones do.
 
@@ -35,7 +35,8 @@ When adding a new reusable fragment, follow this same pattern and document the v
 
 - `content/posts/*.md` — 40 blog posts, migrated from Jekyll with permalinks preserved (`/posts/:slug/`). `content/posts/_index.md` has `redirect_to = "/articles/"` — the section itself redirects, `templates/archive.html` (serving `content/articles.md`) is the real post index.
 - `content/projects/` — `workviz.md` and `omega-editor-theme.md` are legacy standalone pages kept at their old URLs; the *current* project list (davlog, Lanby, Fussel, ticktick-to-todoist-migrator) is **not** content — it's data.
-- `data/projects.toml` — the project cards shown on `/` (featured only) and `/projects/` (all, sorted by `order`). Schema: `id, name, pitch, category, status, tech[], art, art_width, art_height, featured, order`, plus any of `repo, site, docs, demo, post, stars`. `pitch` is the card's only blurb — a single line, not a headline-plus-paragraph pair (links render only for fields that are present — see `templates/macros.html`'s `project_card` branch). `status` drives the LED colour: `active` (green, breathing), `maintenance`/`experimental`/`beta` (amber), `archived` (red, dimmed).
+- `data/projects.toml` — one row per project. Schema: `id, name, pitch, category, status, tech[], art, art_width, art_height, featured, order`, plus any of `repo, site, docs, demo, post, stars, description`. `pitch` is a single line, always shown. `description` is optional, longer-form context shown *only* on `/projects/`, never on home (links render only for fields that are present — see `templates/macros.html`'s `project_card`/`project_section` branches). `status` drives the LED colour: `active` (green, breathing), `maintenance`/`experimental`/`beta` (amber), `archived` (red, dimmed).
+- Home (`/`, featured only) renders each project as a compact `project_card`: one-line pitch, title linking to `/projects/#<id>`. `/projects/` (all, sorted by `order`) renders each as a full-width `project_section` at that same `#<id>` anchor, with the fuller `description` text and a larger art panel. Both partials share the same `data/projects.toml` row and the same `id`, so the anchor always lines up.
 - `data/tech-colors.toml` — language/tool → hex colour for the dot on each tech chip, keyed by **lowercased** label; unknown keys fall back to a neutral grey. Add entries here, not in CSS, when a new project uses a new technology.
 
 ### Pixel art pipeline
