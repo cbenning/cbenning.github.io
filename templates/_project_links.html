@@ -6,8 +6,9 @@
   _led.html lives on its own (see macros.html's header comment).
 
   p: an entry from data/projects.toml (optional repo, site, docs,
-    demo, post, stars -- links render only for fields that are
-    present).
+    demo, demo_label, post, stars -- links render only for fields
+    that are present; demo_label replaces the demo link's default
+    domain label, for a demo whose domain says little on its own).
 #}
 <p class="project-links">
   {#- Labels name the actual destination (its domain, or "GitHub" for
@@ -21,7 +22,11 @@
   {% if p.repo is defined %}<a href="{{ p.repo }}">GitHub <span aria-hidden="true">&#8599;</span></a>{% endif %}
   {% if p.docs is defined %}<a href="{{ p.docs }}">Docs <span aria-hidden="true">&#8599;</span></a>{% endif %}
   {% if p.demo is defined %}
+  {%- if p.demo_label is defined -%}
+  {%- set host = p.demo_label -%}
+  {%- else -%}
   {%- set host = p.demo | replace(from="https://", to="") | replace(from="http://", to="") | split(pat="/") | first -%}
+  {%- endif -%}
   <a href="{{ p.demo }}">{{ host }} <span aria-hidden="true">&#8599;</span></a>
   {%- endif %}
   {% if p.post is defined %}<a href="{{ p.post }}">Blog post <span aria-hidden="true">&#8599;</span></a>{% endif %}

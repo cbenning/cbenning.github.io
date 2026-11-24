@@ -24,7 +24,7 @@ class TestProjectsPage(unittest.TestCase):
     def test_projects_page_cards(self):
         cards = re.findall(r'<article class="project-section" id="([^"]+)"', self.html)
         self.assertEqual(
-            cards, ["davlog", "lanby", "fussel", "ticktick-to-todoist-migrator"]
+            cards, ["cronicl", "davlog", "lanby", "fussel", "ticktick-to-todoist-migrator"]
         )
         for card_id in cards:
             with self.subTest(card_id=card_id):
@@ -53,6 +53,11 @@ class TestProjectsPage(unittest.TestCase):
         self.assertIn("/posts/davlog/", davlog)
         fussel = self._card_html("fussel")
         self.assertIn("http://photos.benninger.ca", fussel)
+        # a demo link is labelled with its domain unless demo_label says otherwise
+        self.assertIn(">photos.benninger.ca <", fussel)
+        cronicl = self._card_html("cronicl")
+        self.assertIn('<a href="https://cbenning.github.io/cronicl/">Live demo <', cronicl)
+        self.assertNotIn(">cbenning.github.io <", cronicl)
 
     def test_stars_without_repo_does_not_break_the_build(self):
         """A project can legitimately have `stars` without `repo` (e.g.
@@ -92,7 +97,7 @@ class TestHomePage(unittest.TestCase):
         self.assertIn("Chris Benninger", html)
         self.assertIn("/art/hero-desk.png", html)
         self.assertIn("led--breathe", html)
-        self.assertEqual(html.count('class="project-card"'), 4)
+        self.assertEqual(html.count('class="project-card"'), 5)
         # The compact home cards stay compact: no fuller description,
         # and the title links to the matching section on /projects/.
         self.assertNotIn("project-description", html)
@@ -112,7 +117,7 @@ class TestHomePage(unittest.TestCase):
         `order` values, not by reading the current page."""
         data_path = REPO_ROOT / "data" / "projects.toml"
         original = data_path.read_text()
-        # davlog is order=1, lanby is order=2; swap them
+        # cronicl is order=1, davlog is order=2; swap them
         mutated = original.replace("order = 1", "order = 9").replace("order = 2", "order = 1").replace(
             "order = 9", "order = 2"
         )
@@ -129,7 +134,7 @@ class TestHomePage(unittest.TestCase):
             self.assertEqual(result.returncode, 0, f"zola build failed:\n{result.stderr}")
             html = (pathlib.Path(scratch) / "index.html").read_text()
             cards = re.findall(r'<article class="project-card" id="([^"]+)"', html)
-            self.assertEqual(cards[:2], ["lanby", "davlog"])
+            self.assertEqual(cards[:2], ["davlog", "cronicl"])
         finally:
             data_path.write_text(original)
             shutil.rmtree(scratch, ignore_errors=True)

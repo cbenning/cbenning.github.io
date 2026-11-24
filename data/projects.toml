@@ -1,4 +1,22 @@
 [[projects]]
+id = "cronicl"
+name = "cronicl"
+pitch = "A family tree kept as plain text you own."
+description = "The whole tree is one YAML file you can edit by hand and keep in git. Around it: a terminal editor that shows a diff before it writes, a checker that points at the exact line, GEDCOM in and out, and a static website to share with family, with living people masked or hidden."
+category = "genealogy tool"
+status = "active"
+tech = ["Python", "YAML", "GEDCOM"]
+repo = "https://github.com/cbenning/cronicl"
+demo = "https://cbenning.github.io/cronicl/"
+demo_label = "Live demo"
+post = "/posts/cronicl/"
+art = "/art/cronicl.svg"
+art_width = 64
+art_height = 40
+featured = true
+order = 1
+
+[[projects]]
 id = "davlog"
 name = "davlog"
 pitch = "A WebDAV server that keeps your files in a git repository."
@@ -12,7 +30,7 @@ art = "/art/davlog.svg"
 art_width = 64
 art_height = 40
 featured = true
-order = 1
+order = 2
 
 [[projects]]
 id = "lanby"
@@ -28,7 +46,7 @@ art = "/art/lanby.svg"
 art_width = 64
 art_height = 40
 featured = true
-order = 2
+order = 3
 
 [[projects]]
 id = "fussel"
@@ -46,7 +64,7 @@ art = "/art/fussel.svg"
 art_width = 64
 art_height = 40
 featured = true
-order = 3
+order = 4
 
 [[projects]]
 id = "ticktick-to-todoist-migrator"
@@ -61,4 +79,4 @@ art = "/art/ticktick-to-todoist-migrator.svg"
 art_width = 64
 art_height = 40
 featured = true
-order = 4
+order = 5
