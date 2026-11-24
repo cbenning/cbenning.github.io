@@ -23,6 +23,7 @@ bash = "#89e051"
 gdscript = "#6a9fd8"
 css = "#563d7c"
 html = "#e34c26"
+yaml = "#cb171e"
 
 # Tools and protocols: picked to sit alongside the language colours
 # without pretending to be languages.

@@ -86,6 +86,7 @@ class TestGeneratedArt(unittest.TestCase):
 
     def test_art_sizes(self):
         sizes = {
+            "cronicl": (64, 40),
             "davlog": (64, 40),
             "lanby": (64, 40),
             "fussel": (64, 40),
