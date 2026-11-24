@@ -29,6 +29,33 @@
   color: var(--muted);
 }
 
+// Markdown tables: same blocky panel look as code blocks. The base
+// rule in _base.scss already makes them scroll sideways when too wide.
+.post-body table {
+  // display: block (from _base) makes the outer border wrap the full
+  // column width; fit-content keeps it hugging the cells instead.
+  width: fit-content;
+  margin: 0 0 1.2em;
+  border: 2px solid var(--line);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.post-body th,
+.post-body td {
+  border: 1px solid var(--line);
+  padding: 6px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.post-body th {
+  background: var(--panel);
+  color: var(--heading);
+  font-family: $font-mono;
+  font-weight: 600;
+}
+
 // --led on --text is only 1.07:1 contrast, so colour alone can't mark
 // a link in long-form prose (WCAG 1.4.1); underline it at rest.
 .post-body a {
