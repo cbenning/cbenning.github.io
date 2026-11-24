@@ -52,9 +52,7 @@ class TestProjectsPage(unittest.TestCase):
         self.assertIn("https://github.com/cbenning/davlog", davlog)
         self.assertIn("/posts/davlog/", davlog)
         fussel = self._card_html("fussel")
-        self.assertIn("http://photos.benninger.ca", fussel)
-        # a demo link is labelled with its domain unless demo_label says otherwise
-        self.assertIn(">photos.benninger.ca <", fussel)
+        self.assertIn('<a href="https://benninger.ca/fussel-demo/">Live demo <', fussel)
         cronicl = self._card_html("cronicl")
         self.assertIn('<a href="https://cbenning.github.io/cronicl/">Live demo <', cronicl)
         self.assertNotIn(">cbenning.github.io <", cronicl)
