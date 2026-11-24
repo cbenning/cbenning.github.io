@@ -126,3 +126,24 @@ def load_fixture(name: str):
     if path.suffix == ".json":
         return json.loads(path.read_text())
     return path.read_text()
+
+
+def live_posts() -> list[tuple[str, str]]:
+    """(slug, date) for every published post in content/posts/, newest
+    first. The slug is the filename minus its date prefix, which is how
+    Zola builds /posts/<slug>/; drafts (`draft = true`) are left out
+    because Zola does not build them. The legacy fixtures pin the 40
+    posts carried over from Jekyll; this is the full current list,
+    including anything written since."""
+    posts = []
+    for path in (REPO_ROOT / "content" / "posts").glob("*.md"):
+        if path.name == "_index.md":
+            continue
+        text = path.read_text()
+        if re.search(r"^draft\s*=\s*true", text, re.MULTILINE):
+            continue
+        match = re.search(r"^date = (\d{4}-\d{2}-\d{2})", text, re.MULTILINE)
+        if match:
+            slug = re.sub(r"^\d{4}-\d{2}-\d{2}-", "", path.stem)
+            posts.append((slug, match.group(1)))
+    return sorted(posts, key=lambda p: p[1], reverse=True)

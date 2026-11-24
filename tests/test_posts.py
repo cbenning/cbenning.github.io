@@ -2,7 +2,15 @@ import difflib
 import pathlib
 import unittest
 
-from helpers import PUBLIC, REPO_ROOT, article_text, count_pre_blocks, load_fixture, normalize
+from helpers import (
+    PUBLIC,
+    REPO_ROOT,
+    article_text,
+    count_pre_blocks,
+    live_posts,
+    load_fixture,
+    normalize,
+)
 
 class TestProjectPages(unittest.TestCase):
     def test_legacy_project_pages_build(self):
@@ -62,11 +70,13 @@ class TestPosts(unittest.TestCase):
                 )
 
     def test_only_live_posts_are_built(self):
-        """public/posts/ holds exactly the 40 posts that were live on
-        the Jekyll site -- no more (a draft leaking out) and no fewer
-        (a post lost in migration)."""
+        """public/posts/ holds exactly the published posts in
+        content/posts/ -- no drafts leaking out -- and still includes
+        all 40 that were live on the Jekyll site, so none was lost in
+        the migration."""
         built = {p.name for p in (PUBLIC / "posts").iterdir() if p.is_dir()}
-        self.assertEqual(built, set(self.baseline))
+        self.assertEqual(built, {s for s, _ in live_posts()})
+        self.assertLessEqual(set(self.baseline), built)
 
     def test_no_liquid_left(self):
         content_dir = REPO_ROOT / "content"

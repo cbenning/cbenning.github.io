@@ -5,7 +5,7 @@ import subprocess
 import tempfile
 import unittest
 
-from helpers import PUBLIC, REPO_ROOT
+from helpers import PUBLIC, REPO_ROOT, live_posts
 
 # Confirmed 404 on the live site, so the new site not having them either
 # is not a regression; each entry notes how it was checked.
@@ -103,7 +103,7 @@ class TestHomePage(unittest.TestCase):
         list_html = html[list_start : html.index("</ul>", list_start)]
         post_links = re.findall(r'href="(/posts/[^"]+/)"', list_html)
         self.assertEqual(len(post_links), 5)
-        self.assertEqual(post_links[0], "/posts/davlog/")
+        self.assertEqual(post_links[0], f"/posts/{live_posts()[0][0]}/")
 
     def test_home_cards_follow_order_field_not_declaration_order(self):
         """Home used to iterate data.projects in raw TOML declaration
@@ -139,7 +139,7 @@ class TestArchivePage(unittest.TestCase):
     def test_archive(self):
         html = _read(PUBLIC / "articles" / "index.html")
         post_links = re.findall(r'href="(/posts/[^"]+/)"', html)
-        self.assertEqual(len(post_links), 40)
+        self.assertEqual(len(post_links), len(live_posts()))
         self.assertIn("2026", html)
         self.assertIn("2010", html)
         self.assertLess(html.index("2026"), html.index("2010"))
