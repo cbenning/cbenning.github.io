@@ -2,7 +2,7 @@ import re
 import unittest
 import xml.etree.ElementTree as ET
 
-from helpers import PUBLIC, REPO_ROOT, load_fixture
+from helpers import PUBLIC, REPO_ROOT, live_posts, load_fixture
 
 ATOM_NS = "{http://www.w3.org/2005/Atom}"
 
@@ -45,16 +45,17 @@ class TestFeeds(unittest.TestCase):
         feed_text = (PUBLIC / "feed.xml").read_text()
         atom_root = ET.fromstring(atom_text)
         feed_root = ET.fromstring(feed_text)
-        self.assertEqual(len(atom_root.findall(f"{ATOM_NS}entry")), 40)
-        self.assertEqual(len(feed_root.findall(f"{ATOM_NS}entry")), 20)
+        self.assertEqual(len(atom_root.findall(f"{ATOM_NS}entry")), len(live_posts()))
+        self.assertEqual(len(feed_root.findall(f"{ATOM_NS}entry")), min(20, len(live_posts())))
 
     def test_feed_ids_match_baseline(self):
-        """Checks the same ids, in the same date order, as the live
-        feeds -- except where two posts share a date (one pair,
-        2010-11-06), where Jekyll's tie-break was an unspecified
-        filesystem detail not worth reproducing; the date sequence
-        still has to match position-for-position, which pins every
-        non-tied post exactly since dates are otherwise unique."""
+        """atom.xml carries every post, newest first; feed.xml is its
+        newest 20. Every id from the live Jekyll feeds is still present
+        and spelled the same, so existing subscribers don't see old
+        posts reappear as new. Posts written since the migration are
+        allowed alongside them. Two posts share a date (2010-11-06),
+        where Jekyll's tie-break was an unspecified filesystem detail
+        not worth reproducing, so order is checked by date sequence."""
         baseline = load_fixture("legacy-feeds.json")
         atom_ids = _entry_ids((PUBLIC / "atom.xml").read_text())
         feed_ids = _entry_ids((PUBLIC / "feed.xml").read_text())
@@ -63,24 +64,39 @@ class TestFeeds(unittest.TestCase):
         def date_sequence(ids):
             return [dates[_slug_from_id(i)] for i in ids]
 
-        self.assertEqual(set(atom_ids), set(baseline["atom.xml"]))
-        self.assertEqual(date_sequence(atom_ids), date_sequence(baseline["atom.xml"]))
-        self.assertEqual(set(feed_ids), set(baseline["feed.xml"]))
-        self.assertEqual(date_sequence(feed_ids), date_sequence(baseline["feed.xml"]))
+        self.assertEqual({_slug_from_id(i) for i in atom_ids}, {s for s, _ in live_posts()})
+        self.assertLessEqual(set(baseline["atom.xml"]), set(atom_ids))
+        self.assertEqual(date_sequence(atom_ids), sorted(date_sequence(atom_ids), reverse=True))
+        # the two feeds spell ids differently (atom.xml relative,
+        # feed.xml absolute), as Jekyll did, so compare by slug
+        self.assertEqual(
+            [_slug_from_id(i) for i in feed_ids], [_slug_from_id(i) for i in atom_ids[:20]]
+        )
+        # feed.xml ids that were already live keep their exact spelling
+        legacy_feed_ids = set(baseline["feed.xml"])
+        for entry_id in feed_ids:
+            if _slug_from_id(entry_id) in {_slug_from_id(i) for i in legacy_feed_ids}:
+                with self.subTest(entry_id=entry_id):
+                    self.assertIn(entry_id, legacy_feed_ids)
 
     def test_feed_updated_matches_baseline_timezone(self):
         """Found via code review: entries rendered <updated> in UTC
         (+00:00) while the live feeds used America/Vancouver, shifting
         every timestamp by 7-8 hours. A reader that tracks <updated>
         (not just <id>) could re-surface every entry, and Pacific-time
-        readers would see each post's date a day early."""
+        readers would see each post's date a day early. Every entry the
+        live feeds had must keep its exact timestamp, and every entry
+        (including newer posts) must be in Pacific time."""
         baseline = load_fixture("legacy-feeds.json")
         baseline_atom = dict(zip(baseline["atom.xml"], baseline["atom.xml_updated"]))
-        baseline_feed = dict(zip(baseline["feed.xml"], baseline["feed.xml_updated"]))
         new_atom = _entry_updated_by_id((PUBLIC / "atom.xml").read_text())
         new_feed = _entry_updated_by_id((PUBLIC / "feed.xml").read_text())
-        self.assertEqual(new_atom, baseline_atom)
-        self.assertEqual(new_feed, baseline_feed)
+        for entry_id, updated in baseline_atom.items():
+            with self.subTest(entry_id=entry_id):
+                self.assertEqual(new_atom.get(entry_id), updated)
+        for entry_id, updated in {**new_atom, **new_feed}.items():
+            with self.subTest(entry_id=entry_id):
+                self.assertRegex(updated, r"T00:00:00-0[78]:00$")
 
     def test_llms_txt(self):
         text = (PUBLIC / "llms.txt").read_text()
@@ -88,7 +104,7 @@ class TestFeeds(unittest.TestCase):
         post_lines = re.findall(
             r"^- \[.+\]\(https://benninger\.ca/posts/[^)]+/\)", text, re.MULTILINE
         )
-        self.assertEqual(len(post_lines), 40)
+        self.assertEqual(len(post_lines), len(live_posts()))
         other_section = text.split("## Other", 1)[1]
         self.assertIn("https://benninger.ca/projects/", other_section)
         self.assertIn("https://benninger.ca/about/", other_section)
@@ -113,9 +129,9 @@ class TestFeeds(unittest.TestCase):
         for slug in baseline:
             with self.subTest(slug=slug):
                 self.assertIn(f"https://benninger.ca/posts/{slug}/", text)
-        # the sitemap lists exactly the live posts and nothing else
+        # the sitemap lists exactly the published posts and nothing else
         sitemap_posts = set(re.findall(r"https://benninger\.ca/posts/([a-z0-9][a-z0-9-]*)/", text))
-        self.assertEqual(sitemap_posts, set(baseline))
+        self.assertEqual(sitemap_posts, {s for s, _ in live_posts()})
 
 
 if __name__ == "__main__":
