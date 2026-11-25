@@ -1,3 +1,4 @@
+import os
 import pathlib
 import re
 import shutil
@@ -86,6 +87,34 @@ class TestProjectsPage(unittest.TestCase):
             self.assertNotIn('href="/stargazers"', html)  # no repo -> no dangling link
         finally:
             data_path.write_text(original)
+            shutil.rmtree(scratch, ignore_errors=True)
+
+
+    def test_star_count_falls_back_when_github_api_unreachable(self):
+        """The live star count is fetched from the GitHub API at build
+        time. With no network (or rate-limited, or API down) the build
+        must still succeed and show the `stars` fallback from
+        data/projects.toml, not fail the deploy or drop the badge."""
+        scratch = tempfile.mkdtemp()
+        env = dict(os.environ)
+        env.pop("GITHUB_TOKEN", None)
+        # Route all HTTPS through a closed local port: every fetch fails.
+        env["HTTPS_PROXY"] = env["https_proxy"] = "http://127.0.0.1:9"
+        try:
+            result = subprocess.run(
+                [str(REPO_ROOT / ".bin" / "zola"), "build", "-o", scratch, "--force"],
+                cwd=REPO_ROOT,
+                env=env,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, f"zola build failed:\n{result.stderr}")
+            fallback = re.search(
+                r'id = "fussel".*?\nstars = (\d+)', (REPO_ROOT / "data" / "projects.toml").read_text(), re.S
+            ).group(1)
+            html = (pathlib.Path(scratch) / "projects" / "index.html").read_text()
+            self.assertRegex(html, rf"&#9733;</span>\s*{fallback}\s*<")
+        finally:
             shutil.rmtree(scratch, ignore_errors=True)
 
 

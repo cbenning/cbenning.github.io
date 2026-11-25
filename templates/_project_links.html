@@ -30,14 +30,37 @@
   <a href="{{ p.demo }}">{{ host }} <span aria-hidden="true">&#8599;</span></a>
   {%- endif %}
   {% if p.post is defined %}<a href="{{ p.post }}">Blog post <span aria-hidden="true">&#8599;</span></a>{% endif %}
+  {#- `stars` in data/projects.toml opts a project into the badge and
+     is the fallback count. For a GitHub repo the live count is fetched
+     from the GitHub API at build time (scheduled daily rebuilds in
+     deploy.yml keep it current); if that request fails -- offline,
+     rate-limited, API down -- the build still succeeds and the
+     fallback is shown. GITHUB_TOKEN, when set (CI), lifts the
+     unauthenticated rate limit, which shared runner IPs often hit. -#}
+  {%- if p.stars is defined -%}
+  {%- set stars = p.stars -%}
+  {%- if p.repo is defined and "https://github.com/" in p.repo -%}
+  {%- set gh_slug = p.repo | replace(from="https://github.com/", to="") -%}
+  {%- set gh_api = "https://api.github.com/repos/" ~ gh_slug -%}
+  {%- set gh_token = get_env(name="GITHUB_TOKEN", default="") -%}
+  {%- if gh_token -%}
+  {%- set gh = load_data(url=gh_api, format="json", required=false, headers=["Accept=application/vnd.github+json", "Authorization=Bearer " ~ gh_token]) -%}
+  {%- else -%}
+  {%- set gh = load_data(url=gh_api, format="json", required=false, headers=["Accept=application/vnd.github+json"]) -%}
+  {%- endif -%}
+  {%- if gh and gh.stargazers_count is defined -%}
+  {%- set stars = gh.stargazers_count -%}
+  {%- endif -%}
+  {%- endif -%}
+  {%- endif %}
   {% if p.stars is defined and p.repo is defined %}
   <a class="stars-badge" href="{{ p.repo }}/stargazers">
-    <span aria-hidden="true">&#9733;</span> {{ p.stars }}
+    <span aria-hidden="true">&#9733;</span> {{ stars }}
     <span class="sr-only">GitHub stars</span>
   </a>
   {% elif p.stars is defined %}
   <span class="stars-badge">
-    <span aria-hidden="true">&#9733;</span> {{ p.stars }}
+    <span aria-hidden="true">&#9733;</span> {{ stars }}
     <span class="sr-only">GitHub stars</span>
   </span>
   {% endif %}
