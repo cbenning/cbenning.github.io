@@ -57,37 +57,14 @@ class TestProjectsPage(unittest.TestCase):
         self.assertIn('<a href="https://cbenning.github.io/cronicl/">Live demo <', cronicl)
         self.assertNotIn(">cbenning.github.io <", cronicl)
 
-    def test_stars_without_repo_does_not_break_the_build(self):
-        """A project can legitimately have `stars` without `repo` (e.g.
-        a GitLab-only project with a mirror star count), and `stars`
-        with no `repo` used to crash the *entire* site build, not just
-        that card: the badge linked unconditionally to `{{ p.repo
-        }}/stargazers`. Proven directly against zola build, not just
-        template text, since that's where the real failure was."""
-        data_path = REPO_ROOT / "data" / "projects.toml"
-        original = data_path.read_text()
-        # lanby has no `repo` in the real data; temporarily give it stars
-        mutated = original.replace(
-            'id = "lanby"\nname = "Lanby"', 'id = "lanby"\nname = "Lanby"\nstars = 1'
-        )
-        self.assertNotEqual(mutated, original, "fixture assumption broke: no lanby entry found")
-        scratch = tempfile.mkdtemp()
-        try:
-            data_path.write_text(mutated)
-            result = subprocess.run(
-                [str(REPO_ROOT / ".bin" / "zola"), "build", "-o", scratch, "--force"],
-                cwd=REPO_ROOT,
-                capture_output=True,
-                text=True,
-            )
-            self.assertEqual(result.returncode, 0, f"zola build failed:\n{result.stderr}")
-            html = (pathlib.Path(scratch) / "projects" / "index.html").read_text()
-            self.assertRegex(html, r"&#9733;</span>\s*1\s*<")
-            self.assertNotIn('href="/stargazers"', html)  # no repo -> no dangling link
-        finally:
-            data_path.write_text(original)
-            shutil.rmtree(scratch, ignore_errors=True)
-
+    def test_no_star_badge(self):
+        """The GitHub star badge was removed on purpose: a hand-kept
+        count went stale, and a live one needs client JS or a daily
+        rebuild. Keep it from coming back by accident."""
+        html = _read(PUBLIC / "projects" / "index.html")
+        self.assertNotIn("stars-badge", html)
+        self.assertNotIn("/stargazers", html)
+        self.assertNotIn("&#9733;", html)
 
 class TestHomePage(unittest.TestCase):
     def test_home(self):
