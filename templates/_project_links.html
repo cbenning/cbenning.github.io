@@ -1,12 +1,12 @@
 {#
-  Project link pills (Site/GitHub/Docs/Demo/Blog post + stars badge).
+  Project link pills (Site/GitHub/Docs/Demo/Blog post).
   Split out of macros.html so both the compact project_card and the
   larger project_section partial can use it without duplicating the
   block -- Tera rejects a template including itself, same reason
   _led.html lives on its own (see macros.html's header comment).
 
   p: an entry from data/projects.toml (optional repo, site, docs,
-    demo, demo_label, post, stars -- links render only for fields
+    demo, demo_label, post -- links render only for fields
     that are present; demo_label replaces the demo link's default
     domain label, for a demo whose domain says little on its own).
 #}
@@ -30,15 +30,4 @@
   <a href="{{ p.demo }}">{{ host }} <span aria-hidden="true">&#8599;</span></a>
   {%- endif %}
   {% if p.post is defined %}<a href="{{ p.post }}">Blog post <span aria-hidden="true">&#8599;</span></a>{% endif %}
-  {% if p.stars is defined and p.repo is defined %}
-  <a class="stars-badge" href="{{ p.repo }}/stargazers">
-    <span aria-hidden="true">&#9733;</span> {{ p.stars }}
-    <span class="sr-only">GitHub stars</span>
-  </a>
-  {% elif p.stars is defined %}
-  <span class="stars-badge">
-    <span aria-hidden="true">&#9733;</span> {{ p.stars }}
-    <span class="sr-only">GitHub stars</span>
-  </span>
-  {% endif %}
 </p>

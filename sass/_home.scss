@@ -229,7 +229,7 @@
 // body copy rather than a button. Text stays neutral and legible;
 // the accent dot carries the colour instead, same split already used
 // by .tech-list .chip.
-.project-links a:not(.stars-badge) {
+.project-links a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -241,7 +241,7 @@
   text-decoration: none;
 }
 
-.project-links a:not(.stars-badge)::before {
+.project-links a::before {
   content: "";
   width: 6px;
   height: 6px;
@@ -250,29 +250,10 @@
   box-shadow: 0 0 4px 1px var(--led-glow);
 }
 
-.project-links a:not(.stars-badge):hover {
+.project-links a:hover {
   border-color: var(--led);
   background: var(--led-glow-wide);
   box-shadow: 0 0 5px 1px var(--led-glow);
-  text-decoration: none;
-}
-
-// GitHub stars: a readable badge at the end of the links row, not a
-// dim aside in the heading.
-.stars-badge {
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 8px;
-  border: 1px solid var(--line);
-  background: var(--bg);
-  color: var(--amber);
-  text-decoration: none;
-}
-
-.stars-badge:hover {
-  border-color: var(--amber);
   text-decoration: none;
 }
 
